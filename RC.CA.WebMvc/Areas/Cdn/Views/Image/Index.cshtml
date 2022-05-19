@@ -1,0 +1,37 @@
+﻿@using RC.CA.Application.Contracts.Identity
+@inject JavaScriptEncoder javaScriptEncoder;
+@inject IAppContextX appContextX;
+@model CdnFilesListResponseDto;
+@{
+    ViewData["Title"] = "Image list";
+    var requestUrl = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}{Context.Request.QueryString}"; 
+    var apiEndpoint = $"https://{appContextX.ApiEndpoint}/api/cdn/Image/Upload"; 
+}
+
+<div class="container-fluid">
+    <div class="row head-border-bottom">
+        <div class="col-12 ">
+            <h3>Upload images</h3>
+        </div>
+    </div>
+</div>
+<div class="container-fluid pt-2">
+    <div id="dropSection" class="row upload-container" data-apiurl="@appContextX.ApiEndpoint">
+        <div id="uploadedFiles" class="d-flex flex-row"></div>
+        <i class="fa fa-cloud fa-xl text-center upload-ico"></i>
+    </div>
+</div>
+<h5>Upload images to azure cdn. Drag and drop images to upload.</h5>
+
+<!-- Image list rendered as partial so it can be refreshed independently of upload widget -->
+<div id="imageListContainer">
+<partial name="_ImageList" for="@Model"></partial>
+</div>
+
+<div asp-validation-summary="All" class="text-danger"></div>
+
+
+
+
+
+

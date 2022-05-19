@@ -1,0 +1,37 @@
+﻿@using RC.CA.Application.Dto
+@model PaginationMetaData
+@{
+    var prevRouteData = Context.Request.Query.ToDictionary(x => x.Key, x => x.Value.ToString());
+    if (prevRouteData.ContainsKey("pageSeq"))
+        prevRouteData.Remove("pageSeq");
+    prevRouteData.Add("pageSeq", (Model.CurrentPage - 1).ToString());
+    var nextRouteData = Context.Request.Query.ToDictionary(x => x.Key, x => x.Value.ToString());
+    if (nextRouteData.ContainsKey("pageSeq"))
+        nextRouteData.Remove("pageSeq");
+
+    nextRouteData.Add("pageSeq", (Model.CurrentPage + 1).ToString());
+    //
+    string nextEnabled = (!Model.HasNext) ? "pag-is-disabled" : "";
+    string previousEnabled = (!Model.HasPrevious) ? "pag-is-disabled" : "";
+    string totalPages = Model.TotalPages > 99 ? "many" : Model.TotalPages.ToString();
+    string currentPage = Model.TotalPages < 1 ? "0" : Model.CurrentPage.ToString();
+}
+<nav class="pt-2" aria-label="Page navigation example">
+  <ul class="pagination">
+    <li class="page-item">
+         <a class="page-link @previousEnabled" id="Previous" asp-all-route-data="prevRouteData" aria-label="Previous">
+            Previous
+         </a>
+    </li>
+    <li class="page-item">
+        <a class="page-link" href="#">
+            Page @currentPage of @totalPages
+        </a>
+    </li>
+    <li class="page-item"> 
+        <a class="page-link @nextEnabled" id="Next" asp-all-route-data="nextRouteData" aria-label="Next">
+            Next
+        </a>
+    </li>
+  </ul>
+</nav>

@@ -1,0 +1,44 @@
+name: 'MVC build and deploy https://rc-ca-webmvc.azurewebsites.net'
+
+on:
+  workflow_dispatch:
+  #push:
+    #branches: [ master ]
+  #pull_request:
+    #branches: [ master ]
+
+env:
+  AZURE_WEBAPP_PACKAGE_PATH: '.' #default location app root
+  AZURE_WEBAPPSERVICE_NAME: RC-CA-WebMVC
+  AZURE_WEBAPP_PROJECTNAME: RC.CA.WebMvc
+
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+        
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    - name: Build
+      run: dotnet build '${{env.AZURE_WEBAPP_PROJECTNAME}}' --configuration Release
+      
+    - name: Publish
+      run: dotnet publish '${{env.AZURE_WEBAPP_PROJECTNAME}}' -c Release -o '${{env.AZURE_WEBAPP_PACKAGE_PATH}}/myapp'
+      
+    - name: Deploy
+      uses: Azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.AZURE_WEBAPPSERVICE_NAME }}
+        #slot-name 'development'
+        publish-profile: ${{ secrets.AZURE_WEBMVC_BUILD_PUBLISH_SECRET }}
+        package: '${{env.AZURE_WEBAPP_PACKAGE_PATH}}/myapp'

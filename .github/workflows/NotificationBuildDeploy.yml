@@ -1,0 +1,44 @@
+name: 'MVC build and deploy https://nt-ca-notification-webapi.azurewebsites.net'
+
+on:
+  workflow_dispatch:
+  #push:
+    #branches: [ master ]
+  #pull_request:
+    #branches: [ master ]
+
+env:
+  AZURE_WEBAPP_PACKAGE_PATH: '.' #default location app root
+  AZURE_WEBAPPSERVICE_NAME: NT-CA-Notification-WebApi
+  AZURE_WEBAPP_PROJECTNAME: NT.CA.Notification.WebApi
+
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+        
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    - name: Build
+      run: dotnet build '${{env.AZURE_WEBAPP_PROJECTNAME}}' --configuration Release
+      
+    - name: Publish
+      run: dotnet publish '${{env.AZURE_WEBAPP_PROJECTNAME}}' -c Release -o '${{env.AZURE_WEBAPP_PACKAGE_PATH}}/myapp'
+      
+    - name: Deploy
+      uses: Azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.AZURE_WEBAPPSERVICE_NAME }}
+        #slot-name 'development'
+        publish-profile: ${{ secrets.AZURE_Notification_BUILD_PUBLISH_SECRET }}
+        package: '${{env.AZURE_WEBAPP_PACKAGE_PATH}}/myapp'

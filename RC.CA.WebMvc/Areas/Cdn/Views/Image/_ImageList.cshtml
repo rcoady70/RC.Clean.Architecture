@@ -1,0 +1,103 @@
+﻿@inject JavaScriptEncoder javaScriptEncoder;
+@model CdnFilesListResponseDto;
+@{
+    var requestUrl = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}{Context.Request.QueryString}"; 
+}
+<div class="container-fluid list-container">
+ 
+    <div class="row pt-2">
+        <div class="col-12 text-end">
+            <div>
+                <a id="evtFilterButton" class="btn btn-primary" data-bs-toggle="collapse" href="#collapseFilter" role="button" aria-expanded="false" aria-controls="collapseFilter">
+                    Filter<span id="filterBadge" class="badge badge-light"></span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- Start filter panel-->
+    <div class="container-fluid">
+        <div class="row pt-2">
+            <div class="col-12 text-start">
+                <div class="collapse" id="collapseFilter">
+                    <form method="get" class="form-inline">
+                            <input  class="form-control-filter w-25" asp-for="FilterByName" id="FilterByName" name="FilterByName" type="input" placeholder="Name..." />
+                            <button class="button-as-text-list" data-spinning-button type="submit" class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End filter panel-->
+    <!-- Heading panel-->
+    <div class="container-fluid list-panel">
+        <div class="row h5 list-row-heading p-2">
+            <div class="col-sm-1">
+            </div>
+            <div class="col-sm-7">
+                File name
+                <a asp-area="Cdn" asp-controller="Image" asp-action="Index" asp-route-OrderBy="FileName_asc"><i class="fa fa-arrow-down"></i></a>
+                <a asp-area="Cdn" asp-controller="Image" asp-action="Index" asp-route-OrderBy="FileName_desc"><i class="fa fa-arrow-up"></i></a>
+            </div>
+            <div class="col-sm-3">
+                Type
+                <a asp-area="Cdn" asp-controller="Image" asp-action="Index" asp-route-OrderBy="ContentType_asc"><i class="fa fa-arrow-down"></i></a>
+                <a asp-area="Cdn" asp-controller="Image" asp-action="Index" asp-route-OrderBy="ContentType_desc"><i class="fa fa-arrow-up"></i></a>
+            </div>
+            <div class="col-sm-1">
+                Options
+            </div>
+        </div>
+        <!-- End heading panel-->
+        @foreach (var item in Model.Files)
+        {
+             <!-- List main row -->
+            <div class="row list-row">
+                <div class="col-sm-1 text-truncate">
+                    <span class="list-subhead"></span>
+                    <img src='@Url.Content($"{@item.CdnLocation}/{@item.FileName.NullIfWhiteSpaceExt() ?? "noimage.jpg"}")' class="img-fluid p-1"/>
+                 </div>
+                <div class="col-sm-7 evt-list-col-more text-truncate">
+                    <span class="list-subhead">File name:</span>@item.FileName
+                </div>
+                <div class="col-sm-3 text-truncate">
+                    <span class="list-subhead">Content type:</span>@item.ContentType
+                </div>
+                <div class="col-sm-1">
+                    <!-- Options -->
+                    <div class="btn-group">
+                        <button type="button" class="btn  " data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa fa-ellipsis-v"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <form id="list-delete" asp-action="Delete" asp-route-id="@item.Id" method="post">
+                                    <button type="submit" 
+                                            class="btn btn-link text-decoration-none text-danger evt-menu-delete"
+                                            data-body-message="Are you sure you want to delete member @javaScriptEncoder.Encode(item.FileName)?"
+                                            data-redirect-after="@requestUrl">
+                                        Delete
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!-- Additional information -->
+            <div class="row list-row-more">
+                <div class="col-sm-12">
+                    <span class="list-row-more-col">Original:&nbsp;</span>@item.OrginalFileName&nbsp;
+                    <span class="list-row-more-col">Size:&nbsp;</span>@item.FileSize&nbsp;
+                    <span class="list-row-more-col">Created on / by:&nbsp;</span>@item.CreatedOn.ToStringBlankExt()&nbsp;@item.CreatedBy
+                </div>
+            </div>
+        }
+        <!-- Start pagination -->
+        <div class="row">
+            <div class="col-12">
+                <partial name="_pagination" for="PaginationMetaData" />
+            </div>
+        </div>
+        <!-- End pagination -->
+    </div>
+</div>

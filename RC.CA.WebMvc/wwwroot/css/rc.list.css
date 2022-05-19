@@ -1,0 +1,118 @@
+﻿/**/
+/* Start List styles */
+/**/
+
+.pag-is-disabled {
+    opacity: .5;
+    pointer-events: none;
+}
+
+.list-head-border-bottom {
+    border-bottom: solid 2px #DEE2E6;
+}
+
+/*Inline fro element for filters*/
+.form-control-filter {
+    display: inline;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+
+
+.list-container {
+}
+
+.list-Panel {
+}
+
+.evt-list-col-more::before {
+    content: '\f35a'; /* You should use \ and not /*/
+    font-family: "Font Awesome 5 Free"; /* This is the correct font-family*/
+    font-size: 22px;
+    cursor: pointer;
+    color: #337AB7;
+    vertical-align: middle;
+}
+
+.evt-list-col-more-display::before {
+    font-family: "Font Awesome 5 Free"; /* This is the correct font-family*/
+    content: "\f358";
+    font-size: 22px;
+    cursor: pointer;
+    color: #337AB7;
+    vertical-align: middle;
+}
+
+.list-row-more {
+    display: none;
+}
+
+.list-row {
+    font-size: 16px;
+    color: #555555;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+    .list-row:hover {
+        background-color: #F2F2F2 !important;
+    }
+
+.list-row-heading {
+    border-bottom: solid 1px #DDDDDD;
+    font-weight: 500;
+    color: #555555;
+    font-size: 18px;
+}
+    /*List heading*/
+    .list-row-heading a {
+        color: #337ab7;
+        text-decoration: none;
+    }
+
+.list-subhead {
+    display: none;
+}
+
+
+.list-row-more-col {
+    color: #a00b0b;
+}
+
+
+@media only screen and (max-width : 992px) {
+    .list-row-heading {
+        display: none;
+        color: green;
+    }
+
+    .list-subhead {
+        display: flex;
+        font-size: 16px;
+        font-weight: 800;
+    }
+
+    .list-row {
+        border-bottom: 1px solid lightgrey;
+    }
+
+    .list-row-more {
+        border-bottom: 1px solid lightgrey;
+    }
+}
+/**/
+/*End list styles*/
+/**/

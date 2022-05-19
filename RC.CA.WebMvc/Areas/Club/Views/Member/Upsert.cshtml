@@ -1,0 +1,181 @@
+﻿@using RC.CA.Application.Features.Club.Queries
+@using RC.CA.SharedKernel.WebHelpers
+@model CreateMemberRequest
+@inject INonce nonce
+@{
+    ViewData["Title"] = "Member";
+}
+<form id="mainForm" method="post" enctype="multipart/form-data">
+    <input asp-for="Id" type="hidden" />
+    <input asp-for="PhotoUrl" type="hidden" />
+    <div class="container-fluid ">
+        <div class="row head-border-bottom">
+            <h4>Member</h4>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="Name"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="Gender"></label>
+                    <select asp-for="Gender" asp-items="@Model.GenderListItems" class="form-select"  aria-required="true" >
+                        <option value="" disabled></option>
+                    </select>
+                    <span asp-validation-for="Gender" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                 <div class="form-group">
+                    <label asp-for="Qualification"></label>
+                    <input asp-for="Qualification" class="form-control" />
+                    <span asp-validation-for="Qualification" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="col-md-6 btn-group">
+                <div class="form-group col-8 p-0">
+                    <div class="custom-file">
+                        <label asp-for="ProfilePhoto" for="formFile" class="form-label">Change profile image</label>
+                        <input asp-for="ProfilePhoto" class="form-control" type="file" id="formFile">
+                    </div>
+                </div>
+                <div class="form-group col-4 pt-1">
+                    <img id="previewPhoto" class="mg-fluid m-2" src="@Url.Content($"~/images/{@Model.PhotoUrl.NullIfWhiteSpaceExt() ?? "noimage.jpg"}")" alt="Logo image" width="125" height="125" style="border:1px;"> 
+                </div>
+            </div>
+        </div>
+
+        <div id="expTable" class="row  border-bottom p-2">
+            <div class="row h5">
+                <div class="col">Qualification Name</div>
+                <div class="col">Description</div>
+                <div class="col">Expiry date</div>
+                <div class="col"></div>
+            </div>
+        
+            @for (var i = 0; i < Model?.Experiences.Count(); i++)
+            {
+                <div class="row expTableRow">
+                    <div class="col"><input asp-for="@Model.Experiences[i].QualificationName" class="form-control" />
+                        <span asp-validation-for="@Model.Experiences[i].QualificationName" class="text-danger"></span>
+                    </div>
+                    <div class="col"><input asp-for="@Model.Experiences[i].Description" class="form-control" />
+                        <span asp-validation-for="@Model.Experiences[i].Description" class="text-danger"></span>
+                    </div>
+                    <div class="col"><input asp-for="@Model.Experiences[i].ExpiryDate"  class="form-control" />
+                        <span asp-validation-for="@Model.Experiences[i].ExpiryDate" class="text-danger"></span>
+                    </div>
+                    <div class="col">
+                        <button  type="button" class="btn btn-sm btn-secondary visible evt-add">Add</button>
+                        <button  type="button" class="btn btn-sm btn-secondary @(i==0 ? "invisible" : "visible") evt-remove">Delete</button>
+                    </div>
+                     <input asp-for="@Model.Experiences[i].Id" type="hidden" />
+                     <input asp-for="@Model.Experiences[i].MemberId" type="hidden" />
+                </div>
+            }
+        </div>
+        <div class="row pt-2">
+            <div class="col">
+                <button type="Submit" data-spinning-button class="btn btn-primary mt-auto">Save</button>
+                <a asp-area="Club" asp-controller="Member" asp-action="index" class="btn btn-primary btn-block">Go back</a>
+            </div>
+        </div>
+    </div>
+    <div asp-validation-summary="All" class="text-danger"></div>
+</form>
+
+
+@section scripts {
+        <script type="text/javascript" nonce="@nonce.CspNonce">		
+            //Example of inline script using csp nonce
+            //Bind click events add remove
+            //
+            $(document).ready(function() {
+               reBindAddDeleteEvents();
+
+               $("#formFile").on("change", function () {
+                    if(this.files.length>0)
+                        $('#previewPhoto')[0].src = window.URL.createObjectURL(this.files[0]);
+		       });
+            });
+
+            //Delete item
+		    function deleteItem(btn) {
+			    $(btn).closest('.expTableRow').remove();
+		    }
+
+            //Add line item
+		    function addItem(btn) {
+                rcForm.unBindFormValidators("mainForm")
+			    var rows = $(".expTableRow");
+                if(rows.length > 0)
+                {
+			       newRow = $(` <div class="row expTableRow">
+                                    <div class="col"><input class="form-control" type="text" data-val="true" data-val-required="The QualificationName field is required." id="Experiences_0__QualificationName" name="Experiences[0].QualificationName" value=""><span class="text-danger field-validation-valid" data-valmsg-for="Experiences[0].QualificationName" data-valmsg-replace="true"></span></div>
+                                    <div class="col"><input class="form-control" type="text" data-val="true" data-val-required="The Description field is required." id="Experiences_0__Description" name="Experiences[0].Description" value=""><span class="text-danger field-validation-valid" data-valmsg-for="Experiences[0].Description" data-valmsg-replace="true"></span></div>
+                                    <div class="col"><input class="form-control valid" type="datetime-local" data-val="true" data-val-required="The ExpiryDate field is required." id="Experiences_0__ExpiryDate" name="Experiences[0].ExpiryDate" value="2022-04-05T14:39:28.446" aria-describedby="Experiences_0__ExpiryDate-error" aria-invalid="false"><span class="text-danger field-validation-valid" data-valmsg-for="Experiences[0].ExpiryDate" data-valmsg-replace="true"></span></div>
+                                    <div class="col">
+                                        <button type="button" class="btn btn-sm btn-secondary visible evt-add">Add</button>
+                                        <button type="button" class="btn btn-sm btn-secondary visible evt-remove">Delete</button>
+                                    </div>
+                                </div>`);
+                    seq = 0;
+                    $("#expTable").append(newRow);
+                    reSequence();
+                    reBindAddDeleteEvents();
+                    rcForm.reBindFormValidators("mainForm")
+                    $("#mainForm").validate();
+			    }
+		    }
+
+            //Rebind add/remove events
+            function reBindAddDeleteEvents()
+            {
+                $(".evt-add").unbind("click");
+                $(".evt-remove").unbind("click");
+                //
+                $(".evt-add").bind("click", function() {
+                  addItem(this);
+                });
+                $(".evt-remove").bind("click", function() {
+                  deleteItem(this);
+                });
+
+            }
+
+            //Resequence lines
+            function reSequence()
+            {
+                console.log("reSequence");
+                ix = 0;
+                $(".expTableRow").each(function(index) {
+                    $(this).find("input")[0].id = "Experiences_" + ix + "__QualificationName";
+                    $(this).find("input")[0].name = "Experiences[" + ix + "].QualificationName";
+                    $(this).find("span").data("valmsg-for","Experiences[" + ix + "].QualificationName");
+                    $(this).find("input")[1].id = "Experiences_" + ix + "__Description";
+                    $(this).find("input")[1].name = "Experiences[" + ix + "].Description";
+                    $(this).find("span").data("valmsg-for","Experiences[" + ix + "].Description");
+                    $(this).find("input")[2].id = "Experiences_" + ix + "__ExpiryDate";
+                    $(this).find("input")[2].name = "Experiences[" + ix + "].ExpiryDate";
+                    $(this).find("span").data("valmsg-for","Experiences[" + ix + "].ExpiryDate");
+                    if(ix==0)
+                    {
+                        $(this).find("#btnRemove").removeClass("visible");
+                        $(this).find("#btnRemove").addClass("invisible");
+                    }
+                    ix++;
+                });
+                console.log("END reSequence");
+            }
+    </Script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+

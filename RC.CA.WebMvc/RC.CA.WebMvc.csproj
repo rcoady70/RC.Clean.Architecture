@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>2d5de89b-97d0-49c5-88ec-d8d34d9d157c</UserSecretsId>
+  </PropertyGroup>
+
+	<ItemGroup>
+        <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.2" />
+        <PackageReference Include="Azure.Identity" Version="1.6.0" />
+        <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.3.0" />
+        <PackageReference Include="Azure.Storage.Blobs" Version="12.11.0" />
+        <PackageReference Include="AspNetCore.HealthChecks.UI" Version="6.0.4" />
+		<PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="6.0.4" />
+		<PackageReference Include="AspNetCore.HealthChecks.Uris" Version="6.0.3" />
+		<PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="6.0.3" />
+		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.3" />
+		<PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
+		<PackageReference Include="Serilog.Enrichers.AspNetCore.HttpContext" Version="1.0.1" />
+		<PackageReference Include="Serilog.Settings.Configuration" Version="3.3.0" />
+		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\RC.CA.Infrastructure.Persistence\RC.CA.Infrastructure.Persistence.csproj" />
+	  <ProjectReference Include="..\RC.CA.SharedKernel\RC.CA.SharedKernel.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Update="Views\appsettings.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+</Project>

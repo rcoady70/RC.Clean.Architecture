@@ -1,0 +1,27 @@
+﻿//Notes
+
+var subsManager = new ServiceBusSubscriptionsManager();
+
+//Create connection to azure bus
+//
+RC.CA.Infrastructure.MessageBus.ServiceBusConnection connection = new RC.CA.Infrastructure.MessageBus.ServiceBusConnection(connectionString);
+
+//Connect to topic and subscription. Note, creating the object will automatically remove the $Default filter.
+//                                         This will also register the subscription with ClientMessageHandlerAsync
+var eventBus = new EventBusServiceBus(connection, logger, subsManager, "rc.ca.webapi.topic", "rc.ca.webapi.main.sub");
+
+//Assign message handler to message. This will create a new filter rule ensuring the message and event handler are bound together.
+//                                   In the example CsvUploadMessage will only be processed by CsvUploadMessageMessageHandler
+//                                        
+eventBus.Subscribe<CsvUploadMessage, CsvUploadMessageMessageHandler>();
+
+//// 
+Random rnd = new Random();
+
+//Create message 
+//
+var CsvUploadMessage = new CsvUploadMessage(rnd.Next(1, 5000));
+
+//Publish message
+//
+eventBus.Publish(orderPaymentIntegrationMessage);

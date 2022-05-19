@@ -1,0 +1,28 @@
+﻿<div style="text-align:left; center;margin: auto;padding: 4em;font-family: 'Courier New', monospace;">
+   <h1>
+      <span>500</span> <br />
+      Unexpected error occured
+   </h1>
+   <h3>
+      Error message 
+   </h3>
+   <h4>
+      <code>An error occurred while processing your request @Model?.ApiRoute</code>
+   </h4>
+   @if (Model?.ShowRequestId ?? false)
+    {
+        <h3>
+            Error message ID
+        </h3>
+        <h4>
+            <code>@Model?.RequestId</code>
+        </h4>
+        <h4>
+            <code>@Model?.DelevoperMessage</code>
+        </h4>
+        <h4>
+            <code>@Model?.DelevoperStackTrace</code>
+        </h4>
+    }
+   <p style="margin-top: 1rem">Site may be under maintenance please check back later.</p>
+</div>
