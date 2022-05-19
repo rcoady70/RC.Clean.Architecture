@@ -75,11 +75,11 @@ public static class SetupServices
     /// <param name="services"></param>
     /// <param name="configuration"></param>
     /// <returns></returns>
-    public static IServiceCollection AddSiteHealthChecks(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddSiteHealthChecks(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
     {
         var hcBuilder = services.AddHealthChecks();
 
-        hcBuilder.AddCheck("Self", () => HealthCheckResult.Healthy())
+        hcBuilder.AddCheck($"Self", () => HealthCheckResult.Healthy(), new string[] { $"{webHostEnvironment.EnvironmentName}" })
                  .AddUrlGroup(new Uri($"{configuration.GetValue<string>("ApiEndpoint")}/health"), $"API ready - {new Uri($"{configuration.GetValue<string>("ApiEndpoint")}/health")}", HealthStatus.Unhealthy, tags: new[] { "api" }, new TimeSpan(0, 0, 5))
                  .AddFilePathWrite("Check image folder access", $"{Directory.GetCurrentDirectory()}\\wwwroot\\images", HealthStatus.Unhealthy, tags: new[] { "access" })
                  .AddFilePathWrite("Check log folder access", $"{Directory.GetCurrentDirectory()}\\logs", HealthStatus.Unhealthy, tags: new[] { "access" });

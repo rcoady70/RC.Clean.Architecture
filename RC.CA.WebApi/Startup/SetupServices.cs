@@ -110,11 +110,11 @@ namespace RC.CA.WebApi.Startup
         /// <param name="services"></param>
         /// <param name="configuration"></param>
         /// <returns></returns>
-        public static IServiceCollection AddSiteHealthChecks(this IServiceCollection services, IConfiguration configuration,bool isProduction)
+        public static IServiceCollection AddSiteHealthChecks(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
         {
             var hcBuilder = services.AddHealthChecks();
 
-            hcBuilder.AddCheck("Self", () => HealthCheckResult.Healthy());
+            hcBuilder.AddCheck($"Self", () => HealthCheckResult.Healthy(), new string[] { $"{webHostEnvironment.EnvironmentName}" });
 
             hcBuilder.CheckConfigurationFileSettings("Check application configuration",configuration, HealthStatus.Unhealthy, tags: new[] { "Config" })
                      .AddSqlServer(configuration.GetConnectionString("Default"), tags: new[] { "Database" })
@@ -123,7 +123,7 @@ namespace RC.CA.WebApi.Startup
                                               new DefaultAzureCredential(),
                                               new NT.CA.WebUiApi.HealthChecks.AzureKeyVaultHealthCheckOptions()
                                               {
-                                                  IsProduction = isProduction,
+                                                  IsProduction = webHostEnvironment.IsProduction(),
                                                   Secrets = new List<string>() { "ConnectionStrings--Default", "JwtSettings--Key" }
                                               },
                                               HealthStatus.Unhealthy,

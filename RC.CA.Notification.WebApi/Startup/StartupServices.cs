@@ -20,7 +20,7 @@ namespace NT.CA.Notification.WebApi.Startup
         {
             var hcBuilder = services.AddHealthChecks();
 
-            hcBuilder.AddCheck($"Self {webHostEnvironment.EnvironmentName}", () => HealthCheckResult.Healthy());
+            hcBuilder.AddCheck($"Self", () => HealthCheckResult.Healthy(), new string[] {$"{webHostEnvironment.EnvironmentName}" });
 
             hcBuilder.AddAzureServiceBusTopic(
                        configuration["EventBus:ConnectionString"],
