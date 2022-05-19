@@ -1,4 +1,4 @@
-name: 'MVC build and deploy https://nt-ca-notification-webapi.azurewebsites.net'
+name: 'Notification build and deploy https://rc-ca-notification-webapi.azurewebsites.net/swagger/index.html'
 
 on:
   workflow_dispatch:
@@ -9,8 +9,8 @@ on:
 
 env:
   AZURE_WEBAPP_PACKAGE_PATH: '.' #default location app root
-  AZURE_WEBAPPSERVICE_NAME: NT-CA-Notification-WebApi
-  AZURE_WEBAPP_PROJECTNAME: NT.CA.Notification.WebApi
+  AZURE_WEBAPPSERVICE_NAME: RC-CA-Notification-WebApi
+  AZURE_WEBAPP_PROJECTNAME: RC.CA.Notification.WebApi
 
 
 jobs:
