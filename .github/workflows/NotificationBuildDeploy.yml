@@ -1,4 +1,4 @@
-name: 'Notification build and deploy https://nt-ca-notification-webapi.azurewebsites.net'
+name: 'Notification build and deploy https://rc-ca-notification-webapi.azurewebsites.net/swagger/index.html'
 
 on:
   workflow_dispatch:
