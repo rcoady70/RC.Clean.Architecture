@@ -16,11 +16,11 @@ namespace NT.CA.Notification.WebApi.Startup
         /// <param name="services"></param>
         /// <param name="configuration"></param>
         /// <returns></returns>
-        public static IServiceCollection AddSiteHealthChecks(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddSiteHealthChecks(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
         {
             var hcBuilder = services.AddHealthChecks();
 
-            hcBuilder.AddCheck("Self", () => HealthCheckResult.Healthy());
+            hcBuilder.AddCheck($"Self {webHostEnvironment.EnvironmentName}", () => HealthCheckResult.Healthy());
 
             hcBuilder.AddAzureServiceBusTopic(
                        configuration["EventBus:ConnectionString"],

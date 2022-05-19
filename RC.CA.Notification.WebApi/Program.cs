@@ -45,7 +45,7 @@ try
     builder.Services.AddSwaggerGen();
 
     //[Healthcheck] Add site health checks
-    builder.Services.AddSiteHealthChecks(builder.Configuration);
+    builder.Services.AddSiteHealthChecks(builder.Configuration,builder.Environment);
 
     //Auto mapper
     var serviceCollection = builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());

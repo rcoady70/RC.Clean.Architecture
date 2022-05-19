@@ -1,0 +1,27 @@
+name: Build a Docker image and Push it to ACR
+
+on:
+  workflow_dispatch:
+  #push:
+  #  branches: [ master ]
+  #pull_request:
+  #  branches: [ master ]
+
+env:
+  AZURE_CONTAINER_LOGIN_SERVER: 'rccacontainerregistry.azurecr.io'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - uses: azure/docker-login@v1
+        with:
+          login-server: ${{env.AZURE_CONTAINER_LOGIN_SERVER}}
+          username: ${{ secrets.AZURE_ACR_USERNAME }}
+          password: ${{ secrets.AZURE_ACR_PASSWORD }}
+
+      - run: |
+          docker build . -t ${{env.AZURE_CONTAINER_LOGIN_SERVER}}/appdb:${{ github.sha }}
+          docker push ${{env.AZURE_CONTAINER_LOGIN_SERVER}}/appdb:${{ github.sha }}
