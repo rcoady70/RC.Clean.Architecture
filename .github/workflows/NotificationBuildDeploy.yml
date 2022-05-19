@@ -1,4 +1,4 @@
-name: 'MVC build and deploy https://nt-ca-notification-webapi.azurewebsites.net'
+name: 'Notification build and deploy https://nt-ca-notification-webapi.azurewebsites.net'
 
 on:
   workflow_dispatch:
