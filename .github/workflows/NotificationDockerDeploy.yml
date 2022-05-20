@@ -26,5 +26,5 @@ jobs:
           password: ${{ secrets.AZURE_ACR_PASSWORD }}
 
       - run: |
-          docker build --file ${{env.AZURE_DOCKER_FILE}} -t ${{env.AZURE_CONTAINER_LOGIN_SERVER}}/${{env.AAZURE_APP_NAME}}:${{ github.sha }} .
-          docker push ${{env.AZURE_CONTAINER_LOGIN_SERVER}}/${{env.AAZURE_APP_NAME}}:${{ github.sha }}
+          docker build --file ${{env.AZURE_DOCKER_FILE}} -t ${{env.AZURE_CONTAINER_LOGIN_SERVER}}/${{env.AZURE_APP_NAME}}:${{ github.sha }} .
+          docker push ${{env.AZURE_CONTAINER_LOGIN_SERVER}}/${{env.AZURE_APP_NAME}}:${{ github.sha }}
