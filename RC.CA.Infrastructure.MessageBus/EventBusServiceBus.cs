@@ -13,11 +13,12 @@ public class EventBusServiceBus : IEventBus, IDisposable
     private readonly IServiceBusConnection _serviceBusConnection; //Connection to event bus
     private readonly ILogger<EventBusServiceBus> _logger; //logger
     private readonly IServiceBusSubscriptionsManager _subsManager; //Cross reference between events and handlers
-    private readonly IServiceProvider _serviceProvider; //dependency injection container
+    private readonly IServiceScopeFactory _serviceScopeFactory; //Use to create a new scope to control the life time of objects which are in MT environment
     private readonly string _topicOrQueueName = "";
     private readonly string _subscriptionName;
     private ServiceBusSender _sender;
     private ServiceBusProcessor _processor;
+    private bool _disposed = false;
 
     /// <summary>
     /// Event bus 
@@ -31,7 +32,7 @@ public class EventBusServiceBus : IEventBus, IDisposable
     public EventBusServiceBus(IServiceBusConnection serviceBusConnection,
                               ILogger<EventBusServiceBus> logger, 
                               IServiceBusSubscriptionsManager subsManager,
-                              IServiceProvider serviceProvider,
+                              IServiceScopeFactory serviceScopeFactory,
                               string topicOrQueueName,
                               string subscriptionClientName)
     {
@@ -40,7 +41,7 @@ public class EventBusServiceBus : IEventBus, IDisposable
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _subsManager = subsManager ?? new ServiceBusSubscriptionsManager();
         _subscriptionName = subscriptionClientName;
-        _serviceProvider = serviceProvider;
+        _serviceScopeFactory = serviceScopeFactory;
         _sender = _serviceBusConnection.ServiceBusClient.CreateSender(topicOrQueueName);
 
         ServiceBusProcessorOptions options = new ServiceBusProcessorOptions { MaxConcurrentCalls = 10, AutoCompleteMessages = false };
@@ -159,8 +160,21 @@ public class EventBusServiceBus : IEventBus, IDisposable
 
     public void Dispose()
     {
-        _subsManager.Clear();
-        _processor.CloseAsync().GetAwaiter().GetResult();
+        Dispose(true);
+    }
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed)
+            return;
+
+        if (disposing)
+        {
+            if (_subsManager!=null)
+                _subsManager.Clear();
+            if(_processor !=null)
+                _processor.CloseAsync().GetAwaiter().GetResult();
+            _disposed = true;
+        }
     }
 
     private Task ErrorHandler(ProcessErrorEventArgs args)
@@ -191,7 +205,8 @@ public class EventBusServiceBus : IEventBus, IDisposable
                     //Create message handler from event type
                     var eventType = _subsManager.GetEventTypeByName(eventName);
                     var integrationEvent = JsonSerializer.Deserialize(message, eventType);
-                    using (var scope = _serviceProvider.CreateScope())
+                    //Create new scope so ALL dependencies are local to this scope. This may be multi threaded so unique scope.
+                    using (var scope = _serviceScopeFactory.CreateScope())
                     {
                         //Resolve handler from DI container. This will ensure di references in the constructor will resolve.
                         var instance = scope.ServiceProvider.GetRequiredService(subscription.HandlerType);

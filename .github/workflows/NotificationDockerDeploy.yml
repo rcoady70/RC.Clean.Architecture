@@ -1,4 +1,4 @@
-name: Build a Docker image and Push it to ACR
+name: Notification docker build and deploy https://rc-ca-notification-docker.azurewebsites.net/swagger/index.html
 
 on:
   workflow_dispatch:

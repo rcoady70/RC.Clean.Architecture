@@ -71,14 +71,14 @@ namespace NT.CA.Notification.WebApi.Startup
                 var serviceBusPersisterConnection = sp.GetRequiredService<IServiceBusConnection>();
                 var logger = sp.GetRequiredService<ILogger<EventBusServiceBus>>();
                 var eventBusSubcriptionsManager = sp.GetRequiredService<IServiceBusSubscriptionsManager>();
-
+                IServiceScopeFactory scopefactory = sp.GetService<IServiceScopeFactory>();
                 //Creates one topic, but this can have many subscriptions with each one being registered using the subscribe method.
                 //Each subscription has a filter added so the messages for each topic are separated by handler.
                 // eventBus.Subscribe<SendEmailMessage, SendEMailEventHandler>();
                 //
                 return new EventBusServiceBus(serviceBusPersisterConnection, logger,
                                               eventBusSubcriptionsManager,
-                                              sp,
+                                              scopefactory,
                                               WebConstants.EventBusTopic,
                                               WebConstants.EventBusSubscription);
             });

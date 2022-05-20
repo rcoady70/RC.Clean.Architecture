@@ -9,7 +9,7 @@ public class ServiceBusConnection : IServiceBusConnection
     private ServiceBusClient _serviceBusClient;
     private ServiceBusAdministrationClient _subscriptionClient;
 
-    bool _disposed;
+    private bool _disposed = false;
 
     public ServiceBusConnection(string serviceBusConnectionString)
     {
@@ -54,8 +54,19 @@ public class ServiceBusConnection : IServiceBusConnection
     public void Dispose()
     {
         if (_disposed) return;
+        Dispose(true);
+    }
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed)
+            return;
 
-        _disposed = true;
-        _serviceBusClient.DisposeAsync().GetAwaiter().GetResult();
+        if (disposing)
+        {
+            if (_serviceBusClient != null)
+                _serviceBusClient.DisposeAsync().GetAwaiter().GetResult();
+            _disposed = true;
+        }
     }
 }
+

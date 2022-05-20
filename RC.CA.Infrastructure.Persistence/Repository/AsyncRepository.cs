@@ -28,6 +28,7 @@ public class AsyncRepository<T> : IAsyncRepository<T> where T : class
     /// <param name="e"></param>
     private void ChangeTracker_Tracked(object sender, EntityTrackedEventArgs e)
     {
+        
         //https://docs.microsoft.com/en-us/shows/visual-studio-toolbox/entity-framework-core-in-depth-part-9
         var source = (e.FromQuery) ? "Database" : "Code";
         Console.WriteLine($"EF debug: Tracked {e.Entry.Entity.GetType().Name}  Source: {source}");

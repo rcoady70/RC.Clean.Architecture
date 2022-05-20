@@ -91,7 +91,7 @@ try
     });
 
     //[Healthchecks]
-    builder.Services.AddSiteHealthChecks(builder.Configuration);
+    builder.Services.AddSiteHealthChecks(builder.Configuration,builder.Environment);
 
     //[HostedService] Simple hosted service to delete old log files cleanup. 
     //

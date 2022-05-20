@@ -69,7 +69,7 @@ try
     builder.Services.SetupSwaggerServices();
 
     //[Healthcheck] Check database is available
-    builder.Services.AddSiteHealthChecks(builder.Configuration,builder.Environment.IsProduction());
+    builder.Services.AddSiteHealthChecks(builder.Configuration,builder.Environment);
 
     //[Filters] Add MVC filters
     builder.Services.AddControllers(config =>
