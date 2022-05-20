@@ -23,5 +23,5 @@ jobs:
           password: ${{ secrets.AZURE_ACR_PASSWORD }}
 
       - run: |
-          docker build --file RC.CA.Notification.WebApi/Dockerfile -t ${{env.AZURE_CONTAINER_LOGIN_SERVER}}/appdb:${{ github.sha }}
+          docker build --file RC.CA.Notification.WebApi/Dockerfile -t ${{env.AZURE_CONTAINER_LOGIN_SERVER}}/appdb:${{ github.sha }} .
           docker push ${{env.AZURE_CONTAINER_LOGIN_SERVER}}/appdb:${{ github.sha }}
