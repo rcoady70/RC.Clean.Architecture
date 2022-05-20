@@ -9,7 +9,7 @@ on:
 
 env:
   AZURE_CONTAINER_LOGIN_SERVER: 'rccacontainerregistry.azurecr.io'
-  AZURE_APP_NAME: RCCANotificationWebApi
+  AZURE_APP_NAME: rccanotificationwebapi
   AZURE_DOCKER_FILE: RC.CA.Notification.WebApi/Dockerfile
   
 
