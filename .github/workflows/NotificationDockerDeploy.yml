@@ -9,6 +9,9 @@ on:
 
 env:
   AZURE_CONTAINER_LOGIN_SERVER: 'rccacontainerregistry.azurecr.io'
+  AZURE_APP_NAME: rccanotificationwebapi
+  AZURE_DOCKER_FILE: RC.CA.Notification.WebApi/Dockerfile
+  
 
 jobs:
   build:
@@ -23,5 +26,5 @@ jobs:
           password: ${{ secrets.AZURE_ACR_PASSWORD }}
 
       - run: |
-          docker build -f /RC.CA.Notification.WebApi -t ${{env.AZURE_CONTAINER_LOGIN_SERVER}}/appdb:${{ github.sha }}
-          docker push ${{env.AZURE_CONTAINER_LOGIN_SERVER}}/appdb:${{ github.sha }}
+          docker build --file ${{env.AZURE_DOCKER_FILE}} -t ${{env.AZURE_CONTAINER_LOGIN_SERVER}}/${{env.AZURE_APP_NAME}}:${{ github.sha }} .
+          docker push ${{env.AZURE_CONTAINER_LOGIN_SERVER}}/${{env.AZURE_APP_NAME}}:${{ github.sha }}
