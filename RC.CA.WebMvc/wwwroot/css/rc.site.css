@@ -53,6 +53,10 @@ body {
     font-size:2em;
 }
 
+.upload-finished {
+    opacity:.5;
+}
+
 /**/
 /* Format errors */
 /**/

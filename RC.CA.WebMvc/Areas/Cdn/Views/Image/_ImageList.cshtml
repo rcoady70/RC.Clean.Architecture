@@ -1,11 +1,11 @@
-﻿@inject JavaScriptEncoder javaScriptEncoder;
+﻿@using RC.CA.SharedKernel.WebHelpers
+@inject JavaScriptEncoder javaScriptEncoder;
 @model CdnFilesListResponseDto;
 @{
     var requestUrl = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}{Context.Request.QueryString}"; 
 }
 <div class="container-fluid list-container">
- 
-    <div class="row pt-2">
+     <div class="row pt-2">
         <div class="col-12 text-end">
             <div>
                 <a id="evtFilterButton" class="btn btn-primary" data-bs-toggle="collapse" href="#collapseFilter" role="button" aria-expanded="false" aria-controls="collapseFilter">

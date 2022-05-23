@@ -47,27 +47,27 @@ public class CreateUploadedCsvFileRequestHandler : IRequestHandler<CreateCSvFile
     {
         Guard.Against.Null(request,nameof(CreateCdnFileRequest));
         Guard.Against.Null(request.UploadedFile, nameof(request.UploadedFile));
-
+        
         var response = new CreateCsvFileResponseDto();
+
         CsvFile csvfile = new CsvFile();
         csvfile.Id = Guid.NewGuid();
         csvfile.FileName = $"{Path.GetFileNameWithoutExtension(request.UploadedFile.FileName)}{Guid.NewGuid()}".SafeFileNameExt() + $"{ Path.GetExtension(request.UploadedFile.FileName)}";
         csvfile.OrginalFileName = request.UploadedFile.FileName;
         csvfile.FileSize = request.UploadedFile.Length;
         csvfile.ContentType = request.UploadedFile.ContentType;
-        csvfile.CdnLocation = _configuration.GetSection("BlobStorage:CdnEndpoint").Value;
-        await _csvFileRepository.AddAsync(csvfile);
-        await _csvFileRepository.SaveChangesAsync();
+        csvfile.CdnLocation = $"{_configuration.GetSection("BlobStorage:CdnEndpoint").Value}/{_configuration.GetSection("BlobStorage:ContainerNameFiles").Value}";
 
         //Upload file to blob storage
-        var containerName = _configuration.GetSection("BlobStorage:ContainerName").Value;
+        var containerName = _configuration.GetSection("BlobStorage:ContainerNameFiles").Value;
         var containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
         var blobClient = containerClient.GetBlobClient(csvfile.FileName);
         using (var stream = request.UploadedFile.OpenReadStream())
-        {
             blobClient.Upload(stream, true);
-        }
 
+        await _csvFileRepository.AddAsync(csvfile);
+        
+        await _csvFileRepository.SaveChangesAsync();
         //Publish message 
         //
         //await _azureMessageBus.PublishMessage(new BaseMessage()

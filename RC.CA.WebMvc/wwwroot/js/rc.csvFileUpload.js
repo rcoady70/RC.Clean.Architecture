@@ -1,56 +1,72 @@
-﻿$(function () {
-    var apiEndPoint ="";
-    if ($("#dropCsvSection").length > 0)
-        var apiEndPoint = $("#dropCsvSection").data('apiurl');
-
-    $("#dropCsvSection").filedrop({
+﻿$(document).ready(function () {
+    var apiEndPoint = "";
+    if ($("#dropSection").length > 0)
+        var apiEndPoint = $("#dropSection").data('apiurl');
+    $("#dropSection").filedrop({
         fallback_id: 'btnUpload',
         fallback_dropzoneClick: true,
-        url: apiEndPoint + '/api/cdn/csvfile/Upload',
-        
+        url: apiEndPoint + '/api/csvfile/upload',
+        allowedfiletypes: ['text/plain', 'application/vnd.ms-excel'],
         allowedfileextensions: ['.txt', '.csv'],
         paramname: 'fileData',
         headers: { 'Authorization': '' },
-        maxfiles: 1, //Maximum Number of Files allowed at a time.
+        maxfiles: 10, //Maximum Number of Files allowed at a time.
         maxfilesize: 2, //Maximum File Size in MB.
         dragOver: function () {
-            $('#dropCsvSection').addClass('upload-active');
+            $('#dropSection').addClass('upload-active');
         },
         dragLeave: function () {
-            $('#dropCsvSection').removeClass('upload-active');
+            $('#dropSection').removeClass('upload-active');
         },
         drop: function () {
-            $('#dropCsvSection').removeClass('upload-active');
+            $('#dropSection').removeClass('upload-active');
         },
         uploadFinished: function (i, file, response, time) {
-            debugger;
-            alert("Uploaded");
-            //console.log(response);
-            //norFileName = file.name.replace(/[^a-z0-9]/gi, '');
-            //if (response.totalErrors > 0) {
-            //    $(response.errors).each(function (key, value) {
-            //        $('#uploadedFiles').append(uploadTemplate(norFileName, true));
-            //    });
-            //    rcPage.displayAjaxErrors(response);
-            //}
-            //else
-            //    $('#uploadedFiles').append(uploadTemplate(norFileName, false));
-            //$('#' + norFileName)[0].src = window.URL.createObjectURL(file);
+            norFileName = file.name.replace(/[^a-z0-9]/gi, '');
+            if (response.totalErrors > 0) {
+                $(response.errors).each(function (key, value) {
+                    $('#uploadedFiles').append(uploadTemplate(norFileName, true));
+                });
+                rcPage.displayAjaxErrors(response);
+            }
+            else {
+                $('#uploadedFiles').append(uploadTemplate(norFileName, false));
+                $('#dropSection').addClass('upload-finished');
+                $("#dropSection").unbind();
+            }
         },
         afterAll: function (e) {
-            //Move to the next step
+
+            //refresh view
+            var parms = {
+                filterByName: $("#FilterByName")[0].value,
+                filterById: "",
+                OrderBy: "createdon_desc",
+                pageSeq: 1,
+            };
+
+            //Refresh images after image upload
+            rcAjaxServices.getImages(parms)
+                .done(function (result, status, xhr) {
+                    $("#imageListContainer").html(result)
+                    rcList.unBindListActions();
+                    rcList.initListActions();
+                })
+                .fail(function (xhr, status, error) {
+                    rcPage.toastError("Refresh failed: " + status + " " + error + " " + xhr.status + " " + xhr.statusText, true);
+                });
         }
     })
-    function uploadTemplate(id, failed) {
+    function uploadTemplate(imageId, failed) {
         if (failed)
             return `<div>
-                        <img class="img-fluid img-thumbnail upload-img" id="`+ id + `" name="` + id +`">
-                        <div class="text-danger">failed</div>
+                        <img class="img-fluid img-thumbnail upload-img" src="https://rpcstorageacc.blob.core.windows.net/images/CSVUploadImage06a620d698c64adcb35b38729e605a7b.jpg" name="` + imageId + `">
+                        <div class="text-danger">failed "` + imageId + `"</div>
                     </div>`;
         else
             return `<div>
-                        <img class="img-fluid img-thumbnail upload-img" id="`+ id + `" name="` + id + `">
-                        <div class="text-success">uploaded</div>
+                        <img class="img-fluid img-thumbnail upload-img" src="https://rpcstorageacc.blob.core.windows.net/images/CSVUploadImage06a620d698c64adcb35b38729e605a7b.jpg" name="` + imageId + `">
+                        <div class="text-success">uploaded "` + imageId + `"</div>
                     </div>`;
     }
-})
+});

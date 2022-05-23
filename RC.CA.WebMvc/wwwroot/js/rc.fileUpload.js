@@ -1,4 +1,5 @@
 ﻿$(function () {
+    alert("init");
     var apiEndPoint ="";
     if ($("#dropSection").length > 0)
         var apiEndPoint = $("#dropSection").data('apiurl');
@@ -13,13 +14,13 @@
         maxfiles: 10, //Maximum Number of Files allowed at a time.
         maxfilesize: 2, //Maximum File Size in MB.
         dragOver: function () {
-            $('#dropSection').addClass('imgupload-active');
+            $('#dropSection').addClass('upload-active');
         },
         dragLeave: function () {
-            $('#dropSection').removeClass('imgupload-active');
+            $('#dropSection').removeClass('upload-active');
         },
         drop: function () {
-            $('#dropSection').removeClass('imgupload-active');
+            $('#dropSection').removeClass('upload-active');
         },
         uploadFinished: function (i, file, response, time) {
             debugger;

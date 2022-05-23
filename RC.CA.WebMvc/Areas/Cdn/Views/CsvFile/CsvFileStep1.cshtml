@@ -1,0 +1,33 @@
+﻿@using RC.CA.Application.Contracts.Identity
+@using RC.CA.SharedKernel.WebHelpers
+@inject JavaScriptEncoder javaScriptEncoder;
+@inject IAppContextX appContextX;
+@{
+    ViewData["Title"] = "Import csv file";
+    var requestUrl = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}{Context.Request.QueryString}"; 
+    var apiEndpoint = $"https://{appContextX.ApiEndpoint}/api/cdn/Image/Upload"; 
+}
+@*<form method="post" asp-action="CsvFileStep2">*@
+    <div class="container-fluid">
+        <div class="row head-border-bottom">
+            <div class="col-12 ">
+                <h3>Step 1 - import list of contacts</h3>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid pt-2">
+        <div id="dropSection" class="row upload-container" data-apiurl="@appContextX.ApiEndpoint">
+            <div id="uploadedFiles" class="d-flex flex-row"></div>
+            <i class="fa fa-cloud fa-xl text-center upload-ico"></i>
+        </div>
+    </div>
+    <h5>File uploaded to azure blob storage. Queue item added to azure bus, processed by .net core worker service</h5>
+    <div class="d-grid gap-2 d-md-block">
+        <button id="btnNext" class="btn btn-outline-success btn-block float-start" asp-action="CsvFileStep2" asp-route-Id="1" data-spinning-button type="submit">Close</button>
+        <button id="btnNext" class="btn btn-outline-success btn-block float-end" asp-action="CsvFileStep1" asp-route-Id="1" data-spinning-button type="submit">Next</button>
+    </div>
+@*</form>*@
+@section Scripts
+{
+  <script rc-nonce src="@Url.Content("~/js/rc.csvFileUpload.js")"></script>
+}

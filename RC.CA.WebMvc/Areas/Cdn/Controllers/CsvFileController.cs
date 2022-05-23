@@ -7,7 +7,17 @@ namespace RC.CA.WebMvc.Areas.Cdn.Controllers
     [AllowAnonymous]
     public class CsvFileController : Controller
     {
-        public IActionResult CsvFileIndex()
+        public IActionResult CsvFileStep1()
+        {
+            return View();
+        }
+        [HttpGet]
+        public IActionResult CsvFileStep2(string id)
+        {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult CsvFileStep2()
         {
             return View();
         }

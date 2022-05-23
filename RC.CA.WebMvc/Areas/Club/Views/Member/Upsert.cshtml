@@ -1,7 +1,6 @@
 ﻿@using RC.CA.Application.Features.Club.Queries
 @using RC.CA.SharedKernel.WebHelpers
 @model CreateMemberRequest
-@inject INonce nonce
 @{
     ViewData["Title"] = "Member";
 }
@@ -93,7 +92,7 @@
 
 
 @section scripts {
-        <script type="text/javascript" nonce="@nonce.CspNonce">		
+        <script type="text/javascript" rc-nonce>		
             //Example of inline script using csp nonce
             //Bind click events add remove
             //

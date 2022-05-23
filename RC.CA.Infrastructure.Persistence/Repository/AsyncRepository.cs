@@ -33,12 +33,25 @@ public class AsyncRepository<T> : IAsyncRepository<T> where T : class
         var source = (e.FromQuery) ? "Database" : "Code";
         Console.WriteLine($"EF debug: Tracked {e.Entry.Entity.GetType().Name}  Source: {source}");
     }
+    /// <summary>
+    /// Debug change tracker triggered when state changes
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void ChangeTracker_StateChanged(object sender, EntityStateChangedEventArgs e)
     {
             var action = string.Empty;
             Console.WriteLine($"EF debug: state change {e.Entry.Entity.GetType().Name} was {e.OldState} before the state changed to {e.NewState}");
     }
-
+    /// <summary>
+    /// Debug took enables you to see change tracker details
+    /// </summary>
+    /// <returns></returns>
+    public string DebugShortView()
+    {
+        _dbContext.ChangeTracker.DetectChanges();
+        return $"EF debug - changes: {_dbContext.ChangeTracker.ToDebugString()}";
+    }
     /// <summary>
     /// Get first or default
     /// </summary>

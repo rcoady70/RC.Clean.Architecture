@@ -25,10 +25,14 @@
 
 <!-- Image list rendered as partial so it can be refreshed independently of upload widget -->
 <div id="imageListContainer">
-<partial name="_ImageList" for="@Model"></partial>
+    <partial name="_ImageList" for="@Model"></partial>
 </div>
 
 <div asp-validation-summary="All" class="text-danger"></div>
+@section Scripts
+{
+  <script rc-nonce src="@Url.Content("~/js/rc.fileUpload.js")"></script>
+}
 
 
 

@@ -1,6 +1,6 @@
 ﻿@using RC.CA.SharedKernel.WebHelpers
 @inject INonce nonce 
-<script nonce="@nonce.CspNonce" src='@Url.Content("~/lib/jquery-validation/dist/jquery.validate.js")'></script>
-<script nonce="@nonce.CspNonce" src='@Url.Content("~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js")'></script>
+<script rc-nonce src='@Url.Content("~/lib/jquery-validation/dist/jquery.validate.js")'></script>
+<script rc-nonce src='@Url.Content("~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js")'></script>
 
 

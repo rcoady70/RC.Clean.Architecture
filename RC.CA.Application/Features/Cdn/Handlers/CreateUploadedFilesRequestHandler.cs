@@ -40,7 +40,7 @@ public class CreateUploadedFilesRequestHandler : IRequestHandler<CreateCdnFileRe
         imgfile.OrginalFileName = request.UploadedFile.FileName;
         imgfile.FileSize = request.UploadedFile.Length;
         imgfile.ContentType = request.UploadedFile.ContentType;
-        imgfile.CdnLocation = _configuration.GetSection("BlobStorage:CdnEndpoint").Value;
+        imgfile.CdnLocation = $"{_configuration.GetSection("BlobStorage:CdnEndpoint").Value}/{_configuration.GetSection("BlobStorage:ContainerName").Value}";
         await _cdnFileRepository.AddAsync(imgfile);
         await _cdnFileRepository.SaveChangesAsync();
 
