@@ -1,5 +1,5 @@
 ﻿$(function () {
-    alert("init");
+    //alert("init");
     var apiEndPoint ="";
     if ($("#dropSection").length > 0)
         var apiEndPoint = $("#dropSection").data('apiurl');
