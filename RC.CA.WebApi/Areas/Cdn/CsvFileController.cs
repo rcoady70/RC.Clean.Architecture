@@ -28,6 +28,7 @@ public class CsvFileController : BaseController
     /// <param name="filedata">This references a variable name in the jquery.filedrop.js</param>
     /// <returns></returns>
     [HttpPost("Upload")]
+    [AllowAnonymous]
     public async Task<CreateCsvFileResponseDto> Upload([FromForm] IFormFile? fileData)
     {
         var response = new CreateCsvFileResponseDto();
