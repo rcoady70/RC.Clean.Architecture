@@ -28,7 +28,6 @@ public class CsvFileController : BaseController
     /// <param name="filedata">This references a variable name in the jquery.filedrop.js</param>
     /// <returns></returns>
     [HttpPost("Upload")]
-    [AllowAnonymous]
     public async Task<CreateCsvFileResponseDto> Upload([FromForm] IFormFile? fileData)
     {
         var response = new CreateCsvFileResponseDto();
@@ -56,7 +55,6 @@ public class CsvFileController : BaseController
     /// <param name="fileData"></param>
     /// <returns></returns>
     [HttpGet("GetMap")]
-    [AllowAnonymous]
     public async Task<UpsertCsvMapResponseDto> GetMap(GetCsvMapRequest getCsvMapRequest)
     {
         UpsertCsvMapResponseDto response = new UpsertCsvMapResponseDto();
@@ -78,7 +76,6 @@ public class CsvFileController : BaseController
     /// <param name="getCsvFilesListRequest"></param>
     /// <returns></returns>
     [HttpGet("List")]
-    [AllowAnonymous]
     public async Task<CsvFilesListResponseDto> List(GetCsvFileListRequest getCsvFilesListRequest)
     {
         CsvFilesListResponseDto response = new CsvFilesListResponseDto();
@@ -92,7 +89,6 @@ public class CsvFileController : BaseController
     /// <param name="getCsvMapRequest"></param>
     /// <returns></returns>
     [HttpPatch("UpdateMap")]
-    [AllowAnonymous]
     public async Task<UpsertCsvMapResponseDto> UpdateMap(UpsertCsvMapRequest upsertCsvMapRequest)
     {
         UpsertCsvMapResponseDto response = await _mediator.Send(upsertCsvMapRequest);
@@ -104,7 +100,6 @@ public class CsvFileController : BaseController
     /// <param name="upsertCsvMapRequest"></param>
     /// <returns></returns>
     [HttpPut("SubmitImport")]
-    [AllowAnonymous]
     public async Task<BaseResponseDto> SubmitImport(SubmitCsvImportRequest submitCsvImportRequest)
     {
         BaseResponseDto response = await _mediator.Send(submitCsvImportRequest);
