@@ -1,0 +1,127 @@
+﻿
+@model CsvFilesListResponseDto
+@inject JavaScriptEncoder javaScriptEncoder
+@{
+    var requestUrl = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}{Context.Request.QueryString}"; 
+}
+
+<div class="container-fluid">
+    <div class="row head-border-bottom">
+            <div class="col-12 ">
+                <h3>Imported members from csv</h3>
+                <h5>Upload csv file to azure blob storage / build a mapping between csv file and members file / run import as azure serverless service</h5>
+            </div>
+    </div>
+
+</div>
+
+<div class="container-fluid list-container">
+
+<div class="container-fluid list-container">
+ 
+    <div class="row pt-2">
+        <div class="col-12 text-end">
+            <div>
+                <a asp-area="Cdn" asp-controller="CsvFile" asp-action="CsvFileStep1" type="button" class="btn btn-primary">
+                    <i class="fa fa-plus mr-1"></i>
+                    Add new
+                </a>
+                <a id="evtFilterButton" class="btn btn-primary" data-bs-toggle="collapse" href="#collapseFilter" role="button" aria-expanded="false" aria-controls="collapseFilter">
+                    Filter<span id="filterBadge" class="badge badge-light"></span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- Start filter panel-->
+    <div class="container-fluid">
+        <div class="row pt-2">
+            <div class="col-12 text-start">
+                <div class="collapse" id="collapseFilter">
+                    <form method="get" class="form-inline">
+                            <input  class="form-control-filter w-25" asp-for="FilterByName" id="FilterByName" name="FilterByName" type="input" placeholder="File name..." />
+                            <input  class="form-control-filter w-25" asp-for="FilterById" id="FilterById" name="FilterById" type="input" placeholder="Id..." />
+                            <button class="button-as-text-list" data-spinning-button type="submit" class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End filter panel-->
+    <!-- Heading panel-->
+    <div class="container-fluid list-panel">
+        <div class="row h5 list-row-heading p-2">
+            <div class="col-sm-8">
+                Name
+                <a asp-area="Cdn" asp-controller="CsvFile" asp-action="List" asp-route-OrderBy="FileName_asc"><i class="fa fa-arrow-down"></i></a>
+                <a asp-area="Cdn" asp-controller="CsvFile" asp-action="List" asp-route-OrderBy="FileName_desc"><i class="fa fa-arrow-up"></i></a>
+            </div>
+             <div class="col-sm-2">
+                Created on
+                <a asp-area="Cdn" asp-controller="CsvFile" asp-action="List" asp-route-OrderBy="CreatedOn_asc"><i class="fa fa-arrow-down"></i></a>
+                <a asp-area="Cdn" asp-controller="CsvFile" asp-action="List" asp-route-OrderBy="CreatedOn_desc"><i class="fa fa-arrow-up"></i></a>
+            </div>
+            <div class="col-sm-1">
+                Size
+                <a asp-area="Cdn" asp-controller="CsvFile" asp-action="List" asp-route-OrderBy="FileSize_asc"><i class="fa fa-arrow-down"></i></a>
+                <a asp-area="Cdn" asp-controller="CsvFile" asp-action="List" asp-route-OrderBy="FileSize_desc"><i class="fa fa-arrow-up"></i></a>
+            </div>
+            <div class="col-sm-1">
+                Options
+            </div>
+        </div>
+        <!-- End heading panel-->
+        @foreach (var item in Model?.CsvFiles)
+        {
+             <!-- List main row -->
+            <div class="row list-row">
+                <div class="col-sm-8 evt-list-col-more text-truncate">
+                    <span class="list-subhead">Name:</span>@item.FileName
+                </div>
+                 <div class="col-sm-2 text-truncate">
+                    <span class="list-subhead">Created on:</span>@item.CreatedOn.ToString()
+                </div>
+                <div class="col-sm-1 text-truncate">
+                    <span class="list-subhead">Size:</span>@item.FileSize
+                </div>
+                <div class="col-sm-1">
+                    <!-- Options -->
+                    <div class="btn-group">
+                        <button type="button" class="btn  " data-bs-toggle="dropdown" aria-expanded="false">
+                            @Html.Raw(@item.OptionsIcon)
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" asp-area="Cdn" asp-controller="CsvFile" asp-action="csvfilestep2" asp-route-id="@item.Id">Edit</a></li>
+                            @*<li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form id="list-delete" asp-action="Delete" asp-route-id="@item.Id" method="post">
+                                    <button type="submit" 
+                                            class="btn btn-link text-decoration-none text-danger evt-menu-delete"
+                                            data-body-message="Are you sure you want to delete member @javaScriptEncoder.Encode(item.FileName)?"
+                                            data-redirect-after="@requestUrl">
+                                        Delete
+                                    </button>
+                                </form>
+                            </li>*@
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!-- Additional information -->
+            <div class="row list-row-more">
+                <div class="col-sm-12">
+                        <span class="list-row-more-col">ID:&nbsp;</span>@item.Id&nbsp;
+                        <span class="list-row-more-col">Original file name:&nbsp;</span>@item.OrginalFileName&nbsp;
+                        <span class="list-row-more-col">Processed on:&nbsp;</span>@item.ProcessedOn&nbsp;
+                </div>
+            </div>
+        }
+        <!-- Start pagination -->
+        <div class="row">
+            <div class="col-12">
+                <partial name="_pagination" for="PaginationMetaData" />
+            </div>
+        </div>
+        <!-- End pagination -->
+    </div>
+</div>
+<div asp-validation-summary="All" class="text-danger"></div>

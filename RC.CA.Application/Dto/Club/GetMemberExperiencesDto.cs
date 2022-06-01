@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RC.CA.Domain.Entities.Common;
+﻿using RC.CA.Domain.Entities.Shared;
 
 namespace RC.CA.Application.Dto.Club;
 public class GetMemberExperienceDto : BaseEntity<int>

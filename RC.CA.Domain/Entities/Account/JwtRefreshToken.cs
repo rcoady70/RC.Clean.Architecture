@@ -1,5 +1,5 @@
 ﻿using System.Text.Json.Serialization;
-using RC.CA.Domain.Entities.Common;
+using RC.CA.Domain.Entities.Shared;
 
 namespace RC.CA.Domain.Entities.Account;
 //https://jasonwatmore.com/post/2021/06/15/net-5-api-jwt-authentication-with-refresh-tokens#jwt-utils-cs

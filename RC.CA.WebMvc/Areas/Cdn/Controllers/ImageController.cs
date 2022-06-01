@@ -1,15 +1,10 @@
 ﻿using System.Net;
-using RC.CA.SharedKernel.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using RC.CA.Application.Contracts.Identity;
 using RC.CA.Application.Contracts.Services;
 using RC.CA.Application.Dto.Cdn;
 using RC.CA.Application.Features.Cdn.Queries;
-using RC.CA.WebUiMvc.Services;
-using RC.CA.Application.Models;
-using RC.CA.SharedKernel.Constants;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors;
 
 namespace RC.CA.WebMvc.Areas.Cdn.Controllers
 {
@@ -22,7 +17,7 @@ namespace RC.CA.WebMvc.Areas.Cdn.Controllers
         {
             _httpHelper = httpHelper;
         }
-        public async Task<IActionResult> Index(string? filterByName, string? filterById, string? OrderBy, int? pageSeq)
+        public async Task<IActionResult> List(string? filterByName, string? filterById, string? OrderBy, int? pageSeq)
         {
             if (!ModelState.IsValid) return View();
 
@@ -38,7 +33,7 @@ namespace RC.CA.WebMvc.Areas.Cdn.Controllers
             {
                 if ((HttpStatusCode)memberListResponse.RequestStatus == HttpStatusCode.Unauthorized)
                     return RedirectToAction("Login", "UserAccount", new { area = "account" });
-                await AppendErrorsToModelState(memberListResponse);
+                await AppendErrorsToModelStateAsync(memberListResponse);
             }
             return View(memberListResponse);
         }
@@ -68,7 +63,7 @@ namespace RC.CA.WebMvc.Areas.Cdn.Controllers
             {
                 if ((HttpStatusCode)memberListResponse.RequestStatus == HttpStatusCode.Unauthorized)
                     return RedirectToAction("Login", "UserAccount", new { area = "account" });
-                await AppendErrorsToModelState(memberListResponse);
+                await AppendErrorsToModelStateAsync(memberListResponse);
             }
             return PartialView("_ImageList", memberListResponse);
         }
@@ -88,8 +83,8 @@ namespace RC.CA.WebMvc.Areas.Cdn.Controllers
             };
             var cdnFileListResponse = await _httpHelper.SendAsync<DeleteCdnFileRequest, BaseResponseDto>(deleteMemberRequest, "api/cdn/image/Delete",HttpMethod.Delete);
             if (cdnFileListResponse?.TotalErrors > 0)
-                await AppendErrorsToModelState(cdnFileListResponse);
-            return RedirectToAction(nameof(Index));
+                await AppendErrorsToModelStateAsync(cdnFileListResponse);
+            return RedirectToAction(nameof(List));
         }
     }
 }

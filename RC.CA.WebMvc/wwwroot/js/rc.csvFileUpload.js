@@ -1,5 +1,10 @@
 ﻿$(document).ready(function () {
+    debugger;
     var apiEndPoint = "";
+    //Check if import id is set if not new
+    if ($("#Id")[0].value.length == 0)
+        $("#btnNext").addClass("d-none");
+
     if ($("#dropSection").length > 0)
         var apiEndPoint = $("#dropSection").data('apiurl');
     $("#dropSection").filedrop({
@@ -33,6 +38,9 @@
                 $('#uploadedFiles').append(uploadTemplate(norFileName, false));
                 $('#dropSection').addClass('upload-finished');
                 $("#dropSection").unbind();
+                $("#Id")[0].value = response.id;
+                $("#btnNext").removeClass("d-none");
+                $("#btnNext").addClass("d-block");
             }
         },
         afterAll: function (e) {

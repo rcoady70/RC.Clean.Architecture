@@ -9,7 +9,6 @@ namespace RC.CA.WebUiMvc.Services;
 public abstract class RootController : Controller
 {
     internal readonly IAppContextX _appContextX;
-    private readonly IHttpContextAccessor _httpContextAccessor;
 
     /// <summary>
     /// Application context, contains authorization info user etc...
@@ -24,7 +23,7 @@ public abstract class RootController : Controller
     /// </summary>
     /// <param name="response">Base response from api call</param>
     /// <returns></returns>
-    public async Task AppendErrorsToModelState(BaseResponseDto? response)
+    public async Task AppendErrorsToModelStateAsync(BaseResponseDto? response)
     {
 
         if (response != null)

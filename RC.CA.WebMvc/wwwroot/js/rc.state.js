@@ -1,5 +1,6 @@
 ﻿//Page state + utilities
 //
+'use strict'
 var rcState = {
     hostUrl: "",
     antiForgeryToken: "",

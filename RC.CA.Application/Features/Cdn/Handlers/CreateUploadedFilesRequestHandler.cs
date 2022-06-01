@@ -8,23 +8,26 @@ using RC.CA.SharedKernel.Extensions;
 using RC.CA.Domain.Entities.Cdn;
 using Azure.Storage.Blobs;
 using Microsoft.Extensions.Configuration;
+using RC.CA.Application.Contracts.Services;
+using Microsoft.Extensions.Options;
+using RC.CA.Application.Dto.Authentication;
 
 namespace RC.CA.Application.Features.Club.Handlers;
 public class CreateUploadedFilesRequestHandler : IRequestHandler<CreateCdnFileRequest, CreateCdnFileResponseDto>
 {
     private readonly ICdnFileRepository _cdnFileRepository;
-    private readonly IMapper _mapper;
-    private readonly BlobServiceClient _blobServiceClient;
+    private readonly IBlobStorage _blobClient;
+    private readonly BlobStorageSettings _blobStorageSettings;
     private readonly IConfiguration _configuration;
 
     public CreateUploadedFilesRequestHandler(ICdnFileRepository cdnFileRepository, 
-                                             IMapper mapper, 
-                                             BlobServiceClient blobServiceClient,
+                                             IBlobStorage blobClient,
+                                             IOptions<BlobStorageSettings> blobStorageSettings,
                                              IConfiguration configuration)
     {
         _cdnFileRepository = cdnFileRepository;
-        _mapper = mapper;
-        _blobServiceClient = blobServiceClient;
+        _blobClient = blobClient;
+        _blobStorageSettings = blobStorageSettings.Value;
         _configuration = configuration;
     }
 
@@ -36,23 +39,17 @@ public class CreateUploadedFilesRequestHandler : IRequestHandler<CreateCdnFileRe
         var response = new CreateCdnFileResponseDto();
             
         CdnFiles imgfile = new CdnFiles();
-        imgfile.FileName = $"{Path.GetFileNameWithoutExtension(request.UploadedFile.FileName)}{Guid.NewGuid()}".SafeFileNameExt() + $"{ Path.GetExtension(request.UploadedFile.FileName)}";
-        imgfile.OrginalFileName = request.UploadedFile.FileName;
+        imgfile.FileName = $"{Path.GetFileNameWithoutExtension(request.UploadedFile.FileName.EscapeHtmlExt())}{Guid.NewGuid()}".SafeFileNameExt() + $"{ Path.GetExtension(request.UploadedFile.FileName)}";
+        imgfile.OrginalFileName = request.UploadedFile.FileName.EscapeHtmlExt();
         imgfile.FileSize = request.UploadedFile.Length;
         imgfile.ContentType = request.UploadedFile.ContentType;
-        imgfile.CdnLocation = $"{_configuration.GetSection("BlobStorage:CdnEndpoint").Value}/{_configuration.GetSection("BlobStorage:ContainerName").Value}";
+        imgfile.CdnLocation = $"{_blobStorageSettings.CdnEndpoint}/{_blobStorageSettings.ContainerName}";
         await _cdnFileRepository.AddAsync(imgfile);
         await _cdnFileRepository.SaveChangesAsync();
 
         //Upload to storage
-        var containerName = _configuration.GetSection("BlobStorage:ContainerName").Value;
-        var containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
-        var blobClient = containerClient.GetBlobClient(imgfile.FileName);
-        using (var stream = request.UploadedFile.OpenReadStream())
-        {
-            blobClient.Upload(stream, true);
-        }
-     
+        await _blobClient.UploadAsync(_blobStorageSettings.ContainerName, imgfile.FileName, request.UploadedFile);
+        
         return response;
     }
 }

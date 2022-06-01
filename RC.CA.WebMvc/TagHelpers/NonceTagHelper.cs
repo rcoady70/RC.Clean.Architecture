@@ -5,7 +5,7 @@ using RC.CA.SharedKernel.WebHelpers;
 namespace RC.CA.WebMvc.TagHelpers
 {
     /// <summary>
-    /// Add nonce to script link tags
+    /// Add nonce to script link tags for csp policy
     /// </summary>
     [HtmlTargetElement("script",Attributes = "rc-nonce")]
     [HtmlTargetElement("link", Attributes = "rc-nonce")]

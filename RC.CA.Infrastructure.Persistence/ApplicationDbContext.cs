@@ -10,6 +10,7 @@ using RC.CA.Application.Contracts.Identity;
 using RC.CA.Domain.Entities.Account;
 using RC.CA.Domain.Entities.Cdn;
 using RC.CA.Domain.Entities.Club;
+using RC.CA.Domain.Entities.CSV;
 using RC.CA.Infrastructure.Persistence.EntityConfig;
 using RC.CA.Infrastructure.Persistence.Repository;
 
@@ -19,6 +20,7 @@ public class ApplicationDbContext : IdentityDbContext
 {
     private readonly IAppContextX _appContextX;
     public DbSet<CdnFiles> CdnFiles { get; set; }
+    public DbSet<CsvFile> CsvFile { get; set; }
     public DbSet<Member> Members { get; set; }
     public DbSet<JwtRefreshToken> JwtJwtRefreshTokens { get; set; }
     public IAppContextX AppContextX

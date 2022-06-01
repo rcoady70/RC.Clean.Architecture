@@ -3,7 +3,7 @@
 namespace RC.CA.WebMvc.HostedService
 {
     /// <summary>
-    /// Sample hosted service to remove old log files 
+    /// Sample hosted service to remove old log files
     /// </summary>
     public class SiteUtilitiesHostedService : BackgroundService
     {

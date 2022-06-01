@@ -1,8 +1,13 @@
 ﻿using Azure.Identity;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using RC.CA.Application.Contracts.Identity;
+using RC.CA.Application.Contracts.Services;
 using RC.CA.Application.Dto.Authentication;
-using RC.CA.SharedKernel.Constants;
+using RC.CA.Application.MsgBusHandlers;
+using RC.CA.Application.Services;
+using RC.CA.Infrastructure.MessageBus;
+using RC.CA.Infrastructure.MessageBus.Interfaces;
+using RC.CA.Infrastructure.Persistence.AzureBlob;
 using RC.CA.SharedKernel.WebHelpers;
 
 namespace RC.CA.WebApi.Startup
@@ -16,25 +21,29 @@ namespace RC.CA.WebApi.Startup
         /// <returns></returns>
         public static IServiceCollection AddBaseServicesApi(this IServiceCollection services, IConfiguration configuration)
         {
-            
-
             //Application context hydrate key info from claims for easy access
             services.AddScoped<IAppContextX, AppContextX>();
 
             //Get JWT token settings
             services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
+            
+            //Get blob storage settings
+            services.Configure<BlobStorageSettings>(configuration.GetSection("BlobStorage"));
 
             //Get CORS settings
-            //
             services.Configure<CorsSettings>(configuration.GetSection("CorsSettings"));
 
             //Http helper used to generate security nouce
-            //
             services.AddScoped<INonce, Nonce>();
 
             //Message bus interface
-            //
             services.Configure<MessageBusSettings>(configuration.GetSection("MessageBus"));
+
+            //Manage blob storage
+            services.AddScoped<IBlobStorage, AzureStorage>();
+
+            //Manage csv mappings
+            services.AddScoped<ICsvMapService, CsvMapService>();
 
             return services;
         }
@@ -128,6 +137,50 @@ namespace RC.CA.WebApi.Startup
                                               },
                                               HealthStatus.Unhealthy,
                                               tags: new[] { "Azure" });
+
+            return services;
+        }
+        /// <summary>
+        /// Add event bus
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddEventBus(this IServiceCollection services, IConfiguration configuration)
+        {
+            //Add event message and handler 
+            services.AddSingleton<IServiceBusSubscriptionsManager, ServiceBusSubscriptionsManager>();
+
+            //Add event bus connection
+            services.AddSingleton<IServiceBusConnection>(sp =>
+            {
+                var serviceBusConnectionString = configuration["EventBus:ConnectionString"];
+                Guard.Against.Null(serviceBusConnectionString, nameof(serviceBusConnectionString));
+                return new ServiceBusConnection(serviceBusConnectionString);
+            });
+
+            //Initialize event bus
+            services.AddSingleton<IEventBus, EventBusServiceBus>(sp =>
+            {
+                //Get instances of dependent objects from DI container to ensure they container can correctly dispose of them
+                var serviceBusPersisterConnection = sp.GetRequiredService<IServiceBusConnection>();
+                var logger = sp.GetRequiredService<ILogger<EventBusServiceBus>>();
+                var eventBusSubcriptionsManager = sp.GetRequiredService<IServiceBusSubscriptionsManager>();
+                IServiceScopeFactory scopefactory = sp.GetService<IServiceScopeFactory>();
+                //Creates one topic, but this can have many subscriptions with each one being registered using the subscribe method.
+                //Each subscription has a filter added so the messages for each topic are separated by handler.
+                // eventBus.Subscribe<SendEmailMessage, SendEMailEventHandler>();
+                //
+                return new EventBusServiceBus(serviceBusPersisterConnection, logger,
+                                              eventBusSubcriptionsManager,
+                                              scopefactory,
+                                              WebConstants.EventBusTopic,
+                                              WebConstants.EventBusSubscription);
+            });
+
+            services.AddTransient<ProcessCsvImportRequestMessageHandler>();
+
+            //See ConfigureEventBusHandlers in SetupApplication.cs, this is where event handlers are wired up to process messages...
 
             return services;
         }

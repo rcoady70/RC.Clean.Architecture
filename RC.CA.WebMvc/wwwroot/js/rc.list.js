@@ -8,6 +8,7 @@
 // <a class="dropdown-item menu-delete" asp-action="Delete" asp-route-id="@item.Id" data-body-message="Are you sure you want to delete @javaScriptEncoder.Encode(item.Name)">Delete</a>
 // Use asp-action, asp-route-**,asp-controller etc to build the listUrl.
 //
+'use strict'
 $(document).ready(function () {
     //debugger;
 
@@ -16,8 +17,8 @@ $(document).ready(function () {
 
 });
 
-var deleteForm; //Reference to delete form
 var rcList = {
+    deleteForm: null, //Reference to delete form
     //Add delete dialog to body
     addDeleteDialog: function () {
         if ($("#deleteModal").length > 0) {
@@ -50,18 +51,18 @@ var rcList = {
                 e.preventDefault();
                 rcList.listTarget = e.target;
 
-                var Id = $(rcList.listTarget).data('id');
-                var bodyMessage = $(rcList.listTarget).data('body-message');
+                let Id = $(rcList.listTarget).data('id');
+                let bodyMessage = $(rcList.listTarget).data('body-message');
 
                 //Save delete from for later to submit
-                deleteForm = $(e.target)[0].closest("form");
+                rcList.deleteForm = $(e.target)[0].closest("form");
                 $(".delete-modal-body").text(bodyMessage);
                 $("#deleteModal").modal('show');
             });
 
             // If confirmation clicked submit form
             $("#confirm-delete").on('click.list', () => {
-                deleteForm.submit();
+                rcList.deleteForm.submit();
             });
         },
         //unbind list actions delete, filter button
@@ -92,7 +93,7 @@ var rcList = {
         },
         //Set filter badge count
         setFilterBadge: function () {
-            fCount = 0;
+            let fCount = 0;
             $(".form-control-filter").each(function (index) {
                 if ($(this)[0].value.length > 0)
                     fCount++;
@@ -112,7 +113,7 @@ var rcList = {
             }
             else {
                 $(event).next().show();
-                var mCol = $(event).find(".evt-list-col-more");
+                let mCol = $(event).find(".evt-list-col-more");
                 $(mCol).addClass("evt-list-col-more-display");
                 $(mCol).removeClass("evt-list-col-more");
             }

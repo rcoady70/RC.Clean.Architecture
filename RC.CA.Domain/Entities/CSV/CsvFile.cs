@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using RC.CA.Domain.Entities.Common;
+using RC.CA.Domain.Entities.Shared;
 
-namespace RC.CA.Domain.Entities.CSV
+namespace RC.CA.Domain.Entities.CSV;
+
+public class CsvFile : BaseEntity<Guid>
 {
-    public class CsvFile : BaseEntity<Guid>
-    {
-        public string FileName { get; set; } = "";
-        public string OrginalFileName { get; set; } = "";
-        public long FileSize { get; set; } = 0;
-        public string ContentType { get; set; } = "";
-        public string CdnLocation { get; set; } = "";
-        public FileStatus Status { get; set; }= FileStatus.NotSet;
-    }
+    public string FileName { get; set; } = "";
+    public string OrginalFileName { get; set; } = "";
+    public long FileSize { get; set; } = 0;
+    public string ContentType { get; set; } = "";
+    public string CdnLocation { get; set; } = "";
+    public string ColumnMap { get; set; } = "";
+    public FileStatus Status { get; set; }= FileStatus.NotSet;
+    public DateTime ProcessedOn { get; set; } = DateTime.MinValue;
 }

@@ -94,7 +94,7 @@ public class EventBusServiceBus : IEventBus, IDisposable
                     Name = eventName
                 }).GetAwaiter().GetResult();
             }
-            catch (ServiceBusException)
+            catch (ServiceBusException ex)
             {
                 _logger.LogWarning("The messaging entity {eventName} already exists.", eventName);
             }
@@ -217,11 +217,12 @@ public class EventBusServiceBus : IEventBus, IDisposable
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError($"MessageBus failed to process message {eventName} message {message}", ex);
+                    _logger.LogError($"MessageBus FAILED to process message {eventName} message {message}", ex);
                     throw(ex);
                 }
             }
         }
+        _logger.LogDebug($"Debug: Completed with status {processed}");
         processed = true;
         return processed;
     }

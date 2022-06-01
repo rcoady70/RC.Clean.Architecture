@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RC.CA.Domain.Entities.Common;
+namespace RC.CA.Domain.Entities.Shared;
 /// <summary>
 /// Base entity interface. It is not generic on purpose uses object. Allows selection of entities from change tracker generically using IBaseEntity interface.
 /// </summary>

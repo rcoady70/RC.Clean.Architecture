@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using RC.CA.Domain.Entities.Common;
+using RC.CA.Domain.Entities.Shared;
 
 namespace RC.CA.Domain.Entities.Club;
 /// <summary>

@@ -9,6 +9,6 @@ namespace RC.CA.Application.Dto.Cdn
 {
     public class CreateCsvFileResponseDto : BaseResponseDto
     {
-        public Guid Ids { get; set; }
+        public Guid Id { get; set; }
     }
 }

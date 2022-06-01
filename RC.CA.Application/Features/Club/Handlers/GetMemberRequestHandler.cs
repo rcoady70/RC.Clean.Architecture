@@ -26,7 +26,7 @@ public class GetMemberRequestHandler : IRequestHandler<GetMemberRequest, GetMemb
     public async Task<GetMemberResponseDto> Handle(GetMemberRequest request, CancellationToken cancellationToken)
     {
         GetMemberResponseDto response = new GetMemberResponseDto();
-        var member = await _memberRepository.GetFirstOrDefault(m => m.Id == request.Id, "Experiences");
+        var member = await _memberRepository.GetFirstOrDefaultAsync(m => m.Id == request.Id, "Experiences");
         if (member == null)
             response.AddResponseError(BaseResponseDto.ErrorType.Error, $"Member with id {request.Id} not found");
         else

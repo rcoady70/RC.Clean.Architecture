@@ -16,7 +16,7 @@ namespace RC.CA.WebApi.Areas.CDN
 {
     [Route("api/cdn/[controller]")]
     [ApiController]
-    public class ImageController : ControllerBase
+    public class ImageController : BaseController
     {
 
         public IMediator _mediator { get; }
@@ -48,9 +48,13 @@ namespace RC.CA.WebApi.Areas.CDN
             //Check result of model validation
             if (response.TotalErrors == 0)
                 response = await _mediator.Send(getCdnFilesListRequest);
+            else
+                return InvalidRequest(response);
 
             return response;
         }
+
+        
 
         /// <summary>
         /// Process uploaded file.

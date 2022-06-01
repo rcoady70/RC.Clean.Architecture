@@ -11,6 +11,7 @@ using RC.CA.SharedKernel.Constants;
 using RC.CA.Application.Models;
 using RC.CA.SharedKernel.Extensions;
 using System.Text;
+using RC.CA.SharedKernel.Models.FluentError;
 
 namespace RC.CA.Application.Services;
 
@@ -25,7 +26,7 @@ public class HttpHelper : IHttpHelper
     private readonly ILogger<HttpHelper> _logger;
     private readonly IAppContextX _appContext;
     private HttpClient _httpClient;
-
+    private string _apiResultAsString = "";
     /// <summary>
     /// Http client helper. Facilitate interaction with api
     /// </summary>
@@ -76,7 +77,7 @@ public class HttpHelper : IHttpHelper
         }
         catch (JsonException ex)
         {
-            throw new ApiException(_appContext.CorrelationId, endPoint, $"HttpPostHelper JsonException {ex.Message}", 0, JsonSerializer.Serialize(request).MaskSensitiveDataExt(), JsonSerializer.Serialize(response).MaskSensitiveDataExt(), ex);
+            throw new ApiException(_appContext.CorrelationId, endPoint, $"HttpPostHelper JsonException {ex.Message}", 0, JsonSerializer.Serialize(request).MaskSensitiveDataExt(), _apiResultAsString.MaskSensitiveDataExt(), ex);
         }
         catch (System.Exception ex)
         {
@@ -99,14 +100,26 @@ public class HttpHelper : IHttpHelper
                                                     where TOut : BaseResponseDto, new() //Output object must inherit from BaseResponseDto 
     {
         TOut? response = new TOut();
-        string strResponse = "";
         switch (apiResult.StatusCode)
         {
             case HttpStatusCode.OK:
             case HttpStatusCode.BadRequest:
-                strResponse = await apiResult.Content.ReadAsStringAsync();
-                if (!string.IsNullOrEmpty(strResponse))
-                    response = JsonSerializer.Deserialize<TOut>(strResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                _apiResultAsString = await apiResult.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(_apiResultAsString))
+                {
+                    //catch fluent validation errors which may be returned.
+                    if (_apiResultAsString.IndexOf("https://tools.ietf.org/html/rfc7231#section-6.5.1") > 0)
+                    {
+                        var fluentResponse = JsonSerializer.Deserialize<FluentErrorModel>(_apiResultAsString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                        foreach(var fError in fluentResponse?.errors)
+                        {
+                            foreach(var error in fError.Value)
+                                response.AddResponseError( BaseResponseDto.ErrorType.Error, error);
+                        }
+                    }
+                    else
+                        response = JsonSerializer.Deserialize<TOut>(_apiResultAsString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                }
                 else
                 {
                     response = new TOut();
@@ -119,8 +132,8 @@ public class HttpHelper : IHttpHelper
                 await response.AddResponseError(BaseResponseDto.ErrorType.Unauthorized, $"Unauthorized {endPoint}");
                 break;
             default:
-                strResponse = await apiResult.Content.ReadAsStringAsync();
-                var baseResponse = JsonSerializer.Deserialize<BaseResponseDto>(strResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                _apiResultAsString = await apiResult.Content.ReadAsStringAsync();
+                var baseResponse = JsonSerializer.Deserialize<BaseResponseDto>(_apiResultAsString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 throw new ApiException(_appContext.CorrelationId, endPoint, $"HttpPostHelper WebException {baseResponse?.Errors?[0]}", (int)baseResponse.RequestStatus, JsonSerializer.Serialize(request).MaskSensitiveDataExt(), JsonSerializer.Serialize(baseResponse).MaskSensitiveDataExt(), null);
                 break;
         }

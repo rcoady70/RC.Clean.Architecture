@@ -12,30 +12,27 @@ using RC.CA.Domain.Entities.CSV;
 using Microsoft.Extensions.Options;
 using RC.CA.Application.Dto.Authentication;
 using RC.CA.Infrastructure.MessageBus;
+using RC.CA.Application.Contracts.Services;
 
 namespace RC.CA.Application.Features.Club.Handlers;
 public class CreateUploadedCsvFileRequestHandler : IRequestHandler<CreateCSvFileRequest, CreateCsvFileResponseDto>
 {
     private readonly ICsvFileRepository _csvFileRepository;
-    private readonly IMapper _mapper;
-    private readonly BlobServiceClient _blobServiceClient;
+    private readonly IBlobStorage _blobClient;
     private readonly IConfiguration _configuration;
-    private readonly IOptions<MessageBusSettings> _messageBusSettings;
+    private readonly BlobStorageSettings _blobStorageSettings;
+
     //private readonly AzureMessageBusX _azureMessageBus;
 
     public CreateUploadedCsvFileRequestHandler(ICsvFileRepository csvFileRepository, 
-                                                 IMapper mapper, 
-                                                 BlobServiceClient blobServiceClient,
+                                                 IBlobStorage blobClient,
                                                  IConfiguration configuration,
-                                                 IOptions<MessageBusSettings> messageBusSettings)
-                                                 //AzureMessageBusX azureMessageBus)
+                                                 IOptions<BlobStorageSettings> blobStorageSettings)
     {
         _csvFileRepository = csvFileRepository;
-        _mapper = mapper;
-        _blobServiceClient = blobServiceClient;
+        _blobClient = blobClient;
         _configuration = configuration;
-        _messageBusSettings = messageBusSettings;
-       // _azureMessageBus = azureMessageBus;
+        _blobStorageSettings = blobStorageSettings.Value;
     }
     /// <summary>
     /// 
@@ -52,29 +49,20 @@ public class CreateUploadedCsvFileRequestHandler : IRequestHandler<CreateCSvFile
 
         CsvFile csvfile = new CsvFile();
         csvfile.Id = Guid.NewGuid();
-        csvfile.FileName = $"{Path.GetFileNameWithoutExtension(request.UploadedFile.FileName)}{Guid.NewGuid()}".SafeFileNameExt() + $"{ Path.GetExtension(request.UploadedFile.FileName)}";
-        csvfile.OrginalFileName = request.UploadedFile.FileName;
+        csvfile.FileName = $"{Path.GetFileNameWithoutExtension(request.UploadedFile.FileName.EscapeHtmlExt())}{Guid.NewGuid()}".SafeFileNameExt() + $"{ Path.GetExtension(request.UploadedFile.FileName)}";
+        csvfile.OrginalFileName = request.UploadedFile.FileName.EscapeHtmlExt();
         csvfile.FileSize = request.UploadedFile.Length;
         csvfile.ContentType = request.UploadedFile.ContentType;
-        csvfile.CdnLocation = $"{_configuration.GetSection("BlobStorage:CdnEndpoint").Value}/{_configuration.GetSection("BlobStorage:ContainerNameFiles").Value}";
+        csvfile.CdnLocation = $"{_blobStorageSettings.CdnEndpoint}/{_blobStorageSettings.ContainerNameFiles}";
 
-        //Upload file to blob storage
-        var containerName = _configuration.GetSection("BlobStorage:ContainerNameFiles").Value;
-        var containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
-        var blobClient = containerClient.GetBlobClient(csvfile.FileName);
-        using (var stream = request.UploadedFile.OpenReadStream())
-            blobClient.Upload(stream, true);
+        //Upload to storage
+        var containerName = $"{_blobStorageSettings.ContainerNameFiles}";
+        await _blobClient.UploadAsync(containerName, csvfile.FileName, request.UploadedFile);
 
         await _csvFileRepository.AddAsync(csvfile);
         
         await _csvFileRepository.SaveChangesAsync();
-        //Publish message 
-        //
-        //await _azureMessageBus.PublishMessage(new BaseMessage()
-        //                                          {
-        //                                            Id = csvfile.Id,
-        //                                            MessageCreated= DateTime.UtcNow,
-        //                                          },null);
+        response.Id = csvfile.Id;
         return response;
     }
 }

@@ -28,14 +28,14 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                          <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="Club" asp-controller="Member" asp-action="Index">CRUD example</a>
+                            <a class="nav-link text-dark" asp-area="Club" asp-controller="Member" asp-action="List">CRUD example</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="Cdn" asp-controller="Image" asp-action="Index">Azure image upload</a>
+                            <a class="nav-link text-dark" asp-area="Cdn" asp-controller="Image" asp-action="List">Image upload</a>
                         </li>
-                        @* <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="Cdn" asp-controller="CsvFile" asp-action="CsvFileIndex">Csv file upload</a>
-                        </li>*@
+                         <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="Cdn" asp-controller="CsvFile" asp-action="list">Message Bus</a>
+                        </li>
                          <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="exceptions" asp-controller="csp" asp-action="csptest">CSP test</a>
                         </li>
@@ -52,6 +52,7 @@
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
+        
     </div>
 
 <footer id="sticky-footer" class="flex-shrink-0 py-4 bg-white text-black-50">

@@ -32,7 +32,7 @@ public class DeleteUploadedFilesRequestHandler : IRequestHandler<DeleteCdnFileRe
     public async Task<BaseResponseDto> Handle(DeleteCdnFileRequest request, CancellationToken cancellationToken)
     {
         var response = new CreateCdnFileResponseDto();
-        var cdnFile = await _cdnFileRepository.GetFirstOrDefault(c => c.Id == request.Id);
+        var cdnFile = await _cdnFileRepository.GetFirstOrDefaultAsync(c => c.Id == request.Id);
         if (cdnFile != null)
         {
             await _cdnFileRepository.DeleteAsync(cdnFile);

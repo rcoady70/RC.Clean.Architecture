@@ -28,7 +28,7 @@ public class UpdateMemberRequestHandler : IRequestHandler<UpdateMemberRequest, C
     public async Task<CreateMemberResponseDto> Handle(UpdateMemberRequest request, CancellationToken cancellationToken)
     {
         CreateMemberResponseDto response = new CreateMemberResponseDto();
-        var member = await _memberRepository.GetFirstOrDefault(m => m.Id == request.Id, "Experiences", tracked: true);
+        var member = await _memberRepository.GetFirstOrDefaultAsync(m => m.Id == request.Id, "Experiences", tracked: true);
         if (member != null)
         {
             foreach (var item in member.Experiences)

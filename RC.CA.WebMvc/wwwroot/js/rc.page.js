@@ -1,11 +1,12 @@
 ﻿//
 // Script to manage various page functions
 //
+'use strict'
 var rcPage = {
     //Initialize button spinner for submit <buttons>
     initButtonSpinner: function () {
         $("button[data-spinning-button]").on("click.button", function (e) {
-            var $this = $(this);
+            let $this = $(this);
             let formId = $this.data("spinning-button");
             let $form = formId ? $("#" + formId) : $this.parents("form");
             if ($form.length) {

@@ -63,6 +63,10 @@ try
     builder.Services.AddControllers()
                     .AddFluentValidation();
 
+    //[EventBus] Notification requests will be queued to azure event buss and processed later
+    //
+    builder.Services.AddEventBus(builder.Configuration);
+
     //[Swagger] Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     //[Swagger] add jwt identity tokens
@@ -100,6 +104,9 @@ try
     //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/middleware/?view=aspnetcore-6.0#middleware-order
     //
     var app = builder.Build();
+
+    //[EventBus] Configure azure bus message handlers
+    app.ConfigureEventBusHandlers();
 
     //[SeriLog] Serilog Enrich log entries...
     //

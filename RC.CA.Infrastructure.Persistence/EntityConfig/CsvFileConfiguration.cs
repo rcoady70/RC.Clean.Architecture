@@ -17,14 +17,20 @@ public class CsvFileConfiguration: IEntityTypeConfiguration<CsvFile>
     {
         builder.Property(e => e.Id).IsRequired()
                                    .HasColumnType(ColumnTypes.Guid);
+
         builder.Property(e => e.FileName).IsRequired()
                                          .HasColumnType(ColumnTypes.FileName250);
+
         builder.Property(e => e.OrginalFileName).IsRequired()
                                                 .HasColumnType(ColumnTypes.FileName250);
+
         builder.Property(e => e.ContentType).IsRequired()
                                             .HasColumnType(ColumnTypes.Name50);
+
         builder.Property(e => e.CdnLocation).IsRequired()
                                             .HasColumnType(ColumnTypes.URLCol250);
         builder.Property(e => e.Status).IsRequired();
+
+        builder.Property(e => e.ColumnMap).HasColumnType(ColumnTypes.TextCol);
     }
 }

@@ -1,0 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using RC.CA.Application.Models;
+
+namespace RC.CA.Application.Dto.Cdn;
+public class CsvFilesListResponseDto : BaseResponseDto
+{
+    public string? FilterByName { get; set; } = "";
+    public string? FilterById { get; set; } = "";
+    public IReadOnlyList<CsvFileListDto> CsvFiles { get; set; } = new List<CsvFileListDto>();
+    public PaginationMetaData PaginationMetaData { get; set; } = new PaginationMetaData();
+}

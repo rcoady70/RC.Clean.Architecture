@@ -1,14 +1,58 @@
-﻿<div class="container-fluid">
+﻿@using RC.CA.Application.Features.Cdn.Queries
+@model UpsertCsvMapRequest
+
+<div class="container-fluid">
     <div class="row head-border-bottom">
         <div class="col-12 ">
             <h3>Step 2 - map file</h3>
         </div>
     </div>
+    <h5>Map columns in your file to members properties</h5>
 </div>
-<h5>Map columns in your file to members properties</h5>
-<div class="d-grid gap-2 d-md-block">
-    <form method="get" asp-action="CsvFileStep1">
-        <button id="btnNext" class="btn btn-outline-success btn-block float-start" asp-action="CsvFileStep1" asp-route-Id="1" data-spinning-button type="submit">Previous</button>
-    </form>
-    <button id="btnNext" class="btn btn-outline-success btn-block float-end" asp-action="CsvFileStep1" asp-route-Id="1" data-spinning-button type="submit">Next</button>
-</div>
+<form method="post" asp-action="CsvFileStep2">
+    <input asp-for="Id" class="form-control d-none" />
+    <div class="container-fluid pb-2">
+        <div id="expTable" class="row  border-bottom p-2">
+            <div class="row h5">
+                <div class="col">Csv column</div>
+                <div class="col">Sample data</div>
+                <div class="col">Map to column</div>
+                <div class="col d-none">Mask</div>
+                <div class="col d-none">Macro</div>
+            </div>
+        
+            @for (var i = 0; i < Model?.ColumnMap.Count(); i++)
+            {
+                <div class="row expTableRow">
+                    <div class="col"><input asp-for="@Model.ColumnMap[i].FromCsvField" readonly class="form-control" />
+                    </div>
+                    <div class="col">
+                        <div class="col"><input asp-for="@Model.ColumnMap[i].SampleData" readonly class="form-control" />
+                    </div>
+                    </div>
+                   
+                    <div class="col">
+                         <select asp-for="@Model.ColumnMap[i].ToEntityField" asp-items="@Model.ColumnMap[i].ToEntityFieldListItems" class="form-select"  aria-required="false" >
+                            <option value=""></option>
+                        </select>
+                        <span asp-validation-for="@Model.ColumnMap[i].ToEntityField" class="text-danger"></span>
+                    </div>
+                    <div class="col d-none"><input asp-for="@Model.ColumnMap[i].Mask"  class="form-control" />
+                        <span asp-validation-for="@Model.ColumnMap[i].Mask" class="text-danger"></span>
+                    </div>
+                    <div class="col d-none"><input asp-for="@Model.ColumnMap[i].Macro"  class="form-control" />
+                        <span asp-validation-for="@Model.ColumnMap[i].Macro" class="text-danger"></span>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="d-grid gap-2 d-md-block">
+         <a id="btnNext" class="btn btn-outline-success btn-block float-start" asp-action="List" asp-route-Id="@Model.Id" data-spinning-button type="submit">Cancel</a>
+         <button id="btnNext" class="btn btn-outline-success btn-block float-end" asp-action="CsvFileStep2" asp-route-Id="@Model.Id" data-spinning-button type="submit">Next</button>
+    </div>
+    <div>
+    <div asp-validation-summary="All" class="text-danger"></div>
+    </div>
+</form>

@@ -11,6 +11,7 @@ public enum FileStatus
     Failed = -10,
     NotSet = 0,
     Uploaded = 10,
-    BeingProcessed = 20,
-    Finished = 30
+    OnQueue = 20,
+    BeingProcessed = 30,
+    Finished = 40
 }

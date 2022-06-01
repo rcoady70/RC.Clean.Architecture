@@ -1,0 +1,26 @@
+﻿@using RC.CA.Application.Features.Cdn.Queries
+@model UpsertCsvMapRequest
+<form method="post" asp-action="CsvFileFinish">
+    <input asp-for="Id" class="form-control d-none" />
+    <div class="container-fluid">
+        <div class="row head-border-bottom">
+            <div class="col-12 ">
+                <h3>Step 3 - submit import</h3>
+            </div>
+        </div>
+        <h5>Finish will added a queue entry for a subscription and topic to azure bus. This which will be picked up and processed. </h5>
+        <h6>Currently the processor does not implement import it has a 10 second delay  to simulate.</h6>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="d-grid gap-2 d-md-block">
+                    <a id="btnNext" class="btn btn-outline-success btn-block float-start" asp-action="CsvFileStep2" asp-route-Id="@Model.Id" data-spinning-button type="submit">Previous</a>
+                    <button id="btnNext" class="btn btn-outline-success btn-block float-end" asp-action="list" asp-route-Id="@Model.Id" data-spinning-button type="submit">Finish</button>
+            </div>
+        </div>
+        <div class="row">
+            <div asp-validation-summary="All" class="text-danger mt-7"></div>
+        </div>
+    </div>
+</form>
+    

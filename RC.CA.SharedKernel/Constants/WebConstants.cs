@@ -13,4 +13,6 @@ public static class WebConstants
     public const string CORSPolicyName = "Internal";
     public const string EventBusSubscription = "rc.ca.webapi.main.sub";
     public const string EventBusTopic = "rc.ca.webapi.topic";
+
+    public static readonly Dictionary<string,string> MembersImportFields = new Dictionary<string,string>() { { "Name", "Name" }, { "Gender", "Gender" }, { "Qualification", "Qualification" } };
 }

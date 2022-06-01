@@ -5,7 +5,7 @@ using RC.CA.Application.Contracts.Identity;
 using RC.CA.Application.Contracts.Persistence;
 using RC.CA.Application.Dto;
 using RC.CA.Application.Extensions.Linq;
-using RC.CA.Domain.Entities.Common;
+using RC.CA.Domain.Entities.Shared;
 
 namespace RC.CA.Infrastructure.Persistence.Repository;
 
@@ -59,7 +59,7 @@ public class AsyncRepository<T> : IAsyncRepository<T> where T : class
     /// <param name="includeProperties"></param>
     /// <param name="tracked"></param>
     /// <returns></returns>
-    public virtual async Task<T> GetFirstOrDefault(Expression<Func<T, bool>> filter, string? includeProperties = null, bool tracked = false)
+    public virtual async Task<T> GetFirstOrDefaultAsync(Expression<Func<T, bool>> filter, string? includeProperties = null, bool tracked = false)
     {
         IQueryable<T> query = _dbSet;
         if (tracked)
@@ -111,22 +111,30 @@ public class AsyncRepository<T> : IAsyncRepository<T> where T : class
         var count = await query.CountAsync();
         return count;
     }
-
-    public async Task<bool> ExistsAsync(Guid? id)
+    /// <summary>
+    /// Find may be preferable as it caches the record
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <param name="id"></param>
+    /// <param name=""></param>
+    /// <param name="tracked"></param>
+    /// <returns></returns>
+    public async Task<T> FindAsync<TKey>(TKey id, bool tracked = false)
+    {
+        if (tracked)
+            _dbContext.Set<T>().AsTracking();
+        var entity = await _dbContext.Set<T>().FindAsync(id);
+        return entity;
+    }
+    /// <summary>
+    /// Find may be preferable as it caches the record
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public async Task<bool> ExistsAsync<TKey>(TKey id)
     {
         if(id == null)
-            return false;
-        var entity = await _dbContext.Set<T>().FindAsync(id);
-        return entity != null;
-    }
-    public async Task<bool> ExistsAsync(int id)
-    {
-        var entity = await _dbContext.Set<T>().FindAsync(id);
-        return entity != null;
-    }
-    public async Task<bool> ExistsAsync(string id)
-    {
-        if (string.IsNullOrEmpty(id))
             return false;
         var entity = await _dbContext.Set<T>().FindAsync(id);
         return entity != null;
@@ -198,6 +206,7 @@ public class AsyncRepository<T> : IAsyncRepository<T> where T : class
     {
         try
         {
+            string m = DebugShortView();
             await _dbContext.SaveChangesAsync();
         }
         catch (Exception ex)

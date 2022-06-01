@@ -90,7 +90,7 @@ public class UserAccountController : RootController
             else
                 return LocalRedirect(loginRequest.ReturnUrlX);
         }
-        await AppendErrorsToModelState(authResponse);
+        await AppendErrorsToModelStateAsync(authResponse);
         return View();
     }
 
@@ -108,7 +108,7 @@ public class UserAccountController : RootController
         var authResponse = await _httpHelper.SendAsync<RegistrationRequest, RegistrationResponse>(registrationRequest, "api/UserAccount/Register", HttpMethod.Post);
         if (authResponse?.TotalErrors == 0)
             return RedirectToAction("index", "home", new { area = "home" });
-        await AppendErrorsToModelState(authResponse);
+        await AppendErrorsToModelStateAsync(authResponse);
         return View();
     }
 }

@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using RC.CA.Application.Dto.Cdn;
 using RC.CA.Application.Dto.Club;
+using RC.CA.Application.Features.Cdn.Queries;
 using RC.CA.Application.Features.Club.Queries;
 using RC.CA.Domain.Entities.Account;
 using RC.CA.Domain.Entities.Cdn;
 using RC.CA.Domain.Entities.Club;
+using RC.CA.Domain.Entities.CSV;
 
 namespace RC.CA.Application.AutoMapperProfiles;
 
@@ -28,9 +30,12 @@ public class MappingProfile: Profile
         CreateMap<UpdateMemberRequest, CreateMemberRequest>().ReverseMap();
         CreateMap<UpdateMemberRequest, Member>().ReverseMap();
 
-        //Cdn
+        //Cdn csv
         CreateMap<CdnFiles, CdnListDto > ().ReverseMap();
-
+        CreateMap<CsvMapColumn, CsvColumnMapDto>().ReverseMap();
+        CreateMap<CsvMap, UpsertCsvMapResponseDto>().ReverseMap();
+        CreateMap<UpsertCsvMapRequest, UpsertCsvMapResponseDto>().ReverseMap();
+        CreateMap<CsvFile, CsvFileListDto>().ReverseMap();
     }
 }
 

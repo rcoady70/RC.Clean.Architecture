@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace RC.CA.WebApi.Areas;
 
-public class BaseController : ControllerBase
+public abstract class BaseController : ControllerBase
 {
     /// <summary>
     /// Return invalid result.Sets status code to 400 bad request

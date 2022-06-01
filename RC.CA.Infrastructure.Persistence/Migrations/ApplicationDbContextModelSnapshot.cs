@@ -408,6 +408,10 @@ namespace RC.CA.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(250)");
 
+                    b.Property<string>("ColumnMap")
+                        .IsRequired()
+                        .HasColumnType("nText");
+
                     b.Property<string>("ContentType")
                         .IsRequired()
                         .HasColumnType("nvarchar(50)");
@@ -428,6 +432,9 @@ namespace RC.CA.Infrastructure.Persistence.Migrations
                     b.Property<string>("OrginalFileName")
                         .IsRequired()
                         .HasColumnType("nvarchar(250)");
+
+                    b.Property<DateTime>("ProcessedOn")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");

@@ -25,7 +25,7 @@ public class DeleteMemberRequestHandler : IRequestHandler<DeleteMemberRequest, B
     public async Task<BaseResponseDto> Handle(DeleteMemberRequest request, CancellationToken cancellationToken)
     {
         BaseResponseDto baseResponse = new BaseResponseDto();
-        var member = await _memberRepository.GetFirstOrDefault(u => u.Id == request.Id, "Experiences", tracked: true);
+        var member = await _memberRepository.GetFirstOrDefaultAsync(u => u.Id == request.Id, "Experiences", tracked: true);
 
         if (member != null)
         {

@@ -1,5 +1,7 @@
 ﻿@using RC.CA.Application.Contracts.Identity
+@using RC.CA.Application.Features.Cdn.Queries
 @using RC.CA.SharedKernel.WebHelpers
+@model UpsertCsvMapRequest
 @inject JavaScriptEncoder javaScriptEncoder;
 @inject IAppContextX appContextX;
 @{
@@ -7,7 +9,8 @@
     var requestUrl = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}{Context.Request.QueryString}"; 
     var apiEndpoint = $"https://{appContextX.ApiEndpoint}/api/cdn/Image/Upload"; 
 }
-@*<form method="post" asp-action="CsvFileStep2">*@
+<form method="get" asp-action="CsvFileStep2">
+<input asp-for="Id" class="form-control d-none" />
     <div class="container-fluid">
         <div class="row head-border-bottom">
             <div class="col-12 ">
@@ -23,10 +26,10 @@
     </div>
     <h5>File uploaded to azure blob storage. Queue item added to azure bus, processed by .net core worker service</h5>
     <div class="d-grid gap-2 d-md-block">
-        <button id="btnNext" class="btn btn-outline-success btn-block float-start" asp-action="CsvFileStep2" asp-route-Id="1" data-spinning-button type="submit">Close</button>
-        <button id="btnNext" class="btn btn-outline-success btn-block float-end" asp-action="CsvFileStep1" asp-route-Id="1" data-spinning-button type="submit">Next</button>
+        <a id="btnClose" class="btn btn-outline-success btn-block float-start" asp-action="list" asp-route-Id="" data-spinning-button type="submit">Close</a>
+        <button id="btnNext" class="btn btn-outline-success btn-block float-end" asp-action="CsvFileStep2" asp-route-Id="" data-spinning-button type="submit">Next</button>
     </div>
-@*</form>*@
+</form>
 @section Scripts
 {
   <script rc-nonce src="@Url.Content("~/js/rc.csvFileUpload.js")"></script>

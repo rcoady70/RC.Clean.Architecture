@@ -162,7 +162,7 @@ public class JwtUtilities : IJwtUtilities
 
         //Revoke old refresh token
         //
-        var dToken = await _jwtRefreshTokenRepo.GetFirstOrDefault(j => j.UserId == userName, null, true);
+        var dToken = await _jwtRefreshTokenRepo.GetFirstOrDefaultAsync(j => j.UserId == userName, null, true);
         if (dToken != null)
         {
            dToken.RevokedOn = DateTime.UtcNow;
@@ -194,7 +194,7 @@ public class JwtUtilities : IJwtUtilities
     public async Task RevokeJwtRefreshToken(string userId, string reason)
     {
         Guard.Against.NullOrEmpty(userId, nameof(userId));
-        var rToken = await _jwtRefreshTokenRepo.GetFirstOrDefault(j => j.UserId == userId && j.RevokedOn == null, null, true);
+        var rToken = await _jwtRefreshTokenRepo.GetFirstOrDefaultAsync(j => j.UserId == userId && j.RevokedOn == null, null, true);
         if (rToken != null)
         {
             rToken.RevokedOn = DateTime.UtcNow;

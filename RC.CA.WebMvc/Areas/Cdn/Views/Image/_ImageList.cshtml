@@ -1,5 +1,4 @@
-﻿@using RC.CA.SharedKernel.WebHelpers
-@inject JavaScriptEncoder javaScriptEncoder;
+﻿@inject JavaScriptEncoder javaScriptEncoder;
 @model CdnFilesListResponseDto;
 @{
     var requestUrl = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}{Context.Request.QueryString}"; 
@@ -35,13 +34,13 @@
             </div>
             <div class="col-sm-7">
                 File name
-                <a asp-area="Cdn" asp-controller="Image" asp-action="Index" asp-route-OrderBy="FileName_asc"><i class="fa fa-arrow-down"></i></a>
-                <a asp-area="Cdn" asp-controller="Image" asp-action="Index" asp-route-OrderBy="FileName_desc"><i class="fa fa-arrow-up"></i></a>
+                <a asp-area="Cdn" asp-controller="Image" asp-action="List" asp-route-OrderBy="FileName_asc"><i class="fa fa-arrow-down"></i></a>
+                <a asp-area="Cdn" asp-controller="Image" asp-action="List" asp-route-OrderBy="FileName_desc"><i class="fa fa-arrow-up"></i></a>
             </div>
             <div class="col-sm-3">
                 Type
-                <a asp-area="Cdn" asp-controller="Image" asp-action="Index" asp-route-OrderBy="ContentType_asc"><i class="fa fa-arrow-down"></i></a>
-                <a asp-area="Cdn" asp-controller="Image" asp-action="Index" asp-route-OrderBy="ContentType_desc"><i class="fa fa-arrow-up"></i></a>
+                <a asp-area="Cdn" asp-controller="Image" asp-action="List" asp-route-OrderBy="ContentType_asc"><i class="fa fa-arrow-down"></i></a>
+                <a asp-area="Cdn" asp-controller="Image" asp-action="List" asp-route-OrderBy="ContentType_desc"><i class="fa fa-arrow-up"></i></a>
             </div>
             <div class="col-sm-1">
                 Options
