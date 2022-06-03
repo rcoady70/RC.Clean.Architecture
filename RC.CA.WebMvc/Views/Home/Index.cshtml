@@ -1,26 +1,33 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+<link rc-nonce rel="stylesheet" href='@Url.Content("~/css/rc-card.css")' asp-append-version="true" />
 
-  <div class="px-4 pt-5 my-5 text-center">
-    <h1 class="display-4 fw-bold">Sample .net core 6 site c#</h1>
-    <div class="col-lg-6 mx-auto">
-      <p class="lead mb-4">Site is built to learn, test, try new technologies and techniques.  </p>
-      <p class="lead mb-4">Site is made up of mvc site communicating with webapi site.</p>
-    </div>
-    <div class="overflow-hidden" style="max-height: 30vh;">
-      <a href="https://github.com/rcoady70/RC.Clean.Architecture">Git-hub link to project</a><br />
-      <a href="https://rc-ca-webapi.azurewebsites.net/swagger/index.html">Swagger API site</a><br />
-      <a href="https://rc-ca-healthchecks.azurewebsites.net">Health checks site</a>
-    </div>
+  <div class="jumbotron jumbotron-fluid">
+  <div class="container">
+    <h1 class="display-4">Sample .net core 6 site c#</h1>
+    <p class="lead">Site is built to learn, test, try new technologies and techniques. MVC with Web API back end. Based on clean architecture. </p>
+   
   </div>
-
-
-  <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
+</div>
+<p>
+    <ul class="nav justify-content-center h5">
+      <li class="nav-item">
+        <a class="nav-link active" href="https://github.com/rcoady70/RC.Clean.Architecture">Git-hub link to project source</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://rc-ca-webapi.azurewebsites.net/swagger/index.html">Swagger API site</a>
+      </li>
+       <li class="nav-item">
+        <a class="nav-link" href="https://rc-ca-healthchecks.azurewebsites.net">Health checks site</a>
+      </li>
+    </ul>
+</p>
+ <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
       <div class="col">
-        <div class="card mb-4 rounded-3 shadow-sm border-primary">
-          <div class="card-header py-3 text-white bg-primary border-primary">
-            <h4 class="my-0 fw-normal">Authentication</h4>
+        <div class="card mb-4 rounded-3 shadow-sm border-dark">
+          <div class="card-header py-3 text-white bg-dark border-dark">
+            <h5 class="my-0 fw-normal">Authentication</h5>
           </div>
           <div class="card-body">
             <h1 class="card-title pricing-card-title"><small class="text-muted fw-light">Core identity</small></h1>
@@ -34,15 +41,14 @@
         </div>
       </div>
       <div class="col">
-        <div class="card mb-4 rounded-3 shadow-sm border-primary">
-          <div class="card-header py-3 text-white bg-primary border-primary">
-            <h4 class="my-0 fw-normal">Technology stack</h4>
+        <div class="card mb-4 rounded-3 shadow-sm border-dark">
+          <div class="card-header py-3 text-white bg-dark border-dark">
+            <h5 class="my-0 fw-normal">Technology stack</h5>
           </div>
           <div class="card-body">
             <h1 class="card-title pricing-card-title"><small class="text-muted fw-light">.Net core mvc / web api</small></h1>
             <ul class="list-unstyled mt-3 mb-4">
-              <li>C#</li>
-              <li>MVC / Razor</li>
+              <li>C# MVC / Razor</li>
               <li>Bootstrap / CSS / JQuery / Javascript</li>
               <li>Dependency Injection / Generics</li>
               <li>Code first / SQL Server / TSql / Encryption at rest</li>
@@ -51,9 +57,9 @@
         </div>
       </div>
       <div class="col">
-        <div class="card mb-4 rounded-3 shadow-sm border-primary">
-          <div class="card-header py-3 text-white bg-primary border-primary">
-            <h4 class="my-0 fw-normal">Design</h4>
+        <div class="card mb-4 rounded-3 shadow-sm border-dark">
+          <div class="card-header py-3 text-white bg-dark border-dark">
+            <h5 class="my-0 fw-normal">Design</h5>
           </div>
           <div class="card-body">
             <h1 class="card-title pricing-card-title"><small class="text-muted fw-light">Domain driven design</small></h1>
@@ -67,9 +73,9 @@
         </div>
       </div>
       <div class="col">
-        <div class="card mb-4 rounded-3 shadow-sm border-primary">
-          <div class="card-header py-3 text-white bg-primary border-primary">
-            <h4 class="my-0 fw-normal">Security</h4>
+        <div class="card mb-4 rounded-3 shadow-sm border-dark">
+          <div class="card-header py-3 text-white bg-dark border-dark">
+            <h5 class="my-0 fw-normal">Security</h5>
           </div>
           <div class="card-body">
             <h1 class="card-title pricing-card-title"><small class="text-muted fw-light">OWASP</small></h1>
@@ -85,9 +91,9 @@
         </div>
       </div>
       <div class="col">
-        <div class="card mb-4 rounded-3 shadow-sm border-primary">
-          <div class="card-header py-3 text-white bg-primary border-primary">
-            <h4 class="my-0 fw-normal">Cloud</h4>
+        <div class="card mb-4 rounded-3 shadow-sm border-dark">
+          <div class="card-header py-3 text-white bg-dark border-dark">
+            <h5 class="my-0 fw-normal">Cloud</h5>
           </div>
           <div class="card-body">
             <h1 class="card-title pricing-card-title"><small class="text-muted fw-light">Azure</small></h1>

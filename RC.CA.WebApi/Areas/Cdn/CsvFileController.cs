@@ -1,12 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RC.CA.Application.Contracts.Persistence;
 using RC.CA.Application.Dto.Cdn;
 using RC.CA.Application.Features.Cdn.Queries;
 using RC.CA.Application.Features.Club.Queries;
-using RC.CA.Application.Models;
 
 namespace RC.CA.WebApi.Areas.Cdn;
 
