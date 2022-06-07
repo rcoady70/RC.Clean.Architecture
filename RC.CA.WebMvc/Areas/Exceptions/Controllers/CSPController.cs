@@ -16,6 +16,21 @@ public class CSPController : Controller
     {
         _logger = logger;
     }
+    /// <summary>
+    /// Test page csp violations
+    /// </summary>
+    /// <param name="cspReportRequest"></param>
+    /// <returns></returns>
+    [HttpGet("exceptions/csptest")]
+    public IActionResult CspTest()
+    {
+        return View();
+    }
+    /// <summary>
+    /// Log CSP violations
+    /// </summary>
+    /// <param name="cspReportRequest"></param>
+    /// <returns></returns>
     [HttpPost("exceptions/cspviolation")]
     public IActionResult CspViolation([FromBody] RC.CA.WebUiMvc.Areas.Exceptions.Models.CspReportRequestVM cspReportRequest)
     {

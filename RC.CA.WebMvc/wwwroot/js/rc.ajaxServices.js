@@ -1,7 +1,7 @@
 ﻿//Consolidate all ajax services 
 //
 $(document).ready(function () {
-    //Add converter to remove the d from data object if it exists
+    //Add converter to remove the d from returnrd data object if it exists
     $.ajaxSetup({
         converters: {
             "json": function(data) {
@@ -18,7 +18,7 @@ var rcAjaxServices = {
                     type: "GET",
                     url: "/Cdn/Image/ImageListRefresh",
                     contentType: "application/json",
-            headers: { 'Authorization': rcAjaxServices .authBearerToken},
+                    headers: { 'Authorization': rcAjaxServices .authBearerToken},
                     data: data,
                     dataType: "html"
                 });
