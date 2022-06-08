@@ -40,7 +40,6 @@ namespace RC.CA.Application.Features.Cdn.Handlers
                 else
                     filter = filter.And(LinqExtensionsFilter.BuildPredicate<CsvFile>("Id", "contains", request.FilterById));
             }
-
             //Set order by from string
             List<SortModel> orderByCollection = null;
             if (!string.IsNullOrEmpty(request.OrderBy))
@@ -52,6 +51,7 @@ namespace RC.CA.Application.Features.Cdn.Handlers
                                                                       filter,
                                                                       orderByCollection,
                                                                       "");
+            var x = _csvFileRepository.GetFirstOrDefaultAsync(c => c.Id == new Guid("7186F8C3-4919-458C-AF5A-0C1D308D46AE"));
 
             //Map response to dto prevent over posting
             var response = new CsvFilesListResponseDto
@@ -63,5 +63,6 @@ namespace RC.CA.Application.Features.Cdn.Handlers
             };
             return response;
         }
+        
     }
 }

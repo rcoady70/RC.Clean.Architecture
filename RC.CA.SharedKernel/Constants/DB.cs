@@ -10,7 +10,9 @@ public static class DB
 {
     public const string RoleAdmin = "Admin";
     public const string RoleUser = "User";
-    //Pagination 
+    ///
+    /// Pagination
+    ///
     public const Int16 ListItemsPerPage = 10;
     public const string OperatorIn = "in";
     public const string OperatorLike = "like";

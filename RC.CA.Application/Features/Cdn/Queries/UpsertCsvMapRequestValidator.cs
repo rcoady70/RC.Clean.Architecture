@@ -24,5 +24,22 @@ public class UpsertCsvMapRequestValidator : AbstractValidator<UpsertCsvMapReques
                 })
                 .WithErrorCode("InUse")
                 .WithMessage("Import is queued or is being processed");
+
+        RuleForEach(x => x.ColumnMap).ChildRules(orders =>
+        {
+                orders.RuleFor(x => x.ToEntityField).Matches("^Name|Gender|Qualification");
+        }).WithMessage("{PropertyName} contains invalid mapping field");
+
+        RuleFor(x => x.ColumnMap)
+                .Must(colMap =>
+                {
+                    foreach(var col in colMap)
+                    {
+                        if (!string.IsNullOrEmpty(col.ToEntityField))
+                            return true;
+                    }
+                    return false;
+                })
+                .WithMessage("You must at least supply one mapping field");
     }
 }

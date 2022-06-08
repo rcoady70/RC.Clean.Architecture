@@ -9,7 +9,8 @@ public class GetCdnFilesRequestValidator : AbstractValidator<GetCdnFilesListRequ
     {
         //Extension method does not work null check fails
         //
-        RuleFor(p => p.FilterByName).ExtIsRestrictedChar().ExtFilter();
+        RuleFor(p => p.FilterByName).ExtFilter()
+                                    .ExtIsRestrictedChar().ExtFilter();
 
        
     }

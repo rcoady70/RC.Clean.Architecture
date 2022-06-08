@@ -18,32 +18,13 @@ public static class ValidatorExtensions
     /// <returns></returns>
     public static IRuleBuilderOptions<T, string?> ExtIsValidEmail<T>(this IRuleBuilder<T, string?> rule)
     {
-        return rule.ExtIsRestrictedChar()
-                   .NotEmpty()
+        return rule.NotEmpty()
                    .NotNull()
                    .EmailAddress()
-                   .MaximumLength(50)
+                   .MaximumLength(50).WithMessage("{PropertyName} Email must be less than 50 characters")
                    .WithMessage("{PropertyName} Email address is invalid");
     }
-    /// <summary>
-    /// Common rule for string keys must be less than 50 not null,not empty
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="rule"></param>
-    /// <param name="required"></param>
-    /// <returns></returns>
-    public static IRuleBuilderOptions<T, string?> ExtCompanyId<T>(this IRuleBuilder<T, string?> rule)
-    {
-        return rule.ExtIsRestrictedChar()
-               .NotEmpty()
-               .NotNull().WithMessage("{PropertyName} cannot be blank")
-               .NotEmpty().WithMessage("{PropertyName} cannot be blank")
-               .NotEqual("string").WithMessage("{PropertyName} has invalid value")
-               .MaximumLength(50).WithMessage("{PropertyName} must be between 2 - 50 characters in length")
-               .MinimumLength(2).WithMessage("{PropertyName} must be between 2 - 50 characters in length")
-               .Matches("[a-z,A-Z,0-9]").WithMessage("{PropertyName} can only contain characters and numbers \"a\" To \"z\" and \"0\" to \"9\"");
-               
-    }
+   
     /// <summary>
     /// Common rule for name must be less than 50
     /// </summary>
@@ -53,8 +34,22 @@ public static class ValidatorExtensions
     /// <returns></returns>
     public static IRuleBuilderOptions<T, string?> ExtIsValidName<T>(this IRuleBuilder<T, string?> rule)
     {
-        return rule.ExtIsRestrictedChar()
-                   .MaximumLength(50).WithMessage("{PropertyName} must be less than 50 characters ");
+        return rule.Matches(ValidationRegex.WhiteListForName).WithMessage("{PropertyName} contains invalid characters")
+                   .MaximumLength(50).WithMessage("{PropertyName} Email must be less than 50 characters");
+    }
+    /// <summary>
+    /// Common rule for URI
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="rule"></param>
+    /// <param name="required"></param>
+    /// <returns></returns>
+    public static IRuleBuilderOptions<T, string?> ExtIsValidUri<T>(this IRuleBuilder<T, string?> rule)
+    {
+        return rule.Must(uri =>
+        {
+            return Uri.TryCreate(uri, UriKind.Absolute, out _);
+        }).WithMessage("{PropertyName} Uri is not valid");
     }
     /// <summary>
     /// Common rule for name must be less than 50
@@ -79,8 +74,10 @@ public static class ValidatorExtensions
     /// <returns></returns>
     public static IRuleBuilderOptions<T, string?> ExtIsValidDescription<T>(this IRuleBuilder<T, string?> rule)
     {
+        var m = Regex.IsMatch("", ValidationRegex.WhiteListForDescription, RegexOptions.IgnoreCase);
         return rule.ExtIsRestrictedChar()
-                   .MaximumLength(50).WithMessage("{PropertyName} must be less than 50 characters ");
+                   .MaximumLength(50).WithMessage("{PropertyName} must be less than 50 characters ")
+                   .Matches(ValidationRegex.WhiteListForDescription).WithMessage("{PropertyName} contains invalid characters");
     }
     /// <summary>
     /// Common rule for name must be less than 50
@@ -92,10 +89,12 @@ public static class ValidatorExtensions
     public static IRuleBuilderOptions<T, string?> ExtIsValidGender<T>(this IRuleBuilder<T, string?> rule)
     {
         return rule.ExtIsRestrictedChar()
-                   .MaximumLength(25).WithMessage("{PropertyName} must be less than 50 characters ");
+                   .Matches(@"^[M,F,U]").WithMessage("{PropertyName} Gender is invalid ");
+                   
     }
     /// <summary>
-    /// Simple rule to check for restricted characters 
+    /// Simple rule to check for restricted characters just simple layer does not take into account escaped values. 
+    /// All input should be WHITELISTED
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="rule"></param>
@@ -111,23 +110,7 @@ public static class ValidatorExtensions
     }
 
     /// <summary>
-    /// Simple rule to check for restricted characters 
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="rule"></param>
-    /// <returns></returns>
-    public static IRuleBuilderOptions<T, string?> ExtIsValidCharList<T>(this IRuleBuilder<T, string?> rule)
-    {
-        return rule.Must(propertyValue =>
-        {
-            if (string.IsNullOrEmpty(propertyValue))
-                return true;
-            return Regex.IsMatch(propertyValue, @"[a-z,0-9,A-Z,@,:,\/]", RegexOptions.IgnoreCase);
-        }).WithMessage("{PropertyName} contains invalid characters");
-    }
-
-    /// <summary>
-    /// check filter
+    /// Check list filter
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="rule"></param>
@@ -135,6 +118,7 @@ public static class ValidatorExtensions
     public static IRuleBuilderOptions<T, string?> ExtFilter<T>(this IRuleBuilder<T, string?> rule)
     {
         return rule.ExtIsRestrictedChar()
+                   .Matches(ValidationRegex.WhiteListForListFilter).WithMessage("{PropertyName} contains invalid characters")
                    .MaximumLength(50).WithMessage("{PropertyName} must be between 0 - 50 characters in length")
                    .When(x => x != null, ApplyConditionTo.AllValidators);
                    

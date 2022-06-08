@@ -6,5 +6,7 @@ namespace RC.CA.Application.Contracts.Persistence;
 public interface ICsvFileRepository : IAsyncRepository<CsvFile>
 {
     bool IsBeingProcessed(Guid Id);
+
+
 }
 

@@ -9,7 +9,8 @@ public class GetMemberListRequestValidator : AbstractValidator<GetMemberListRequ
     {
         //Extension method does not work null check fails
         //
-        RuleFor(p => p.FilterByName).ExtIsRestrictedChar();
+        RuleFor(p => p.FilterByName).ExtFilter()
+                                    .ExtIsRestrictedChar();
 
        
     }

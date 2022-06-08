@@ -47,12 +47,15 @@
             }
         </div>
     </div>
-
-    <div class="d-grid gap-2 d-md-block">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="d-grid gap-2 d-md-block">
          <a id="btnNext" class="btn btn-outline-success btn-block float-start" asp-action="List" asp-route-Id="@Model.Id" data-spinning-button type="submit">Cancel</a>
          <button id="btnNext" class="btn btn-outline-success btn-block float-end" asp-action="CsvFileStep2" asp-route-Id="@Model.Id" data-spinning-button type="submit">Next</button>
     </div>
-    <div>
-    <div asp-validation-summary="All" class="text-danger"></div>
+        </div>
+        <div class="row">
+            <div asp-validation-summary="All" class="text-danger mt-7"></div>
+        </div>
     </div>
 </form>

@@ -90,7 +90,14 @@ public class CsvFileController : BaseController
     [HttpPatch("UpdateMap")]
     public async Task<UpsertCsvMapResponseDto> UpdateMap(UpsertCsvMapRequest upsertCsvMapRequest)
     {
-        UpsertCsvMapResponseDto response = await _mediator.Send(upsertCsvMapRequest);
+        UpsertCsvMapResponseDto response = new UpsertCsvMapResponseDto();
+        UpsertCsvMapRequestValidator validationRules = new UpsertCsvMapRequestValidator(_csvFileRepository);
+        var valResult = validationRules.Validate(upsertCsvMapRequest);
+        await response.CheckFluentValidationResults(valResult);
+        if (response.TotalErrors == 0)
+            response = await _mediator.Send(upsertCsvMapRequest);
+        else
+            return InvalidRequest(response);
         return response;
     }
     /// <summary>
