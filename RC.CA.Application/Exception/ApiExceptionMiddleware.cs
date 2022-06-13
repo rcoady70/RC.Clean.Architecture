@@ -47,6 +47,7 @@ public async Task Invoke( HttpContext context )
 /// <param name="exception"></param>
 private async Task HandleExceptionAsync( HttpContext context, Exception exception)
 {
+        
         //Try to get requestId from header. Used to tie error messages between mvc site and api site
         if (!context.Request.Headers.TryGetValue(WebConstants.CorrelationId, out var correlationId))
             correlationId = "Not-Found";
