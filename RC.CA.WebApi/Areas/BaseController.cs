@@ -18,7 +18,9 @@ public abstract class BaseController : ControllerBase
         return result;
     }
     /// <summary>
-    /// Handle result
+    /// Handle result. Different way to return responses.  
+    /// example call from api controller:
+    /// return HandleResult(await Mediator.Send(new List.Query { Username = username, Predicate = predicate }));
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="result"></param>

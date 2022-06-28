@@ -8,8 +8,8 @@ using RC.CA.Application.Features.Club.Queries;
 
 namespace RC.CA.WebApi.Areas.Cdn;
 
-    [Route("api/[controller]")]
-    [ApiController]
+[Route("api/[controller]")]
+[ApiController]
 public class CsvFileController : BaseController
 {
     private readonly IMediator _mediator;
@@ -48,6 +48,7 @@ public class CsvFileController : BaseController
         }
         return response;
     }
+
     /// <summary>
     /// Get map based on id
     /// </summary>
@@ -61,8 +62,8 @@ public class CsvFileController : BaseController
         GetCsvMapRequestValidator validationRules = new GetCsvMapRequestValidator(_csvFileRepository);
         var valResult = validationRules.Validate(getCsvMapRequest);
         await response.CheckFluentValidationResults(valResult);
-    
-        if(response.TotalErrors == 0)
+
+        if (response.TotalErrors == 0)
             response = await _mediator.Send(getCsvMapRequest);
         else
             return InvalidRequest(response);
@@ -110,5 +111,18 @@ public class CsvFileController : BaseController
     {
         BaseResponseDto response = await _mediator.Send(submitCsvImportRequest);
         return response;
+    }
+
+    /// <summary>
+    /// Test alternative way to handle responses. Using generic response. 
+    /// </summary>
+    /// <param name="fileData"></param>
+    /// <returns></returns>
+    [HttpGet("TestAltResponse")]
+    public async Task<IActionResult> TestAltResponse(GetCdnTestMethodRequest getCdnTestMethodRequest)
+    {
+        //Test alternative way to handle responses. Using generic response. 
+        var result = await _mediator.Send(getCdnTestMethodRequest);
+        return HandleResult(result);
     }
 }
