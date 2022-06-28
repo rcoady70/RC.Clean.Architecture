@@ -1,7 +1,4 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using RC.CA.Domain.Entities.Shared;
+﻿using RC.CA.Domain.Entities.Shared;
 
 namespace RC.CA.Domain.Entities.Club;
 /// <summary>
@@ -18,5 +15,6 @@ public class Member : BaseEntity<Guid>
     public virtual List<Experience> Experiences { get; set; } = new List<Experience>();
 
     public string? PhotoUrl { get; set; }
+
 
 }

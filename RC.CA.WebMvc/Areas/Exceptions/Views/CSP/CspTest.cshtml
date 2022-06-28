@@ -43,4 +43,55 @@
         color:red;
     }
 </style>
+<a id="apiTest">Test api</a>
+
+<script  rc-nonce>
+      $( "#apiTest" ).bind( "click", function() {
+        api();
+    });
+	function api()
+	{
+        //This will convert the json into an object easier to update properties
+		var apicall = 
+			{
+				Contact: [
+				{
+					"FirstName": "",
+					"LastName": "",
+					"PersonalEMail": ""
+				}
+				],
+				"UpdateByKey": "email",
+				"SendWelcomeEmail": false,
+				"SignupFormId":"00000000-0000-0000-0000-000000000000"
+			}
+
+        //Set values
+        //
+        apicall.Contact[0].FirstName = "Tom"
+        apicall.Contact[0].LastName = "Smith"
+        apicall.Contact[0].PersonalEMail = "cors1XXX@mycompany.com"
+        console.log(apicall);
+        console.log(JSON.stringify(apicall));
+		
+		$.ajax({
+            type: "POST",
+            url: "https://hotels.sensorpro.net/api/api/WHContact/AddUpdateContact/2ce0c0ab4d902c5a6466ae7da8fa82fa",
+            data: JSON.stringify(apicall),
+            contentType: "application/json",
+            dataType: "json",
+            success: function (msg) {
+                console.log(msg);
+                alert("Ok");
+            },
+            error: function (msg) {
+                console.log(msg);
+                alert("failed");
+            }
+        });
+
+}
+		
+
+</script>
 </html>

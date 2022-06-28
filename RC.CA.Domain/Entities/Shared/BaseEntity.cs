@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace RC.CA.Domain.Entities.Shared;
 /// <summary>
@@ -15,6 +11,7 @@ public interface IBaseEntity
     DateTime CreatedOn { get; set; }
     string? UpdatedBy { get; set; }
     DateTime UpdatedOn { get; set; }
+
 }
 
 /// <summary>
@@ -35,4 +32,7 @@ public abstract class BaseEntity<T> : IBaseEntity
     public DateTime CreatedOn { get; set; } = DateTime.Now;
     public string? UpdatedBy { get; set; }
     public DateTime UpdatedOn { get; set; } = DateTime.Now;
+    [Timestamp]
+    public byte[] ConcurrencyToken { get; set; } = default!;
+
 }

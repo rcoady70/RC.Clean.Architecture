@@ -1,14 +1,8 @@
-﻿using System.Linq.Expressions;
-using AutoMapper;
+﻿using AutoMapper;
 using MediatR;
 using RC.CA.Application.Contracts.Persistence;
-using RC.CA.Application.Dto;
 using RC.CA.Application.Dto.Club;
-using RC.CA.Application.Extensions.Linq;
 using RC.CA.Application.Features.Club.Queries;
-using RC.CA.Domain.Entities.Club;
-using RC.CA.SharedKernel.Constants;
-using RC.CA.SharedKernel.Extensions;
 
 namespace RC.CA.Application.Features.Club.Handlers;
 public class UpdateMemberRequestHandler : IRequestHandler<UpdateMemberRequest, CreateMemberResponseDto>
@@ -31,6 +25,7 @@ public class UpdateMemberRequestHandler : IRequestHandler<UpdateMemberRequest, C
         var member = await _memberRepository.GetFirstOrDefaultAsync(m => m.Id == request.Id, "Experiences", tracked: true);
         if (member != null)
         {
+            //Delete all experiences.
             foreach (var item in member.Experiences)
             {
                 var exp = request.Experiences.Find(e => e.Id == item.Id);

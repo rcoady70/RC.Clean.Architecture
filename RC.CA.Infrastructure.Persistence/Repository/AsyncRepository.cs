@@ -1,9 +1,7 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using RC.CA.Application.Contracts.Identity;
 using RC.CA.Application.Contracts.Persistence;
-using RC.CA.Application.Dto;
 using RC.CA.Application.Extensions.Linq;
 using RC.CA.Domain.Entities.Shared;
 
@@ -28,7 +26,7 @@ public class AsyncRepository<T> : IAsyncRepository<T> where T : class
     /// <param name="e"></param>
     private void ChangeTracker_Tracked(object sender, EntityTrackedEventArgs e)
     {
-        
+
         //https://docs.microsoft.com/en-us/shows/visual-studio-toolbox/entity-framework-core-in-depth-part-9
         var source = (e.FromQuery) ? "Database" : "Code";
         Console.WriteLine($"EF debug: Tracked {e.Entry.Entity.GetType().Name}  Source: {source}");
@@ -40,8 +38,8 @@ public class AsyncRepository<T> : IAsyncRepository<T> where T : class
     /// <param name="e"></param>
     private void ChangeTracker_StateChanged(object sender, EntityStateChangedEventArgs e)
     {
-            var action = string.Empty;
-            Console.WriteLine($"EF debug: state change {e.Entry.Entity.GetType().Name} was {e.OldState} before the state changed to {e.NewState}");
+        var action = string.Empty;
+        Console.WriteLine($"EF debug: state change {e.Entry.Entity.GetType().Name} was {e.OldState} before the state changed to {e.NewState}");
     }
     /// <summary>
     /// Debug took enables you to see change tracker details
@@ -134,7 +132,7 @@ public class AsyncRepository<T> : IAsyncRepository<T> where T : class
     /// <returns></returns>
     public async Task<bool> ExistsAsync<TKey>(TKey id)
     {
-        if(id == null)
+        if (id == null)
             return false;
         var entity = await _dbContext.Set<T>().FindAsync(id);
         return entity != null;
@@ -144,7 +142,7 @@ public class AsyncRepository<T> : IAsyncRepository<T> where T : class
     {
         return await _dbContext.Set<T>().ToListAsync();
     }
-   
+
     public async Task<T> AddAsync(T entity)
     {
         try
@@ -208,6 +206,26 @@ public class AsyncRepository<T> : IAsyncRepository<T> where T : class
         {
             string m = DebugShortView();
             await _dbContext.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            Console.WriteLine(ex.Message);
+            EntityEntry entryEntity = ex.Entries[0];
+            //Kept in DbChangeTracker
+            PropertyValues originalValues = entryEntity.OriginalValues;
+            PropertyValues currentValues = entryEntity.CurrentValues;
+            IEnumerable<PropertyEntry> modifiedEntries =
+                entryEntity.Properties.Where(e => e.IsModified);
+            foreach (var itm in modifiedEntries)
+            {
+                Console.WriteLine($"{itm.Metadata.Name},");
+            }
+            //Needs to call to database to get values
+            PropertyValues databaseValues = entryEntity.GetDatabaseValues();
+            //Discards local changes, gets database values, resets change tracker
+            entryEntity.Reload();
+            //logging stuff here
+            throw;
         }
         catch (Exception ex)
         {

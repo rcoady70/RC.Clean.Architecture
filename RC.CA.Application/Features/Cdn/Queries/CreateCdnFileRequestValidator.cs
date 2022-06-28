@@ -10,7 +10,7 @@ public class CreateCdnFileRequestValidator : AbstractValidator<IFormFile>
     {
         //Extension method does not work null check fails
         //
-        RuleFor(f => f.FileName).ExtFilter().ExtIsRestrictedChar();
+        RuleFor(f => f.FileName).ExtIsRestrictedChar();
        
     }
 }

@@ -65,8 +65,10 @@ namespace RC.CA.WebApi.Startup
             services.AddCors(options => options.AddPolicy(WebConstants.CORSPolicyName,
                                                           builder => {
                                                           //builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
-                                                              builder.WithOrigins(corsSettings.AllowedOrgins.ToArray())
-                                                              .AllowAnyMethod().AllowAnyHeader()
+                                                              builder
+                                                              .WithOrigins(corsSettings.AllowedOrgins.ToArray())
+                                                              .AllowAnyMethod()
+                                                              .AllowAnyHeader()
                                                               .SetIsOriginAllowedToAllowWildcardSubdomains();
                                                           //.AllowCredentials(); //Allows cookies to be posted on ajax querys
 

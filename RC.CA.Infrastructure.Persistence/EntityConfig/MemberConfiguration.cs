@@ -8,7 +8,7 @@ public class MemberConfiguration : IEntityTypeConfiguration<Member>
 {
     public void Configure(EntityTypeBuilder<Member> builder)
     {
-        builder.Property(m => m.Id).IsRequired().HasColumnType(ColumnTypes.Guid).HasDefaultValueSql("newid()"); 
+        builder.Property(m => m.Id).IsRequired().HasColumnType(ColumnTypes.Guid).HasDefaultValueSql("newid()");
         builder.HasKey(m => new { m.Id });
 
         builder.HasMany(m => m.Experiences);
