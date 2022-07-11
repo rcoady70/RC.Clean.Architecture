@@ -1,14 +1,14 @@
-﻿using RC.CA.WebApi;
-using RC.CA.Infrastructure.Persistence;
-using RC.CA.WebApi.Filters;
-using Serilog;
-using RC.CA.Infrastructure.Persistence.DependencyInjection;
-using Microsoft.AspNetCore.Authorization;
+﻿using Azure.Identity;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Azure;
-using Azure.Identity;
-using RC.CA.WebApi.Startup;
 using NT.CA.Notification.WebApi.Startup;
+using RC.CA.Infrastructure.Persistence;
+using RC.CA.Infrastructure.Persistence.DependencyInjection;
+using RC.CA.WebApi;
+using RC.CA.WebApi.Filters;
+using RC.CA.WebApi.Startup;
+using Serilog;
 
 
 // [Serilog] Setup serilog in a two-step process. First, we configure basic logging
@@ -23,7 +23,7 @@ Log.Logger = new LoggerConfiguration()
             .WriteTo.Console()
             .CreateBootstrapLogger();
 try
- {
+{
     //[Serilog]
     Log.Information($"{DateTime.Now.ToString()} Web api starting Environment.Version {Environment.Version}");
     var builder = WebApplication.CreateBuilder(args);
@@ -73,7 +73,7 @@ try
     builder.Services.SetupSwaggerServices();
 
     //[Healthcheck] Check database is available
-    builder.Services.AddSiteHealthChecks(builder.Configuration,builder.Environment);
+    builder.Services.AddSiteHealthChecks(builder.Configuration, builder.Environment);
 
     //[Filters] Add MVC filters
     builder.Services.AddControllers(config =>
@@ -88,8 +88,8 @@ try
     builder.Services.AddAuthorization(options =>
     {
         options.FallbackPolicy = new AuthorizationPolicyBuilder()
-                .RequireAuthenticatedUser()
-                .Build();
+                                    .RequireAuthenticatedUser()
+                                    .Build();
     });
 
     //Azure blob storage to save images
@@ -130,9 +130,9 @@ try
 
     // Configure the HTTP request pipeline.
     //if (app.Environment.IsDevelopment())
-   // {
-        app.UseSwagger();
-        app.UseSwaggerUI();
+    // {
+    app.UseSwagger();
+    app.UseSwaggerUI();
     // }
 
     //Execute order 0. Exception handler 1. HSTS 2. HttpsRedirection 3. Static files 
@@ -162,22 +162,22 @@ try
     app.UseAuthentication();
 
     app.UseAuthorization();
- 
+
     app.MapControllers();
 
     //[Healthchecks] Configure azure bus message handlers
     app.ConfigureHealthChecks();
-    
+
     app.Run();
- }
- catch (Exception ex)
- {
+}
+catch (Exception ex)
+{
     Log.Fatal(ex, $"{DateTime.Now.ToString()} Web api terminated unexpectedly {ex.Message}");
- }
- finally
- {
+}
+finally
+{
     Log.CloseAndFlush();
- }
+}
 
 
 //
