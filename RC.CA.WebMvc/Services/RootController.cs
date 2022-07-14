@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RC.CA.Application.Contracts.Identity;
-using RC.CA.Application.Models;
 
 namespace RC.CA.WebUiMvc.Services;
 /// <summary>
@@ -23,6 +22,7 @@ public abstract class RootController : Controller
     /// </summary>
     /// <param name="response">Base response from api call</param>
     /// <returns></returns>
+    [Obsolete("Use AppendErrorsToModelStateAsyncCAResult all responses should return CAResult object")]
     public async Task AppendErrorsToModelStateAsync(BaseResponseDto? response)
     {
 
@@ -32,6 +32,20 @@ public abstract class RootController : Controller
             {
                 ModelState.AddModelError("", item.Detail);
             }
+        }
+    }
+    /// <summary>
+    /// Helper function to apply errors returned from api (CAResult) to model state 
+    /// </summary>
+    /// <param name="response">Base response from api call</param>
+    /// <returns></returns>
+    public async Task AppendErrorsToModelStateAsyncCAResult(List<ValidationError>? errors)
+    {
+
+        if (errors != null)
+        {
+            foreach (var error in errors)
+                ModelState.AddModelError("", error.ErrorMessage);
         }
     }
 }

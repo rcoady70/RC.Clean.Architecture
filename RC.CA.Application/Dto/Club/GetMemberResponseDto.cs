@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RC.CA.Domain.Entities.Club;
-using RC.CA.Application.Models;
+﻿using RC.CA.Application.Models;
 
 namespace RC.CA.Application.Dto.Club;
-public class GetMemberResponseDto : BaseResponseDto
+public class GetMemberResponseDto : BaseResponseCAResult
 {
     public Guid Id { get; set; }
 

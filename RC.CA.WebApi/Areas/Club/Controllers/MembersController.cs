@@ -1,11 +1,8 @@
 ﻿using AutoMapper;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RC.CA.Application.Dto.Club;
 using RC.CA.Application.Features.Club.Queries;
-using RC.CA.SharedKernel.Constants;
-using RC.CA.Application.Models;
 
 
 namespace RC.CA.WebApi.Areas.Club.Controllers;
@@ -21,9 +18,9 @@ public class MembersController : BaseController
         _mediator = mediator;
         _mapper = mapper;
     }
-    
+
     [HttpGet("Get")]
-    public async Task<GetMemberResponseDto> Get(GetMemberRequest getMemberRequest)
+    public async Task<CAResult<GetMemberResponseDto>> Get(GetMemberRequest getMemberRequest)
     {
         var memberResponse = await _mediator.Send(getMemberRequest);
         return memberResponse;

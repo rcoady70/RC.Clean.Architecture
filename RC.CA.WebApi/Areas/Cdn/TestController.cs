@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using RC.CA.Application.MsgBusHandlers;
-using RC.CA.Infrastructure.MessageBus.Interfaces;
-using static RC.CA.Infrastructure.MessageBus.ServiceBusSubscriptionsManager;
+using RC.CA.Application.Contracts.Persistence;
+using RC.CA.Application.Dto.Cdn;
+using RC.CA.Application.Features.Cdn.Queries;
+using RC.CA.Application.Features.Club.Queries;
 
 namespace RC.CA.WebApi.Areas.Cdn
 {
@@ -18,40 +18,63 @@ namespace RC.CA.WebApi.Areas.Cdn
     {
         private readonly IMediator _mediator;
         private readonly IServiceScopeFactory _serviceScopeFactory;
+        private readonly ICsvFileRepository _csvFileRepository;
 
-        
-        public TestController(IMediator mediator, IServiceScopeFactory serviceScopeFactory)
+        public TestController(IMediator mediator, IServiceScopeFactory serviceScopeFactory, ICsvFileRepository csvFileRepository)
         {
             _mediator = mediator;
             _serviceScopeFactory = serviceScopeFactory;
+            _csvFileRepository = csvFileRepository;
         }
         /// <summary>
-        /// Scope factory to make sure it is actually releasing resources
+        /// Test success
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
-        public async Task TestMethod()
+        [HttpGet("TestSuccess")]
+        public async Task<CAResult<UpsertCsvMapResponseDto>> TestSuccess()
         {
-            //try
-            //{
-            //    for (int i = 0; i < 1000; i++)
-            //    {
-            //        using (var scope = _serviceScopeFactory.CreateScope())
-            //        {
-            //            ProcessCsvImportRequestMessage integrationEvent = new ProcessCsvImportRequestMessage() { ImportId = new Guid("57a2bfbd-4e53-4389-aa08-0e1373c20fe5") };
-            //            ////Resolve handler from DI container. This will ensure di references in the constructor will resolve.
-            //            var instance = scope.ServiceProvider.GetRequiredService(typeof(ProcessCsvImportRequestMessageHandler));
-            //            ////Call handle method
-            //            var concreteType = typeof(IIntegrationEventHandler<>).MakeGenericType(typeof(ProcessCsvImportRequestMessage));
-            //            await (Task)concreteType.GetMethod("Handle").Invoke(instance, new object[] { integrationEvent });
-            //        }
-            //    }
-            //}
-            //catch(Exception ex)
-            //{
-            //    string m = ex.Message;
-            //}
-            //GC.Collect();
+            UpsertCsvMapResponseDto responseDTO = new UpsertCsvMapResponseDto();
+            return Result.Success(responseDTO);
         }
+
+        /// <summary>
+        /// Test fluent validation errors 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("TestFluentErrors")]
+        public async Task<CAResult<UpsertCsvMapResponseDto>> TestFluentErrors()
+        {
+            //Fluent validation 
+            UpsertCsvMapResponseDto responseDTO = new UpsertCsvMapResponseDto();
+            GetCdnFilesRequestValidator validationRules = new GetCdnFilesRequestValidator();
+
+            var valResult = validationRules.Validate(new GetCdnFilesListRequest() { FilterByName = "<" });
+            if (!valResult.IsValid)
+                return CAResult<UpsertCsvMapResponseDto>.Invalid(valResult.AsErrors());
+            else
+                return CAResult<UpsertCsvMapResponseDto>.Success(responseDTO, "Ran ok no errors");
+        }
+
+        /// <summary>
+        /// Test exception in controller
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("TestExceptionController")]
+        public async Task TestExceptionController()
+        {
+            throw (new NotImplementedException("Test exception in controller"));
+        }
+
+        /// <summary>
+        /// Test exception in controller
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("TestNotFound")]
+        public async Task<CAResult<UpsertCsvMapResponseDto>> TestNotFound()
+        {
+            return CAResult<UpsertCsvMapResponseDto>.NotFound();
+
+        }
+
     }
 }

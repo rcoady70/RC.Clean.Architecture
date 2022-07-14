@@ -1,12 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using RC.CA.Application.Contracts.Identity;
 using RC.CA.Application.Contracts.Services;
-using RC.CA.Application.Features.Club.Queries;
 using RC.CA.Application.Dto.Club;
-using RC.CA.WebUiMvc.Services;
-using RC.CA.Application.Models;
-using AutoMapper;
-using System.Net;
+using RC.CA.Application.Features.Club.Queries;
 
 namespace NT.CA.WebUiMvc.Areas.Club.Controllers;
 [Area("Club")]
@@ -83,6 +80,7 @@ public class MemberController : RootController
     [HttpGet]
     public async Task<IActionResult> Upsert(Guid? Id)
     {
+
         if (!ModelState.IsValid) return View();
 
         var upsertModel = new CreateMemberRequest();
@@ -91,14 +89,14 @@ public class MemberController : RootController
         if (Id != null)
         {
             var getMemberRequest = new GetMemberRequest() { Id = Id };
-            var member = await _httpHelper.SendAsync<GetMemberRequest, GetMemberResponseDto>(getMemberRequest, "api/club/Members/Get", HttpMethod.Get);
-            if (member?.TotalErrors > 0)
-                await AppendErrorsToModelStateAsync(member);
+            var member = await _httpHelper.SendAsyncCAResult<GetMemberRequest, GetMemberResponseDto>(getMemberRequest, "api/club/Members/Get", HttpMethod.Get);
+            if (!member.IsSuccess)
+                await AppendErrorsToModelStateAsyncCAResult(member.ValidationErrors);
             else
             {
-                if (member.Experiences.Count == 0)
-                    member.Experiences.Add(new GetMemberExperienceDto());
-                upsertModel = _mapper.Map<CreateMemberRequest>(member);
+                if (member.Value.Experiences.Count == 0)
+                    member.Value.Experiences.Add(new GetMemberExperienceDto());
+                upsertModel = _mapper.Map<CreateMemberRequest>(member.Value);
             }
         }
         return View(upsertModel);
