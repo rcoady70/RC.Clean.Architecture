@@ -6,6 +6,10 @@ public class CAResult<T> : ICAResult
 {
     protected CAResult() { }
 
+    /// <summary>
+    /// Return result with value of T
+    /// </summary>
+    /// <param name="value"></param>
     public CAResult(T value)
     {
         Value = value;
@@ -25,11 +29,33 @@ public class CAResult<T> : ICAResult
         Status = status;
     }
 
-    //implicit convert TO T FROM Result<T>
+    public T Value { get; }
+    [JsonIgnore]
+    public Type ValueType { get; private set; }
+    [JsonInclude] // Causes the protected setter to be called on de-serialization.
+    public ResultStatus Status { get; protected set; } = ResultStatus.Ok;
+    public bool IsSuccess => Status == ResultStatus.Ok;
+    [JsonInclude] // Causes the protected setter to be called on de-serialization.
+    public string SuccessMessage { get; protected set; } = string.Empty;
+    [JsonInclude] // Causes the protected setter to be called on de-serialization.
+    public IEnumerable<string> Errors { get; protected set; } = new List<string>();
+    [JsonInclude] // Causes the protected setter to be called on de-serialization.
+    public List<ValidationError> ValidationErrors { get; protected set; } = new List<ValidationError>();
+
+    /// <summary>
+    /// Implicit convert TO T FROM Result<T>
+    /// </summary>
+    /// <param name="result"></param>
     public static implicit operator T(CAResult<T> result) => result.Value;
-    //implicit convert TO Result<T> FROM T
+    /// <summary>
+    /// implicit convert TO Result<T> FROM T
+    /// </summary>
+    /// <param name="value"></param>
     public static implicit operator CAResult<T>(T value) => new CAResult<T>(value);
-    //implicit convert TO Result<T> FROM T Result
+    /// <summary>
+    /// implicit convert TO Result<T> FROM T Result
+    /// </summary>
+    /// <param name="result"></param>
     public static implicit operator CAResult<T>(Result result)
     {
         return new CAResult<T>(default(T))
@@ -40,16 +66,15 @@ public class CAResult<T> : ICAResult
             ValidationErrors = result.ValidationErrors,
         };
     }
+    /// <summary>
+    /// Add an error to the validation error collection
+    /// </summary>
+    /// <param name="ErrorCode"></param>
+    /// <param name="ErrorMessage"></param>
+    /// <param name="Severity"></param>
+    /// <param name="Identifier"></param>
 
-    public T Value { get; }
-    [JsonIgnore]
-    public Type ValueType { get; private set; }
-    public ResultStatus Status { get; set; } = ResultStatus.Ok;
-    public bool IsSuccess => Status == ResultStatus.Ok;
-    public string SuccessMessage { get; protected set; } = string.Empty;
-    public IEnumerable<string> Errors { get; protected set; } = new List<string>();
-    public List<ValidationError> ValidationErrors { get; protected set; } = new List<ValidationError>();
-    public void Adderror(string ErrorCode, string ErrorMessage, ValidationSeverity Severity, string Identifier = "")
+    public void AddValidationError(string ErrorCode, string ErrorMessage, ValidationSeverity Severity, string Identifier = "")
     {
         ValidationErrors.Add(new ValidationError()
         {
@@ -134,7 +159,7 @@ public class CAResult<T> : ICAResult
     {
         var result = new CAResult<T>(ResultStatus.Invalid) { ValidationErrors = new List<ValidationError>() };
         foreach (var error in validationErrors)
-            result.Adderror(error.ErrorCode, error.ErrorMessage, error.Severity, error.Identifier);
+            result.AddValidationError(error.ErrorCode, error.ErrorMessage, error.Severity, error.Identifier);
         return result;
     }
     /// <summary>
@@ -145,7 +170,7 @@ public class CAResult<T> : ICAResult
     public static CAResult<T> Invalid(ValidationError validationError)
     {
         var result = new CAResult<T>(ResultStatus.Invalid) { ValidationErrors = new List<ValidationError>() };
-        result.Adderror(validationError.ErrorCode, validationError.ErrorMessage, validationError.Severity, validationError.Identifier);
+        result.AddValidationError(validationError.ErrorCode, validationError.ErrorMessage, validationError.Severity, validationError.Identifier);
         return result;
     }
     /// <summary>
@@ -156,7 +181,7 @@ public class CAResult<T> : ICAResult
     public static CAResult<T> Invalid(string errorCode, string errorMessage, ValidationSeverity severity, string identifier = "")
     {
         var result = new CAResult<T>(ResultStatus.Invalid) { ValidationErrors = new List<ValidationError>() };
-        result.Adderror(errorCode, errorMessage, severity, identifier);
+        result.AddValidationError(errorCode, errorMessage, severity, identifier);
         return result;
     }
 

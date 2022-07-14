@@ -5,7 +5,6 @@ using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using RC.CA.Application.Contracts.Identity;
 using RC.CA.Application.Contracts.Services;
-using RC.CA.Application.Dto.Club;
 using RC.CA.Application.Exceptions;
 using RC.CA.Application.Models;
 using RC.CA.Infrastructure.Logging.Constants;
@@ -97,9 +96,6 @@ public class HttpHelper : IHttpHelper
     public async Task<CAResult<TOut>> SendAsyncCAResult<TIn, TOut>(TIn request, string endPoint, HttpMethod method) where TOut : BaseResponseCAResult, new()
     {
 
-        //Create empty response object 
-        TOut? response = new TOut();
-
         _httpClient = _httpClientFactory.CreateClient(RC.CA.SharedKernel.Constants.WebConstants.HttpFactoryName);
 
         //Create request message
@@ -117,23 +113,29 @@ public class HttpHelper : IHttpHelper
         try
         {
             var apiResult = await _httpClient.SendAsync(message);
-            response = await ProssessResponseCAResult<TIn, TOut>(apiResult, endPoint, request);
+            return await ProssessResponseCAResult<TIn, TOut>(apiResult, endPoint, request);
         }
         catch (WebException ex)
         {
-            throw new ApiException(_appContext.CorrelationId, endPoint, $"HttpPostHelper WebException {ex.Message}", (int)ex.Status, JsonSerializer.Serialize(request).MaskSensitiveDataExt(), JsonSerializer.Serialize(response).MaskSensitiveDataExt(), ex);
+            throw new ApiException(_appContext.CorrelationId, endPoint, $"HttpPostHelper WebException {ex.Message}", (int)ex.Status,
+                                   JsonSerializer.Serialize(request).MaskSensitiveDataExt(),
+                                   "", ex);
         }
         catch (JsonException ex)
         {
-            throw new ApiException(_appContext.CorrelationId, endPoint, $"HttpPostHelper JsonException {ex.Message}", 0, JsonSerializer.Serialize(request).MaskSensitiveDataExt(), _apiResultAsString.MaskSensitiveDataExt(), ex);
+            throw new ApiException(_appContext.CorrelationId, endPoint, $"HttpPostHelper JsonException {ex.Message}", 0,
+                                    JsonSerializer.Serialize(request).MaskSensitiveDataExt(),
+                                    _apiResultAsString.MaskSensitiveDataExt(), ex);
         }
         catch (System.Exception ex)
         {
-            _logger.LogError(LoggerEvents.APIEvt, ex, @"API failed: Request-Id {CorrelationId} Endpoint {endPoint} Error {errormessage}  Request: {request} ", endPoint, ex.Message, JsonSerializer.Serialize(response).MaskSensitiveDataExt(), _appContext.CorrelationId);
+            _logger.LogError(LoggerEvents.APIEvt, ex, @"API failed: Request-Id {CorrelationId} Endpoint {endPoint} Error {errormessage}  Request: {request} ",
+                             endPoint,
+                             ex.Message,
+                             "", _appContext.CorrelationId);
             ex.Data.Add("ApiEndpoint", endPoint);
             throw; //Use throw it will preserve stack trace
         }
-        return response;
     }
     private async Task<CAResult<TOut>> ProssessResponseCAResult<TIn, TOut>(HttpResponseMessage apiResult, string endPoint, TIn request)
                                                                 where TOut : BaseResponseCAResult, new()
@@ -170,11 +172,7 @@ public class HttpHelper : IHttpHelper
                         }
                     }
                     else
-                    {
-                        var nokResponse = JsonSerializer.Deserialize<CAResult<GetMemberResponseDto>>(_apiResultAsString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                        var okResponse = JsonSerializer.Deserialize<CAResult<TOut>>(_apiResultAsString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                        return okResponse;
-                    }
+                        return JsonSerializer.Deserialize<CAResult<TOut>>(_apiResultAsString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 }
                 else
                 {

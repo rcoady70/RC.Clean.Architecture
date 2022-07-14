@@ -80,7 +80,6 @@ public class MemberController : RootController
     [HttpGet]
     public async Task<IActionResult> Upsert(Guid? Id)
     {
-
         if (!ModelState.IsValid) return View();
 
         var upsertModel = new CreateMemberRequest();
