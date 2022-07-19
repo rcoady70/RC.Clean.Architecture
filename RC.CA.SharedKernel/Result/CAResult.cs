@@ -43,20 +43,20 @@ public class CAResult<T> : ICAResult
     public List<ValidationError> ValidationErrors { get; protected set; } = new List<ValidationError>();
 
     /// <summary>
-    /// Implicit convert TO T FROM Result<T>
+    /// Implicit convert TO T FROM CAEmptyResult<T>
     /// </summary>
     /// <param name="result"></param>
     public static implicit operator T(CAResult<T> result) => result.Value;
     /// <summary>
-    /// implicit convert TO Result<T> FROM T
+    /// implicit convert TO CAEmptyResult<T> FROM T
     /// </summary>
     /// <param name="value"></param>
     public static implicit operator CAResult<T>(T value) => new CAResult<T>(value);
     /// <summary>
-    /// implicit convert TO Result<T> FROM T Result
+    /// implicit convert TO CAEmptyResult<T> FROM T CAEmptyResult
     /// </summary>
     /// <param name="result"></param>
-    public static implicit operator CAResult<T>(Result result)
+    public static implicit operator CAResult<T>(CAResultEmpty result)
     {
         return new CAResult<T>(default(T))
         {
@@ -121,7 +121,7 @@ public class CAResult<T> : ICAResult
     /// Represents a successful operation and accepts a values as the result of the operation
     /// </summary>
     /// <param name="value">Sets the Value property</param>
-    /// <returns>A Result<typeparamref name="T"/></returns>
+    /// <returns>A CAEmptyResult<typeparamref name="T"/></returns>
     public static CAResult<T> Success(T value)
     {
         return new CAResult<T>(value);
@@ -133,7 +133,7 @@ public class CAResult<T> : ICAResult
     /// </summary>
     /// <param name="value">Sets the Value property</param>
     /// <param name="successMessage">Sets the SuccessMessage property</param>
-    /// <returns>A Result<typeparamref name="T"/></returns>
+    /// <returns>A CAEmptyResult<typeparamref name="T"/></returns>
     public static CAResult<T> Success(T value, string successMessage)
     {
         return new CAResult<T>(value, successMessage);
@@ -144,7 +144,7 @@ public class CAResult<T> : ICAResult
     /// Error messages may be provided and will be exposed via the Errors property.
     /// </summary>
     /// <param name="errorMessages">A list of string error messages.</param>
-    /// <returns>A Result<typeparamref name="T"/></returns>
+    /// <returns>A CAEmptyResult<typeparamref name="T"/></returns>
     public static CAResult<T> Error(params string[] errorMessages)
     {
         return new CAResult<T>(ResultStatus.Error) { Errors = errorMessages };
@@ -154,7 +154,7 @@ public class CAResult<T> : ICAResult
     /// Represents validation errors that prevent the underlying service from completing.
     /// </summary>
     /// <param name="validationErrors">A list of validation errors encountered</param>
-    /// <returns>A Result<typeparamref name="T"/></returns>
+    /// <returns>A CAEmptyResult<typeparamref name="T"/></returns>
     public static CAResult<T> Invalid(List<ValidationError> validationErrors)
     {
         var result = new CAResult<T>(ResultStatus.Invalid) { ValidationErrors = new List<ValidationError>() };
@@ -166,7 +166,7 @@ public class CAResult<T> : ICAResult
     /// Represents validation error that prevent the underlying service from completing.
     /// </summary>
     /// <param name="validationErrors">A list of validation errors encountered</param>
-    /// <returns>A Result<typeparamref name="T"/></returns>
+    /// <returns>A CAEmptyResult<typeparamref name="T"/></returns>
     public static CAResult<T> Invalid(ValidationError validationError)
     {
         var result = new CAResult<T>(ResultStatus.Invalid) { ValidationErrors = new List<ValidationError>() };
@@ -177,7 +177,7 @@ public class CAResult<T> : ICAResult
     /// Represents validation error that prevent the underlying service from completing.
     /// </summary>
     /// <param name="validationErrors">A list of validation errors encountered</param>
-    /// <returns>A Result<typeparamref name="T"/></returns>
+    /// <returns>A CAEmptyResult<typeparamref name="T"/></returns>
     public static CAResult<T> Invalid(string errorCode, string errorMessage, ValidationSeverity severity, string identifier = "")
     {
         var result = new CAResult<T>(ResultStatus.Invalid) { ValidationErrors = new List<ValidationError>() };
@@ -188,7 +188,7 @@ public class CAResult<T> : ICAResult
     /// <summary>
     /// Represents the situation where a service was unable to find a requested resource.
     /// </summary>
-    /// <returns>A Result<typeparamref name="T"/></returns>
+    /// <returns>A CAEmptyResult<typeparamref name="T"/></returns>
     public static CAResult<T> NotFound()
     {
         return new CAResult<T>(ResultStatus.NotFound);
@@ -198,7 +198,7 @@ public class CAResult<T> : ICAResult
     /// The parameters to the call were correct, but the user does not have permission to perform some action.
     /// See also HTTP 403 Forbidden: https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#4xx_client_errors
     /// </summary>
-    /// <returns>A Result<typeparamref name="T"/></returns>
+    /// <returns>A CAEmptyResult<typeparamref name="T"/></returns>
     public static CAResult<T> Forbidden()
     {
         return new CAResult<T>(ResultStatus.Forbidden);
@@ -208,7 +208,7 @@ public class CAResult<T> : ICAResult
     /// This is similar to Forbidden, but should be used when the user has not authenticated or has attempted to authenticate but failed.
     /// See also HTTP 401 Unauthorized: https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#4xx_client_errors
     /// </summary>
-    /// <returns>A Result<typeparamref name="T"/></returns>
+    /// <returns>A CAEmptyResult<typeparamref name="T"/></returns>
     public static CAResult<T> Unauthorized()
     {
         return new CAResult<T>(ResultStatus.Unauthorized);

@@ -6,7 +6,7 @@ using RC.CA.Application.Features.Club.Queries;
 using RC.CA.Domain.Entities.Club;
 
 namespace RC.CA.Application.Features.Club.Handlers;
-public class CreateMemberRequestHandler : IRequestHandler<CreateMemberRequest, CreateMemberResponseDto>
+public class CreateMemberRequestHandler : IRequestHandler<CreateMemberRequest, CAResult<CreateMemberResponseDto>>
 {
     private readonly IMemberRepository _memberRepository;
     private readonly IMapper _mapper;
@@ -17,18 +17,18 @@ public class CreateMemberRequestHandler : IRequestHandler<CreateMemberRequest, C
         _mapper = mapper;
     }
 
-    public async Task<CreateMemberResponseDto> Handle(CreateMemberRequest request, CancellationToken cancellationToken)
+    public async Task<CAResult<CreateMemberResponseDto>> Handle(CreateMemberRequest request, CancellationToken cancellationToken)
     {
         Member newMember = new Member(); ;// = _mapper.Map<Member>(request);
         _mapper.Map(request, newMember);
-        
+
         var member = await _memberRepository.AddAsync(newMember);
         await _memberRepository.SaveChangesAsync();
         var response = new CreateMemberResponseDto()
         {
             Id = member.Id
         };
-        return response;
+        return CAResult<CreateMemberResponseDto>.Success(response);
     }
 
 }

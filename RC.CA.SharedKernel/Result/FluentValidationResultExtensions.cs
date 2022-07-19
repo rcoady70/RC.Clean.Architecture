@@ -5,7 +5,7 @@ namespace RC.CA.SharedKernel.Result;
 
 public static class FluentValidationResultExtensions
 {
-    public static List<ValidationError> AsErrors(this ValidationResult valResult)
+    public static List<ValidationError> AsModelStateErrors(this ValidationResult valResult)
     {
         var resultErrors = new List<ValidationError>();
 

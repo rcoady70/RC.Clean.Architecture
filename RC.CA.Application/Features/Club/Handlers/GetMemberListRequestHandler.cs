@@ -2,16 +2,13 @@
 using AutoMapper;
 using MediatR;
 using RC.CA.Application.Contracts.Persistence;
-using RC.CA.Application.Dto;
 using RC.CA.Application.Dto.Club;
 using RC.CA.Application.Extensions.Linq;
 using RC.CA.Application.Features.Club.Queries;
 using RC.CA.Domain.Entities.Club;
-using RC.CA.SharedKernel.Constants;
-using RC.CA.SharedKernel.Extensions;
 
 namespace RC.CA.Application.Features.Club.Handlers;
-public class GetMemberListRequestHandler : IRequestHandler<GetMemberListRequest, MemberListResponseDto>
+public class GetMemberListRequestHandler : IRequestHandler<GetMemberListRequest, CAResult<MemberListResponseDto>>
 {
     private readonly IMemberRepository _memberRepository;
     private readonly IMapper _mapper;
@@ -22,7 +19,7 @@ public class GetMemberListRequestHandler : IRequestHandler<GetMemberListRequest,
         _mapper = mapper;
     }
 
-    public async Task<MemberListResponseDto> Handle(GetMemberListRequest request, CancellationToken cancellationToken)
+    public async Task<CAResult<MemberListResponseDto>> Handle(GetMemberListRequest request, CancellationToken cancellationToken)
     {
         //Set filter
         Expression<Func<Member, bool>> filter = null;
@@ -59,7 +56,7 @@ public class GetMemberListRequestHandler : IRequestHandler<GetMemberListRequest,
             FilterByName = request.FilterByName,
             PaginationMetaData = members.PagnationMetaData
         };
-        return response;
+        return CAResult<MemberListResponseDto>.Success(response);
     }
 }
 

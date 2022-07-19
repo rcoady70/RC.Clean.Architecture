@@ -34,7 +34,7 @@ namespace RC.CA.WebApi.Areas.Cdn
         public async Task<CAResult<UpsertCsvMapResponseDto>> TestSuccess()
         {
             UpsertCsvMapResponseDto responseDTO = new UpsertCsvMapResponseDto();
-            return Result.Success(responseDTO);
+            return CAResultEmpty.Success(responseDTO);
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace RC.CA.WebApi.Areas.Cdn
 
             var valResult = validationRules.Validate(new GetCdnFilesListRequest() { FilterByName = "<" });
             if (!valResult.IsValid)
-                return CAResult<UpsertCsvMapResponseDto>.Invalid(valResult.AsErrors());
+                return CAResult<UpsertCsvMapResponseDto>.Invalid(valResult.AsModelStateErrors());
             else
                 return CAResult<UpsertCsvMapResponseDto>.Success(responseDTO, "Ran ok no errors");
         }

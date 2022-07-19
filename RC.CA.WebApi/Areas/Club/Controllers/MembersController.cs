@@ -31,22 +31,17 @@ public class MembersController : BaseController
     /// <param name="createMemberRequest"></param>
     /// <returns></returns>
     [HttpGet("List")]
-    public async Task<MemberListResponseDto> List(GetMemberListRequest getMemberListRequest)
+    public async Task<CAResult<MemberListResponseDto>> List(GetMemberListRequest getMemberListRequest)
     {
         Request.Headers.TryGetValue(WebConstants.CorrelationId, out var correlationId);
-
-        MemberListResponseDto memberResponse = new MemberListResponseDto();
         GetMemberListRequestValidator validationRules = new GetMemberListRequestValidator();
         var valResult = validationRules.Validate(getMemberListRequest);
-        memberResponse.CheckFluentValidationResults(valResult);
 
         //Check result of model validation
-        if (memberResponse.TotalErrors == 0)
-            memberResponse = await _mediator.Send(getMemberListRequest);
+        if (valResult.IsValid)
+            return await _mediator.Send(getMemberListRequest);
         else
-            return InvalidRequest(memberResponse);
-
-        return memberResponse;
+            return CAResult<MemberListResponseDto>.Invalid(valResult.AsModelStateErrors());
     }
     /// <summary>
     /// Create member with list of experience
@@ -54,14 +49,11 @@ public class MembersController : BaseController
     /// <param name="createMemberRequest"></param>
     /// <returns></returns>
     [HttpDelete("Delete")]
-    public async Task<BaseResponseDto> Delete(DeleteMemberRequest deleteMemberRequest)
+    public async Task<CAResult<BaseResponseDto>> Delete(DeleteMemberRequest deleteMemberRequest)
     {
-        BaseResponseDto memberResponse = new BaseResponseDto();
 
-        CreateExpierenceRequestValidator validationRulesExp = new CreateExpierenceRequestValidator();
-        memberResponse = await _mediator.Send(deleteMemberRequest);
+        return await _mediator.Send(deleteMemberRequest);
 
-        return memberResponse;
     }
     /// <summary>
     /// Create member with list of experience's
@@ -69,29 +61,28 @@ public class MembersController : BaseController
     /// <param name="createMemberRequest"></param>
     /// <returns></returns>
     [HttpPut("Create")]
-    public async Task<CreateMemberResponseDto> Create(CreateMemberRequest createMemberRequest)
+    public async Task<CAResult<CreateMemberResponseDto>> Create(CreateMemberRequest createMemberRequest)
     {
         CreateMemberResponseDto memberResponse = new CreateMemberResponseDto();
         CreateMemberRequestValidator validationRules = new CreateMemberRequestValidator();
         var valResult = validationRules.Validate(createMemberRequest);
-        await memberResponse.CheckFluentValidationResults(valResult);
 
-        //Validate experience records
-        CreateExpierenceRequestValidator validationRulesExp = new CreateExpierenceRequestValidator();
-        foreach (var item in createMemberRequest.Experiences)
+        if (valResult.IsValid)
         {
-            valResult = validationRulesExp.Validate(item);
-            await memberResponse.CheckFluentValidationResults(valResult);
+            //Validate experience records
+            CreateExpierenceRequestValidator validationRulesExp = new CreateExpierenceRequestValidator();
+            foreach (var item in createMemberRequest.Experiences)
+            {
+                valResult = validationRulesExp.Validate(item);
+                if (!valResult.IsValid)
+                    break;
+            }
         }
-        //
-        if (memberResponse.TotalErrors == 0)
-        {
-            memberResponse = await _mediator.Send(createMemberRequest);
-        }
+
+        if (valResult.IsValid)
+            return await _mediator.Send(createMemberRequest);
         else
-            return InvalidRequest(memberResponse);
-
-        return memberResponse;
+            return CAResult<CreateMemberResponseDto>.Invalid(valResult.AsModelStateErrors());
     }
     /// <summary>
     /// Update member with list of experience's
@@ -99,29 +90,27 @@ public class MembersController : BaseController
     /// <param name="createMemberRequest"></param>
     /// <returns></returns>
     [HttpPatch("Update")]
-    public async Task<CreateMemberResponseDto> Update(UpdateMemberRequest updateMemberRequest)
+    public async Task<CAResult<CreateMemberResponseDto>> Update(UpdateMemberRequest updateMemberRequest)
     {
         CreateMemberResponseDto memberResponse = new CreateMemberResponseDto();
         UpdateMemberRequestValidator validationRules = new UpdateMemberRequestValidator();
         var valResult = validationRules.Validate(updateMemberRequest);
-        await memberResponse.CheckFluentValidationResults(valResult);
+        if (valResult.IsValid)
+        {
+            //Validate experience records
+            CreateExpierenceRequestValidator validationRulesExp = new CreateExpierenceRequestValidator();
+            foreach (var item in updateMemberRequest.Experiences)
+            {
+                valResult = validationRulesExp.Validate(item);
+                if (!valResult.IsValid)
+                    break;
+            }
+        }
 
-        //Validate experience records
-        CreateExpierenceRequestValidator validationRulesExp = new CreateExpierenceRequestValidator();
-        foreach (var item in updateMemberRequest.Experiences)
-        {
-            valResult = validationRulesExp.Validate(item);
-            await memberResponse.CheckFluentValidationResults(valResult);
-        }
-        //
-        if (memberResponse.TotalErrors == 0)
-        {
-            memberResponse = await _mediator.Send(updateMemberRequest);
-        }
+        if (valResult.IsValid)
+            return await _mediator.Send(updateMemberRequest);
         else
-            return InvalidRequest(memberResponse);
-
-        return memberResponse;
+            return CAResultEmpty.Invalid(valResult.AsModelStateErrors());
     }
 
 }

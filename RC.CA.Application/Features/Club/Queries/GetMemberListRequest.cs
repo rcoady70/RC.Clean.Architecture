@@ -1,13 +1,11 @@
 ﻿using MediatR;
-using RC.CA.Application.Dto;
 using RC.CA.Application.Dto.Club;
-using RC.CA.SharedKernel.Constants;
 
 namespace RC.CA.Application.Features.Club.Queries;
 /// <summary>
 /// Get member list request, out IReadOnlyList<MemberListResponseDto>
 /// </summary>
-public class GetMemberListRequest : IRequest<MemberListResponseDto>
+public class GetMemberListRequest : IRequest<CAResult<MemberListResponseDto>>
 {
     public string? FilterByName { get; set; } = "";
     public string? FilterById { get; set; } = "";

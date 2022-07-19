@@ -5,7 +5,7 @@ using RC.CA.Application.Dto.Club;
 using RC.CA.Application.Features.Club.Queries;
 
 namespace RC.CA.Application.Features.Club.Handlers;
-public class UpdateMemberRequestHandler : IRequestHandler<UpdateMemberRequest, CreateMemberResponseDto>
+public class UpdateMemberRequestHandler : IRequestHandler<UpdateMemberRequest, CAResult<CreateMemberResponseDto>>
 {
     private readonly IMemberRepository _memberRepository;
     private readonly IExperienceRepository _experienceRepository;
@@ -19,7 +19,7 @@ public class UpdateMemberRequestHandler : IRequestHandler<UpdateMemberRequest, C
         _mapper = mapper;
     }
 
-    public async Task<CreateMemberResponseDto> Handle(UpdateMemberRequest request, CancellationToken cancellationToken)
+    public async Task<CAResult<CreateMemberResponseDto>> Handle(UpdateMemberRequest request, CancellationToken cancellationToken)
     {
         CreateMemberResponseDto response = new CreateMemberResponseDto();
         var member = await _memberRepository.GetFirstOrDefaultAsync(m => m.Id == request.Id, "Experiences", tracked: true);
@@ -37,7 +37,7 @@ public class UpdateMemberRequestHandler : IRequestHandler<UpdateMemberRequest, C
             int rowsAffected = await _memberRepository.UpdateAsync(member);
             await _memberRepository.SaveChangesAsync();
         }
-        return response;
+        return CAResult<CreateMemberResponseDto>.Success(response);
     }
 }
 

@@ -10,8 +10,8 @@ public abstract class BaseController : ControllerBase
     /// Alternative approach generics over inheritance give BaseResponseDto. Drop result into generic response.
     /// Return invalid result.Sets status code to 400 bad request
     /// </summary>
-    /// <typeparam name="T">Result object</typeparam>
-    /// <returns>Result object</returns>
+    /// <typeparam name="T">CAEmptyResult object</typeparam>
+    /// <returns>CAEmptyResult object</returns>
     internal T InvalidRequest<T>(T result)
     {
         Response.StatusCode = (int)HttpStatusCode.BadRequest;

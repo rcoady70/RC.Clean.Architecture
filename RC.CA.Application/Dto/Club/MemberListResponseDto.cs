@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RC.CA.Application.Models;
+﻿using RC.CA.Application.Models;
 
 namespace RC.CA.Application.Dto.Club;
-public class MemberListResponseDto : BaseResponseDto
+public class MemberListResponseDto : BaseResponseCAResult
 {
     public string? FilterByName { get; set; } = "";
     public string? FilterById { get; set; } = "";
