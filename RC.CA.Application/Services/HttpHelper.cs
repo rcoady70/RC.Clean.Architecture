@@ -50,50 +50,7 @@ public class HttpHelper : IHttpHelper
     /// <param name="method">Method put,post,get,patch</param>
     /// <returns></returns>
     /// <exception cref="ApiException"></exception>
-    [Obsolete("Use SendAsyncCAResult. Responses should now be returned as a CAResult<T> from api ")]
-    public async Task<TOut> SendAsync<TIn, TOut>(TIn request, string endPoint, HttpMethod method)
-                                                where TOut : BaseResponseDto, new() //Output object must inherit from BaseResponseDto 
-    {
-        //Create empty response object 
-        TOut? response = new TOut();
-
-        _httpClient = _httpClientFactory.CreateClient(RC.CA.SharedKernel.Constants.WebConstants.HttpFactoryName);
-
-        //Create request message
-        HttpRequestMessage message = new HttpRequestMessage();
-        message.Headers.Add("Accept", "application/json");
-        message.RequestUri = new Uri($"{_httpClient.BaseAddress}{endPoint}");
-        message.Method = method;
-
-        if (request != null)
-            message.Content = new StringContent(request.ToJsonExt(), Encoding.UTF8, "application/json");
-
-        _httpClient.DefaultRequestHeaders.Clear();
-        await SetRequestHeaders();
-
-        try
-        {
-            var apiResult = await _httpClient.SendAsync(message);
-            response = await ProssessResponse<TIn, TOut>(apiResult, endPoint, request);
-        }
-        catch (WebException ex)
-        {
-            throw new ApiException(_appContext.CorrelationId, endPoint, $"HttpPostHelper WebException {ex.Message}", (int)ex.Status, JsonSerializer.Serialize(request).MaskSensitiveDataExt(), JsonSerializer.Serialize(response).MaskSensitiveDataExt(), ex);
-        }
-        catch (JsonException ex)
-        {
-            throw new ApiException(_appContext.CorrelationId, endPoint, $"HttpPostHelper JsonException {ex.Message}", 0, JsonSerializer.Serialize(request).MaskSensitiveDataExt(), _apiResultAsString.MaskSensitiveDataExt(), ex);
-        }
-        catch (System.Exception ex)
-        {
-            _logger.LogError(LoggerEvents.APIEvt, ex, @"API failed: Request-Id {CorrelationId} Endpoint {endPoint} Error {errormessage}  Request: {request} ", endPoint, ex.Message, JsonSerializer.Serialize(response).MaskSensitiveDataExt(), _appContext.CorrelationId);
-            ex.Data.Add("ApiEndpoint", endPoint);
-            throw; //Use throw it will preserve stack trace
-        }
-        return response;
-    }
-
-    public async Task<CAResult<TOut>> SendAsyncCAResult<TIn, TOut>(TIn request, string endPoint, HttpMethod method)
+    public async Task<CAResult<TOut>> SendAsync<TIn, TOut>(TIn request, string endPoint, HttpMethod method)
         where TOut : BaseResponseCAResult, new()
     {
 
@@ -114,7 +71,7 @@ public class HttpHelper : IHttpHelper
         try
         {
             var apiResult = await _httpClient.SendAsync(message);
-            return await ProssessResponseCAResult<TIn, TOut>(apiResult, endPoint, request);
+            return await ProssessResponse<TIn, TOut>(apiResult, endPoint, request);
         }
         catch (WebException ex)
         {
@@ -138,7 +95,7 @@ public class HttpHelper : IHttpHelper
             throw; //Use throw it will preserve stack trace
         }
     }
-    private async Task<CAResult<TOut>> ProssessResponseCAResult<TIn, TOut>(HttpResponseMessage apiResult, string endPoint, TIn request)
+    private async Task<CAResult<TOut>> ProssessResponse<TIn, TOut>(HttpResponseMessage apiResult, string endPoint, TIn request)
                                                                 where TOut : BaseResponseCAResult, new()
     {
         var dftResponse = CAResult<TOut>.Invalid(new ValidationError
@@ -206,58 +163,7 @@ public class HttpHelper : IHttpHelper
         }
         return dftResponse;
     }
-    /// <summary>
-    /// Process api response
-    /// </summary>
-    /// <typeparam name="TOut"></typeparam>
-    /// <param name="apiResult"></param>
-    /// <param name="endPoint"></param>
-    /// <returns></returns>
-    /// <exception cref="ApiException"></exception>
-    [Obsolete("Use ProssessResponseCAResult. Responses should now be returned as a CAResult<T> ")]
-    private async Task<TOut> ProssessResponse<TIn, TOut>(HttpResponseMessage apiResult, string endPoint, TIn request)
-                                                    where TOut : BaseResponseDto, new() //Output object must inherit from BaseResponseDto 
-    {
-        TOut? response = new TOut();
-        switch (apiResult.StatusCode)
-        {
-            case HttpStatusCode.OK:
-            case HttpStatusCode.BadRequest:
-                _apiResultAsString = await apiResult.Content.ReadAsStringAsync();
-                if (!string.IsNullOrEmpty(_apiResultAsString))
-                {
-                    //catch fluent validation errors which may be returned.
-                    if (_apiResultAsString.IndexOf("https://tools.ietf.org/html/rfc7231#section-6.5.1") > 0)
-                    {
-                        var fluentResponse = JsonSerializer.Deserialize<FluentErrorModel>(_apiResultAsString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                        foreach (var fError in fluentResponse?.errors)
-                        {
-                            foreach (var error in fError.Value)
-                                response.AddResponseError(BaseResponseDto.ErrorType.Error, error);
-                        }
-                    }
-                    else
-                        response = JsonSerializer.Deserialize<TOut>(_apiResultAsString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                }
-                else
-                {
-                    response = new TOut();
-                    await response.AddResponseError(BaseResponseDto.ErrorType.Error, $"No response object form endpoint {endPoint}");
-                    _logger.LogError(LoggerEvents.APIEvt, @"API return object de-serialize failed: Request-Id {requestId} Endpoint {endPoint}  Request: {request} ", endPoint, JsonSerializer.Serialize(request).MaskSensitiveDataExt(), _appContext.CorrelationId);
-                }
-                break;
-            case HttpStatusCode.Unauthorized:
-                response.RequestStatus = HttpStatusCode.Unauthorized;
-                await response.AddResponseError(BaseResponseDto.ErrorType.Unauthorized, $"Unauthorized {endPoint}");
-                break;
-            default:
-                _apiResultAsString = await apiResult.Content.ReadAsStringAsync();
-                var baseResponse = JsonSerializer.Deserialize<BaseResponseDto>(_apiResultAsString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                throw new ApiException(_appContext.CorrelationId, endPoint, $"HttpPostHelper WebException {baseResponse?.Errors?[0]}", (int)baseResponse.RequestStatus, JsonSerializer.Serialize(request).MaskSensitiveDataExt(), JsonSerializer.Serialize(baseResponse).MaskSensitiveDataExt(), null);
-                break;
-        }
-        return response;
-    }
+
     /// <summary>
     /// Set default headers. Bearer token & Correlation Id to tie requests together between from and back end
     /// </summary>

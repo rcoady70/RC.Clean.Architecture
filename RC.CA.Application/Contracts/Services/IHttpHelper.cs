@@ -12,9 +12,8 @@ public interface IHttpHelper
     /// <param name="method">Method put,post,get,patch</param>
     /// <returns></returns>
     /// <exception cref="ApiException"></exception>
-    [Obsolete]
-    Task<TOut> SendAsync<TIn, TOut>(TIn request, string endPoint, HttpMethod method) where TOut : BaseResponseDto, new();
-    Task<CAResult<TOut>> SendAsyncCAResult<TIn, TOut>(TIn request, string endPoint, HttpMethod method)
+
+    Task<CAResult<TOut>> SendAsync<TIn, TOut>(TIn request, string endPoint, HttpMethod method)
         where TOut : BaseResponseCAResult, new();
 
 }

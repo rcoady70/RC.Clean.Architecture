@@ -37,7 +37,7 @@ public class UserAccountController : RootController
 
     public async Task<IActionResult> LogOut()
     {
-        var authResponse = await _httpHelper.SendAsyncCAResult<EmptyRequest, LoginResponse>(new EmptyRequest(), "api/UserAccount/Logout", HttpMethod.Post);
+        var authResponse = await _httpHelper.SendAsync<EmptyRequest, LoginResponse>(new EmptyRequest(), "api/UserAccount/Logout", HttpMethod.Post);
         if (authResponse.IsSuccess)
         {
             //Logout local cookie
@@ -68,7 +68,7 @@ public class UserAccountController : RootController
     {
         if (!ModelState.IsValid) return View();
 
-        var authResponse = await _httpHelper.SendAsyncCAResult<LoginRequest, LoginResponse>(loginRequest, "api/UserAccount/Login", HttpMethod.Post);
+        var authResponse = await _httpHelper.SendAsync<LoginRequest, LoginResponse>(loginRequest, "api/UserAccount/Login", HttpMethod.Post);
         if (authResponse.IsSuccess)
         {
             //Parse and generate new claims object
@@ -102,7 +102,7 @@ public class UserAccountController : RootController
     {
         if (!ModelState.IsValid) return View();
         //
-        var authResponse = await _httpHelper.SendAsyncCAResult<RegistrationRequest, RegistrationResponse>(registrationRequest, "api/UserAccount/Register", HttpMethod.Post);
+        var authResponse = await _httpHelper.SendAsync<RegistrationRequest, RegistrationResponse>(registrationRequest, "api/UserAccount/Register", HttpMethod.Post);
         if (authResponse.IsSuccess)
             return RedirectToAction("index", "home", new { area = "home" });
         await AppendErrorsToModelStateAsyncCAResult(authResponse.ValidationErrors);

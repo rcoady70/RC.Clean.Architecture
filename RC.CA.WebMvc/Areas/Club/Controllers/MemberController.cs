@@ -44,7 +44,7 @@ public class MemberController : RootController
         getMemberListRequest.OrderBy = OrderBy ?? "createdon_desc";
         getMemberListRequest.PageSeq = pageSeq ?? 1;
 
-        var memberListResponse = await _httpHelper.SendAsyncCAResult<GetMemberListRequest, MemberListResponseDto>(getMemberListRequest, "api/club/Members/List", HttpMethod.Get);
+        var memberListResponse = await _httpHelper.SendAsync<GetMemberListRequest, MemberListResponseDto>(getMemberListRequest, "api/club/Members/List", HttpMethod.Get);
         if (!memberListResponse.IsSuccess)
             await AppendErrorsToModelStateAsyncCAResult(memberListResponse.ValidationErrors);
 
@@ -64,7 +64,7 @@ public class MemberController : RootController
         {
             Id = Id
         };
-        var memberListResponse = await _httpHelper.SendAsyncCAResult<DeleteMemberRequest, BaseResponseCAResult>(deleteMemberRequest, "api/club/Members/Delete", HttpMethod.Delete);
+        var memberListResponse = await _httpHelper.SendAsync<DeleteMemberRequest, BaseResponseCAResult>(deleteMemberRequest, "api/club/Members/Delete", HttpMethod.Delete);
         if (!memberListResponse.IsSuccess)
             await AppendErrorsToModelStateAsyncCAResult(memberListResponse.ValidationErrors);
         return RedirectToAction(nameof(List));
@@ -84,7 +84,7 @@ public class MemberController : RootController
         if (Id != null)
         {
             var getMemberRequest = new GetMemberRequest() { Id = Id };
-            var member = await _httpHelper.SendAsyncCAResult<GetMemberRequest, GetMemberResponseDto>(getMemberRequest, "api/club/Members/Get", HttpMethod.Get);
+            var member = await _httpHelper.SendAsync<GetMemberRequest, GetMemberResponseDto>(getMemberRequest, "api/club/Members/Get", HttpMethod.Get);
             if (!member.IsSuccess)
                 await AppendErrorsToModelStateAsyncCAResult(member.ValidationErrors);
             else
@@ -113,7 +113,7 @@ public class MemberController : RootController
         //Add member
         if (createMemberRequest.Id == null)
         {
-            var memberListResponse = await _httpHelper.SendAsyncCAResult<CreateMemberRequest, MemberListResponseDto>(createMemberRequest, "api/club/Members/Create", HttpMethod.Put);
+            var memberListResponse = await _httpHelper.SendAsync<CreateMemberRequest, MemberListResponseDto>(createMemberRequest, "api/club/Members/Create", HttpMethod.Put);
             if (!memberListResponse.IsSuccess)
                 await AppendErrorsToModelStateAsyncCAResult(memberListResponse.ValidationErrors);
             else
@@ -123,7 +123,7 @@ public class MemberController : RootController
         {
             //Update member
             var updateMemberRequest = _mapper.Map<UpdateMemberRequest>(createMemberRequest);
-            var memberListResponse = await _httpHelper.SendAsyncCAResult<UpdateMemberRequest, MemberListResponseDto>(updateMemberRequest, "api/club/Members/Update", HttpMethod.Patch);
+            var memberListResponse = await _httpHelper.SendAsync<UpdateMemberRequest, MemberListResponseDto>(updateMemberRequest, "api/club/Members/Update", HttpMethod.Patch);
             if (!memberListResponse.IsSuccess)
                 await AppendErrorsToModelStateAsyncCAResult(memberListResponse.ValidationErrors);
             else

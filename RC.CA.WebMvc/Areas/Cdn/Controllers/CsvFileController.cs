@@ -42,7 +42,7 @@ namespace RC.CA.WebMvc.Areas.Cdn.Controllers
             if (!ModelState.IsValid) return View();
             ModelState.Clear();
             var submitCsvImportRequest = new SubmitCsvImportRequest() { Id = id };
-            var response = await _httpHelper.SendAsyncCAResult<SubmitCsvImportRequest, BaseResponseCAResult>(submitCsvImportRequest, "api/csvfile/SubmitImport", HttpMethod.Put);
+            var response = await _httpHelper.SendAsync<SubmitCsvImportRequest, BaseResponseCAResult>(submitCsvImportRequest, "api/csvfile/SubmitImport", HttpMethod.Put);
 
             if (response.IsSuccess)
                 return RedirectToAction(nameof(List));
@@ -60,7 +60,7 @@ namespace RC.CA.WebMvc.Areas.Cdn.Controllers
             ModelState.Clear();
 
             var getCsvMapRequest = new GetCsvMapRequest() { Id = id };
-            var response = await _httpHelper.SendAsyncCAResult<GetCsvMapRequest, UpsertCsvMapResponseDto>(getCsvMapRequest, "api/csvfile/getmap", HttpMethod.Get);
+            var response = await _httpHelper.SendAsync<GetCsvMapRequest, UpsertCsvMapResponseDto>(getCsvMapRequest, "api/csvfile/getmap", HttpMethod.Get);
             if (response.IsSuccess)
             {
                 var vmResponse = _mapper.Map<UpsertCsvMapRequest>(response.Value);
@@ -77,7 +77,7 @@ namespace RC.CA.WebMvc.Areas.Cdn.Controllers
             if (!ModelState.IsValid) return View(upsertCsvMapRequest);
             ModelState.Clear();
 
-            var response = await _httpHelper.SendAsyncCAResult<UpsertCsvMapRequest, UpsertCsvMapResponseDto>(upsertCsvMapRequest, "api/csvfile/updatemap", HttpMethod.Patch);
+            var response = await _httpHelper.SendAsync<UpsertCsvMapRequest, UpsertCsvMapResponseDto>(upsertCsvMapRequest, "api/csvfile/updatemap", HttpMethod.Patch);
             if (response.IsSuccess)
                 return RedirectToAction(nameof(CsvFileFinish), new { id = upsertCsvMapRequest.Id });
             else
@@ -98,7 +98,7 @@ namespace RC.CA.WebMvc.Areas.Cdn.Controllers
                 PageSeq = pageSeq ?? 1,
             };
 
-            var response = await _httpHelper.SendAsyncCAResult<GetCsvFileListRequest, CsvFilesListResponseDto>(getCsvFilesListRequest, "api/CsvFile/List", HttpMethod.Get);
+            var response = await _httpHelper.SendAsync<GetCsvFileListRequest, CsvFilesListResponseDto>(getCsvFilesListRequest, "api/CsvFile/List", HttpMethod.Get);
             if (response.IsSuccess)
                 await AppendErrorsToModelStateAsyncCAResult(response.ValidationErrors);
 

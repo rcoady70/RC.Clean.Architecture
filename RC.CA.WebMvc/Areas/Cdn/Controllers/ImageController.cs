@@ -27,7 +27,7 @@ namespace RC.CA.WebMvc.Areas.Cdn.Controllers
             getCdnFilesListRequest.OrderBy = OrderBy ?? "createdon_desc";
             getCdnFilesListRequest.PageSeq = pageSeq ?? 1;
 
-            var memberListResponse = await _httpHelper.SendAsyncCAResult<GetCdnFilesListRequest, CdnFilesListResponseDto>(getCdnFilesListRequest, "api/cdn/image/list", HttpMethod.Get);
+            var memberListResponse = await _httpHelper.SendAsync<GetCdnFilesListRequest, CdnFilesListResponseDto>(getCdnFilesListRequest, "api/cdn/image/list", HttpMethod.Get);
             if (!memberListResponse.IsSuccess)
                 await AppendErrorsToModelStateAsyncCAResult(memberListResponse.ValidationErrors);
 
@@ -54,7 +54,7 @@ namespace RC.CA.WebMvc.Areas.Cdn.Controllers
             getCdnFilesListRequest.OrderBy = OrderBy ?? "createdon_desc";
             getCdnFilesListRequest.PageSeq = pageSeq ?? 1;
 
-            var memberListResponse = await _httpHelper.SendAsyncCAResult<GetCdnFilesListRequest, CdnFilesListResponseDto>(getCdnFilesListRequest, "api/cdn/image/list", HttpMethod.Get);
+            var memberListResponse = await _httpHelper.SendAsync<GetCdnFilesListRequest, CdnFilesListResponseDto>(getCdnFilesListRequest, "api/cdn/image/list", HttpMethod.Get);
             if (!memberListResponse.IsSuccess)
                 await AppendErrorsToModelStateAsyncCAResult(memberListResponse.ValidationErrors);
 
@@ -74,10 +74,14 @@ namespace RC.CA.WebMvc.Areas.Cdn.Controllers
             {
                 Id = Id
             };
-            var cdnFileListResponse = await _httpHelper.SendAsync<DeleteCdnFileRequest, BaseResponseDto>(deleteMemberRequest, "api/cdn/image/Delete", HttpMethod.Delete);
-            if (cdnFileListResponse?.TotalErrors > 0)
-                await AppendErrorsToModelStateAsync(cdnFileListResponse);
-            return RedirectToAction(nameof(List));
+            var cdnFileListResponse = await _httpHelper.SendAsync<DeleteCdnFileRequest, BaseResponseCAResult>(deleteMemberRequest, "api/cdn/image/Delete", HttpMethod.Delete);
+            if (!cdnFileListResponse.IsSuccess)
+            {
+                await AppendErrorsToModelStateAsyncCAResult(cdnFileListResponse.ValidationErrors);
+                return View();
+            }
+            else
+                return RedirectToAction(nameof(List));
         }
     }
 }
