@@ -26,7 +26,7 @@
             debugger;
             console.log(response);
             norFileName = file.name.replace(/[^a-z0-9]/gi, '');
-            if (response.totalErrors > 0) {
+            if (!response.isSuccess) {
                 $(response.errors).each(function (key, value) {
                     $('#uploadedFiles').append(uploadTemplate(norFileName, true));
                 });

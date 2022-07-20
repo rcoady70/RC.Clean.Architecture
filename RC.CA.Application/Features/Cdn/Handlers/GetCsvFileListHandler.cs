@@ -1,21 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using AutoMapper;
 using MediatR;
 using RC.CA.Application.Contracts.Persistence;
 using RC.CA.Application.Dto.Cdn;
 using RC.CA.Application.Extensions.Linq;
 using RC.CA.Application.Features.Cdn.Queries;
-using RC.CA.Domain.Entities.Cdn;
 using RC.CA.Domain.Entities.CSV;
 
 namespace RC.CA.Application.Features.Cdn.Handlers
 {
-    public class GetCsvFileListHandler : IRequestHandler<GetCsvFileListRequest, CsvFilesListResponseDto>
+    public class GetCsvFileListHandler : IRequestHandler<GetCsvFileListRequest, CAResult<CsvFilesListResponseDto>>
     {
         private readonly ICsvFileRepository _csvFileRepository;
         private readonly IMapper _mapper;
@@ -27,7 +21,7 @@ namespace RC.CA.Application.Features.Cdn.Handlers
         }
 
 
-        public async Task<CsvFilesListResponseDto> Handle(GetCsvFileListRequest request, CancellationToken cancellationToken)
+        public async Task<CAResult<CsvFilesListResponseDto>> Handle(GetCsvFileListRequest request, CancellationToken cancellationToken)
         {
             //Set filter
             Expression<Func<CsvFile, bool>> filter = null;
@@ -61,8 +55,7 @@ namespace RC.CA.Application.Features.Cdn.Handlers
                 FilterByName = request.FilterByName,
                 PaginationMetaData = csvFiles.PagnationMetaData
             };
-            return response;
+            return CAResult<CsvFilesListResponseDto>.Success(response);
         }
-        
     }
 }

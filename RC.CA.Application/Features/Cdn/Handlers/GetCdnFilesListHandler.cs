@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using AutoMapper;
 using MediatR;
 using RC.CA.Application.Contracts.Persistence;
@@ -14,7 +9,7 @@ using RC.CA.Domain.Entities.Cdn;
 
 namespace RC.CA.Application.Features.Cdn.Handlers
 {
-    public class GetCdnFilesListHandler : IRequestHandler<GetCdnFilesListRequest, CdnFilesListResponseDto>
+    public class GetCdnFilesListHandler : IRequestHandler<GetCdnFilesListRequest, CAResult<CdnFilesListResponseDto>>
     {
         private readonly ICdnFileRepository _cdnFileRepository;
         private readonly IMapper _mapper;
@@ -26,7 +21,7 @@ namespace RC.CA.Application.Features.Cdn.Handlers
         }
 
 
-        public async Task<CdnFilesListResponseDto> Handle(GetCdnFilesListRequest request, CancellationToken cancellationToken)
+        public async Task<CAResult<CdnFilesListResponseDto>> Handle(GetCdnFilesListRequest request, CancellationToken cancellationToken)
         {
             //Set filter
             Expression<Func<CdnFiles, bool>> filter = null;
@@ -60,7 +55,7 @@ namespace RC.CA.Application.Features.Cdn.Handlers
                 FilterByName = request.FilterByName,
                 PaginationMetaData = cdnFiles.PagnationMetaData
             };
-            return response;
+            return CAResult<CdnFilesListResponseDto>.Success(response);
         }
     }
 }

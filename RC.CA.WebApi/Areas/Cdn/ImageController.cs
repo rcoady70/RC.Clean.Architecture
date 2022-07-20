@@ -1,16 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RC.CA.Application.Dto.Cdn;
 using RC.CA.Application.Features.Cdn.Queries;
 using RC.CA.Application.Features.Club.Queries;
-using RC.CA.Application.Models;
 using RC.CA.Infrastructure.MessageBus;
-using RC.CA.Infrastructure.MessageBus.Interfaces;
-using RC.CA.SharedKernel.Constants;
-using RC.CA.SharedKernel.GuardClauses;
 
 namespace RC.CA.WebApi.Areas.CDN
 {
@@ -30,32 +24,25 @@ namespace RC.CA.WebApi.Areas.CDN
 
             public string Description { get; }
 
-            public TestIntegrationMessage(int orderId,string description)
+            public TestIntegrationMessage(int orderId, string description)
             {
                 OrderId = orderId;
                 Description = description;
             }
         }
-       
+
         [HttpGet("List")]
-        public async Task<CdnFilesListResponseDto> List(GetCdnFilesListRequest getCdnFilesListRequest)
+        public async Task<CAResult<CdnFilesListResponseDto>> List(GetCdnFilesListRequest getCdnFilesListRequest)
         {
             CdnFilesListResponseDto response = new CdnFilesListResponseDto();
             GetCdnFilesRequestValidator validationRules = new GetCdnFilesRequestValidator();
             var valResult = validationRules.Validate(getCdnFilesListRequest);
-            response.CheckFluentValidationResults(valResult);
-
             //Check result of model validation
-            if (response.TotalErrors == 0)
-                response = await _mediator.Send(getCdnFilesListRequest);
+            if (valResult.IsValid)
+                return await _mediator.Send(getCdnFilesListRequest);
             else
-                return InvalidRequest(response);
-
-            return response;
+                return CAResult<CdnFilesListResponseDto>.Invalid(valResult.AsModelStateErrors());
         }
-
-        
-
         /// <summary>
         /// Process uploaded file.
         /// </summary>
@@ -63,7 +50,7 @@ namespace RC.CA.WebApi.Areas.CDN
         /// <returns></returns>
         [HttpPost("Upload")]
         [AllowAnonymous]
-        public async Task<CreateCdnFileResponseDto> Upload([FromForm]IFormFile? fileData)
+        public async Task<CAResult<CreateCdnFileResponseDto>> Upload([FromForm] IFormFile? fileData)
         {
             var cookie = Request.Cookies.Count;
             CreateCdnFileResponseDto response = new CreateCdnFileResponseDto();
@@ -71,20 +58,17 @@ namespace RC.CA.WebApi.Areas.CDN
             {
                 CreateCdnFileRequestValidator validationRules = new CreateCdnFileRequestValidator();
                 var valResult = validationRules.Validate(fileData);
-                response.CheckFluentValidationResults(valResult);
-                if (response.TotalErrors == 0)
+                if (valResult.IsValid)
                 {
                     CreateCdnFileRequest createUploadedFilesRequest = new CreateCdnFileRequest();
                     createUploadedFilesRequest.UploadedFile = fileData;
-                    response = await _mediator.Send(createUploadedFilesRequest);
+                    return await _mediator.Send(createUploadedFilesRequest);
                 }
+                else
+                    return CAResult<CreateCdnFileResponseDto>.Invalid(valResult.AsModelStateErrors());
             }
             else
-            {
-                response = new CreateCdnFileResponseDto();
-                response.AddResponseError( Application.Models.BaseResponseDto.ErrorType.Error,"Uploaded file not found");
-            }
-            return response;
+                return CAResult<CreateCdnFileResponseDto>.Invalid("UploadFailed", "Uploaded file not found", ValidationSeverity.Error);
         }
         /// <summary>
         /// Delete image
@@ -92,13 +76,12 @@ namespace RC.CA.WebApi.Areas.CDN
         /// <param name="Id"></param>
         /// <returns></returns>
         [HttpDelete("Delete")]
-        public async Task<BaseResponseDto> Delete(DeleteCdnFileRequest deleteCdnFileRequest)
+        public async Task<CAResultEmpty> Delete(DeleteCdnFileRequest deleteCdnFileRequest)
         {
             Guard.Against.Null(deleteCdnFileRequest, nameof(deleteCdnFileRequest));
 
-            var baseResponse = await _mediator.Send(deleteCdnFileRequest);
-           
-            return baseResponse;
+            return await _mediator.Send(deleteCdnFileRequest);
+
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using FluentValidation.Results;
 
 namespace RC.CA.Application.Models;
 
@@ -13,7 +12,7 @@ public class BaseResponseDto
     public int TotalWarnings { get; set; } = 0;
     public List<ErrorModel> Errors { get; set; } = new List<ErrorModel>();
     public List<ErrorModel> Warnings { get; set; } = new List<ErrorModel>();
-    public HttpStatusCode RequestStatus { get; set; } =  HttpStatusCode.OK;
+    public HttpStatusCode RequestStatus { get; set; } = HttpStatusCode.OK;
     public enum ErrorType
     {
         Exception = 0,
@@ -41,23 +40,11 @@ public class BaseResponseDto
     public Task AddResponseError(string Id, ErrorType Type, string Message)
     {
         TotalErrors++;
-        Errors.Add(new ErrorModel() {Id= Id, Type = Type.ToString(), Detail = Message });
+        Errors.Add(new ErrorModel() { Id = Id, Type = Type.ToString(), Detail = Message });
         return Task.CompletedTask;
     }
-    /// <summary>
-    /// Check result of validation for errors and add to base response collection. Increment error count if errors found
-    /// </summary>
-    /// <param name="validationResult">Fluent validation result</param>
-    public Task CheckFluentValidationResults(ValidationResult validationResult)
-    {
-        if (validationResult.Errors.Count > 0)
-        {
-            foreach (var error in validationResult.Errors)
-                this.AddResponseError(ErrorType.Error, error.ErrorMessage);
-        }
-        return Task.CompletedTask;
-    }
-    
+
+
     public class ErrorModel
     {
         public string Id { get; set; } = default!;

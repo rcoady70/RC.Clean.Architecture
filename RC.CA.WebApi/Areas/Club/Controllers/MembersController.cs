@@ -49,7 +49,7 @@ public class MembersController : BaseController
     /// <param name="createMemberRequest"></param>
     /// <returns></returns>
     [HttpDelete("Delete")]
-    public async Task<CAResult<BaseResponseDto>> Delete(DeleteMemberRequest deleteMemberRequest)
+    public async Task<CAResultEmpty> Delete(DeleteMemberRequest deleteMemberRequest)
     {
 
         return await _mediator.Send(deleteMemberRequest);

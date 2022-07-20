@@ -7,7 +7,7 @@
     public class ApiResultDto<T>
     {
         /// <summary>
-        /// Return successful eg. CAEmptyResult<ActivityDto>.Success(activity);
+        /// Return successful eg. CAResultEmpty<ActivityDto>.Success(activity);
         /// </summary>
         ///<param name="result"></param>
         /// <returns></returns>
@@ -16,7 +16,7 @@
             return new ApiResultDto<T> { IsSuccess = true, Result = value };
         }
         /// <summary>
-        /// Return successful eg. CAEmptyResult<ActivityDto>.Failure(activity);
+        /// Return successful eg. CAResultEmpty<ActivityDto>.Failure(activity);
         /// </summary>
         ///<param name="result"></param>
         /// <returns></returns>

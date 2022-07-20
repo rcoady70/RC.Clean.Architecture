@@ -10,19 +10,19 @@ namespace RC.CA.Application.Features.Club.Handlers;
 /// <summary>
 /// Get csv mapping
 /// </summary>
-public class GetCsvMapRequestHandler : IRequestHandler<GetCsvMapRequest, UpsertCsvMapResponseDto>
+public class GetCsvMapRequestHandler : IRequestHandler<GetCsvMapRequest, CAResult<UpsertCsvMapResponseDto>>
 {
     private readonly ICsvMapService _csvMapService;
     private readonly ICsvFileRepository _csvFileRepository;
     private readonly IMapper _mapper;
 
-    public GetCsvMapRequestHandler(ICsvMapService csvMapService, ICsvFileRepository csvFileRepository,IMapper mapper)
+    public GetCsvMapRequestHandler(ICsvMapService csvMapService, ICsvFileRepository csvFileRepository, IMapper mapper)
     {
         _csvMapService = csvMapService;
-        _csvFileRepository  = csvFileRepository;
+        _csvFileRepository = csvFileRepository;
         _mapper = mapper;
     }
-    public async Task<UpsertCsvMapResponseDto> Handle(GetCsvMapRequest request, CancellationToken cancellationToken)
+    public async Task<CAResult<UpsertCsvMapResponseDto>> Handle(GetCsvMapRequest request, CancellationToken cancellationToken)
     {
         var response = new UpsertCsvMapResponseDto();
         var csvFile = await _csvFileRepository.FindAsync(request.Id);
@@ -38,6 +38,6 @@ public class GetCsvMapRequestHandler : IRequestHandler<GetCsvMapRequest, UpsertC
                 response.ColumnMap = _mapper.Map<List<CsvColumnMapDto>>(csvMap.MapColumns);
             }
         }
-        return response;
+        return CAResult<UpsertCsvMapResponseDto>.Success(response);
     }
 }

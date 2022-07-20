@@ -1,10 +1,10 @@
-﻿using RC.CA.Application.Models;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
+using RC.CA.Application.Models;
 
 
 namespace RC.CA.Application.Dto.Authentication;
 
-public class LoginResponse : BaseResponseDto
+public class LoginResponse : BaseResponseCAResult
 {
     [JsonPropertyName("expires_at")]
     public DateTime? ExpiresAt { get; set; }

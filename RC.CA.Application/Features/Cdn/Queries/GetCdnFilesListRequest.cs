@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using RC.CA.Application.Dto.Cdn;
-using RC.CA.SharedKernel.Constants;
 
 namespace RC.CA.Application.Features.Cdn.Queries;
 
-public class GetCdnFilesListRequest : IRequest<CdnFilesListResponseDto>
+public class GetCdnFilesListRequest : IRequest<CAResult<CdnFilesListResponseDto>>
 {
     public string? FilterByName { get; set; } = "";
     public string? FilterById { get; set; } = "";

@@ -2,14 +2,12 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RC.CA.WebUiMvc.Services;
 using RC.CA.Application.Contracts.Identity;
-using RC.CA.Application.Models;
+using RC.CA.Application.Contracts.Services;
 using RC.CA.Application.Dto.Authentication;
 using RC.CA.WebUiMvc.Utilities;
-using Microsoft.AspNetCore.Authorization;
-using RC.CA.Application.Contracts.Services;
 
 namespace RC.CA.WebUiMvc.Areas.Account.Controllers;
 [Area("Account")]
@@ -20,13 +18,13 @@ public class UserAccountController : RootController
 
     [BindProperty]
     public string? ReturnUrl { get; set; }
-    
+
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="httpClientFactory"></param>
-    
-    public UserAccountController(IAppContextX appContext, IHttpHelper httpHelper) :base(appContext)
+
+    public UserAccountController(IAppContextX appContext, IHttpHelper httpHelper) : base(appContext)
     {
         _httpHelper = httpHelper;
     }
@@ -36,16 +34,15 @@ public class UserAccountController : RootController
     /// <param name="loginRequest"></param>
     /// <returns></returns>
     [HttpPost]
-    
+
     public async Task<IActionResult> LogOut()
     {
-        var authResponse = await _httpHelper.SendAsync<EmptyRequest, LoginResponse>(new EmptyRequest(), "api/UserAccount/Logout", HttpMethod.Post);
-        if (authResponse.TotalErrors == 0)
+        var authResponse = await _httpHelper.SendAsyncCAResult<EmptyRequest, LoginResponse>(new EmptyRequest(), "api/UserAccount/Logout", HttpMethod.Post);
+        if (authResponse.IsSuccess)
         {
             //Logout local cookie
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            if (authResponse?.TotalErrors == 0)
-                return RedirectToAction("index", "home", new { area = "home" });
+            return RedirectToAction("index", "home", new { area = "home" });
         }
         return View();
     }
@@ -71,11 +68,11 @@ public class UserAccountController : RootController
     {
         if (!ModelState.IsValid) return View();
 
-        var authResponse = await _httpHelper.SendAsync<LoginRequest, LoginResponse>(loginRequest, "api/UserAccount/Login", HttpMethod.Post);
-        if (authResponse?.TotalErrors == 0)
+        var authResponse = await _httpHelper.SendAsyncCAResult<LoginRequest, LoginResponse>(loginRequest, "api/UserAccount/Login", HttpMethod.Post);
+        if (authResponse.IsSuccess)
         {
             //Parse and generate new claims object
-            var claims = await WebHelper.AuthorizationParseClaims(authResponse.AccessToken,new JwtSecurityTokenHandler());
+            var claims = await WebHelper.AuthorizationParseClaims(authResponse.Value.AccessToken, new JwtSecurityTokenHandler());
             var identity = new ClaimsPrincipal(new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme));
 
             var authProperties = new AuthenticationProperties
@@ -90,7 +87,7 @@ public class UserAccountController : RootController
             else
                 return LocalRedirect(loginRequest.ReturnUrlX);
         }
-        await AppendErrorsToModelStateAsync(authResponse);
+        await AppendErrorsToModelStateAsyncCAResult(authResponse.ValidationErrors);
         return View();
     }
 
@@ -105,10 +102,10 @@ public class UserAccountController : RootController
     {
         if (!ModelState.IsValid) return View();
         //
-        var authResponse = await _httpHelper.SendAsync<RegistrationRequest, RegistrationResponse>(registrationRequest, "api/UserAccount/Register", HttpMethod.Post);
-        if (authResponse?.TotalErrors == 0)
+        var authResponse = await _httpHelper.SendAsyncCAResult<RegistrationRequest, RegistrationResponse>(registrationRequest, "api/UserAccount/Register", HttpMethod.Post);
+        if (authResponse.IsSuccess)
             return RedirectToAction("index", "home", new { area = "home" });
-        await AppendErrorsToModelStateAsync(authResponse);
+        await AppendErrorsToModelStateAsyncCAResult(authResponse.ValidationErrors);
         return View();
     }
 }

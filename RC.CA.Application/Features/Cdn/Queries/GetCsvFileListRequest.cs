@@ -3,7 +3,7 @@ using RC.CA.Application.Dto.Cdn;
 
 namespace RC.CA.Application.Features.Cdn.Queries
 {
-    public class GetCsvFileListRequest : IRequest<CsvFilesListResponseDto>
+    public class GetCsvFileListRequest : IRequest<CAResult<CsvFilesListResponseDto>>
     {
         public string? FilterByName { get; set; } = "";
         public string? FilterById { get; set; } = "";

@@ -1,25 +1,21 @@
 ﻿using AutoMapper;
+using Azure.Storage.Blobs;
 using MediatR;
+using Microsoft.Extensions.Configuration;
 using RC.CA.Application.Contracts.Persistence;
 using RC.CA.Application.Dto.Cdn;
 using RC.CA.Application.Features.Cdn.Queries;
-using RC.CA.SharedKernel.GuardClauses;
-using RC.CA.SharedKernel.Extensions;
-using RC.CA.Domain.Entities.Cdn;
-using Azure.Storage.Blobs;
-using Microsoft.Extensions.Configuration;
-using RC.CA.Application.Models;
 
 namespace RC.CA.Application.Features.Club.Handlers;
-public class DeleteUploadedFilesRequestHandler : IRequestHandler<DeleteCdnFileRequest, BaseResponseDto>
+public class DeleteUploadedFilesRequestHandler : IRequestHandler<DeleteCdnFileRequest, CAResultEmpty>
 {
     private readonly ICdnFileRepository _cdnFileRepository;
     private readonly IMapper _mapper;
     private readonly BlobServiceClient _blobServiceClient;
     private readonly IConfiguration _configuration;
 
-    public DeleteUploadedFilesRequestHandler(ICdnFileRepository cdnFileRepository, 
-                                             IMapper mapper, 
+    public DeleteUploadedFilesRequestHandler(ICdnFileRepository cdnFileRepository,
+                                             IMapper mapper,
                                              BlobServiceClient blobServiceClient,
                                              IConfiguration configuration)
     {
@@ -29,7 +25,7 @@ public class DeleteUploadedFilesRequestHandler : IRequestHandler<DeleteCdnFileRe
         _configuration = configuration;
     }
 
-    public async Task<BaseResponseDto> Handle(DeleteCdnFileRequest request, CancellationToken cancellationToken)
+    public async Task<CAResultEmpty> Handle(DeleteCdnFileRequest request, CancellationToken cancellationToken)
     {
         var response = new CreateCdnFileResponseDto();
         var cdnFile = await _cdnFileRepository.GetFirstOrDefaultAsync(c => c.Id == request.Id);
@@ -37,10 +33,10 @@ public class DeleteUploadedFilesRequestHandler : IRequestHandler<DeleteCdnFileRe
         {
             await _cdnFileRepository.DeleteAsync(cdnFile);
             await _cdnFileRepository.SaveChangesAsync();
+            return CAResultEmpty.Success();
         }
         else
-            response.AddResponseError( BaseResponseDto.ErrorType.Error,$"File not found to delete with ID {request.Id}");
-        return response;
+            return CAResultEmpty.Invalid("DeleteFailed", $"File not found to delete with ID {request.Id}", ValidationSeverity.Error);
     }
 }
 

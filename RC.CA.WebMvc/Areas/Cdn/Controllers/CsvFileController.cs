@@ -14,7 +14,7 @@ namespace RC.CA.WebMvc.Areas.Cdn.Controllers
         private readonly IHttpHelper _httpHelper;
         private readonly IMapper _mapper;
 
-        public CsvFileController(IHttpHelper httpHelper,IMapper mapper, IAppContextX appContextX) : base(appContextX)
+        public CsvFileController(IHttpHelper httpHelper, IMapper mapper, IAppContextX appContextX) : base(appContextX)
         {
             _httpHelper = httpHelper;
             _mapper = mapper;
@@ -29,7 +29,7 @@ namespace RC.CA.WebMvc.Areas.Cdn.Controllers
         {
             if (!ModelState.IsValid) return View();
             ModelState.Clear();
-            var response =  new UpsertCsvMapRequest()
+            var response = new UpsertCsvMapRequest()
             {
                 Id = id
             };
@@ -40,16 +40,16 @@ namespace RC.CA.WebMvc.Areas.Cdn.Controllers
         public async Task<IActionResult> CsvFileFinish_Post(Guid id)
         {
             if (!ModelState.IsValid) return View();
-                ModelState.Clear();
-            var upsertCsvMapRequest = new UpsertCsvMapRequest() { Id = id };
+            ModelState.Clear();
             var submitCsvImportRequest = new SubmitCsvImportRequest() { Id = id };
-            var response = await _httpHelper.SendAsync<SubmitCsvImportRequest, BaseResponseDto>(submitCsvImportRequest, "api/csvfile/SubmitImport", HttpMethod.Put);
+            var response = await _httpHelper.SendAsyncCAResult<SubmitCsvImportRequest, BaseResponseCAResult>(submitCsvImportRequest, "api/csvfile/SubmitImport", HttpMethod.Put);
 
-            if (response?.TotalErrors == 0)
+            if (response.IsSuccess)
                 return RedirectToAction(nameof(List));
             else
-                await AppendErrorsToModelStateAsync(response);
+                await AppendErrorsToModelStateAsyncCAResult(response.ValidationErrors);
 
+            var upsertCsvMapRequest = new UpsertCsvMapRequest() { Id = id };
             return View(upsertCsvMapRequest);
         }
         [HttpGet]
@@ -60,14 +60,14 @@ namespace RC.CA.WebMvc.Areas.Cdn.Controllers
             ModelState.Clear();
 
             var getCsvMapRequest = new GetCsvMapRequest() { Id = id };
-            var response = await _httpHelper.SendAsync<GetCsvMapRequest, UpsertCsvMapResponseDto>(getCsvMapRequest, "api/csvfile/getmap", HttpMethod.Get);
-            if (response?.TotalErrors == 0)
+            var response = await _httpHelper.SendAsyncCAResult<GetCsvMapRequest, UpsertCsvMapResponseDto>(getCsvMapRequest, "api/csvfile/getmap", HttpMethod.Get);
+            if (response.IsSuccess)
             {
-                var vmResponse = _mapper.Map<UpsertCsvMapRequest>(response);
+                var vmResponse = _mapper.Map<UpsertCsvMapRequest>(response.Value);
                 return View(vmResponse);
             }
             else
-                await AppendErrorsToModelStateAsync(response);
+                await AppendErrorsToModelStateAsyncCAResult(response.ValidationErrors);
 
             return RedirectToAction(nameof(List));
         }
@@ -77,11 +77,11 @@ namespace RC.CA.WebMvc.Areas.Cdn.Controllers
             if (!ModelState.IsValid) return View(upsertCsvMapRequest);
             ModelState.Clear();
 
-            var response = await _httpHelper.SendAsync<UpsertCsvMapRequest, UpsertCsvMapResponseDto>(upsertCsvMapRequest, "api/csvfile/updatemap", HttpMethod.Patch);
-            if(response.TotalErrors == 0)
+            var response = await _httpHelper.SendAsyncCAResult<UpsertCsvMapRequest, UpsertCsvMapResponseDto>(upsertCsvMapRequest, "api/csvfile/updatemap", HttpMethod.Patch);
+            if (response.IsSuccess)
                 return RedirectToAction(nameof(CsvFileFinish), new { id = upsertCsvMapRequest.Id });
-             else
-                await AppendErrorsToModelStateAsync(response);
+            else
+                await AppendErrorsToModelStateAsyncCAResult(response.ValidationErrors);
 
             return View(upsertCsvMapRequest);
         }
@@ -89,24 +89,24 @@ namespace RC.CA.WebMvc.Areas.Cdn.Controllers
         [RestoreModelState]
         public async Task<IActionResult> List(string? filterByName, string? filterById, string? OrderBy, int? pageSeq)
         {
-            CsvFilesListResponseDto response = new CsvFilesListResponseDto();
 
-            GetCsvFileListRequest getCsvFilesListRequest = new GetCsvFileListRequest() { 
+            GetCsvFileListRequest getCsvFilesListRequest = new GetCsvFileListRequest()
+            {
                 FilterByName = filterByName ?? "",
                 FilterById = filterById ?? "",
                 OrderBy = OrderBy ?? "createdon_desc",
                 PageSeq = pageSeq ?? 1,
             };
 
-            response = await _httpHelper.SendAsync<GetCsvFileListRequest, CsvFilesListResponseDto>(getCsvFilesListRequest, "api/CsvFile/List", HttpMethod.Get);
-            if (response?.TotalErrors > 0)
-                await AppendErrorsToModelStateAsync(response);
-            
-            //Check if submitted tasks and if so queue
-            if(response.CsvFiles.Where(s => s.Status == Domain.Entities.CSV.FileStatus.BeingProcessed || s.Status == Domain.Entities.CSV.FileStatus.OnQueue).ToList().Count > 0)
-                    Response.Headers.Add("Refresh", "10");
+            var response = await _httpHelper.SendAsyncCAResult<GetCsvFileListRequest, CsvFilesListResponseDto>(getCsvFilesListRequest, "api/CsvFile/List", HttpMethod.Get);
+            if (response.IsSuccess)
+                await AppendErrorsToModelStateAsyncCAResult(response.ValidationErrors);
 
-            return View(response);
+            //Check if submitted tasks and if so refresh
+            if (response.Value.CsvFiles.Where(s => s.Status == Domain.Entities.CSV.FileStatus.BeingProcessed || s.Status == Domain.Entities.CSV.FileStatus.OnQueue).ToList().Count > 0)
+                Response.Headers.Add("Refresh", "10");
+
+            return View(response.Value);
         }
     }
 }

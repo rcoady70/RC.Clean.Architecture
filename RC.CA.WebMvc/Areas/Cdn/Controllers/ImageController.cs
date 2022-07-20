@@ -1,15 +1,14 @@
-﻿using System.Net;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RC.CA.Application.Contracts.Identity;
 using RC.CA.Application.Contracts.Services;
 using RC.CA.Application.Dto.Cdn;
 using RC.CA.Application.Features.Cdn.Queries;
-using Microsoft.AspNetCore.Authorization;
 
 namespace RC.CA.WebMvc.Areas.Cdn.Controllers
 {
     [Area("Cdn")]
-    public class ImageController :  RootController
+    public class ImageController : RootController
     {
         private readonly IHttpHelper _httpHelper;
 
@@ -28,14 +27,11 @@ namespace RC.CA.WebMvc.Areas.Cdn.Controllers
             getCdnFilesListRequest.OrderBy = OrderBy ?? "createdon_desc";
             getCdnFilesListRequest.PageSeq = pageSeq ?? 1;
 
-            var memberListResponse = await _httpHelper.SendAsync<GetCdnFilesListRequest, CdnFilesListResponseDto>(getCdnFilesListRequest, "api/cdn/image/list", HttpMethod.Get);
-            if (memberListResponse?.TotalErrors > 0)
-            {
-                if ((HttpStatusCode)memberListResponse.RequestStatus == HttpStatusCode.Unauthorized)
-                    return RedirectToAction("Login", "UserAccount", new { area = "account" });
-                await AppendErrorsToModelStateAsync(memberListResponse);
-            }
-            return View(memberListResponse);
+            var memberListResponse = await _httpHelper.SendAsyncCAResult<GetCdnFilesListRequest, CdnFilesListResponseDto>(getCdnFilesListRequest, "api/cdn/image/list", HttpMethod.Get);
+            if (!memberListResponse.IsSuccess)
+                await AppendErrorsToModelStateAsyncCAResult(memberListResponse.ValidationErrors);
+
+            return View(memberListResponse.Value);
         }
         /// <summary>
         /// Called to refresh image list through ajax call.
@@ -58,14 +54,11 @@ namespace RC.CA.WebMvc.Areas.Cdn.Controllers
             getCdnFilesListRequest.OrderBy = OrderBy ?? "createdon_desc";
             getCdnFilesListRequest.PageSeq = pageSeq ?? 1;
 
-            var memberListResponse = await _httpHelper.SendAsync<GetCdnFilesListRequest, CdnFilesListResponseDto>(getCdnFilesListRequest, "api/cdn/image/list", HttpMethod.Get);
-            if (memberListResponse?.TotalErrors > 0)
-            {
-                if ((HttpStatusCode)memberListResponse.RequestStatus == HttpStatusCode.Unauthorized)
-                    return RedirectToAction("Login", "UserAccount", new { area = "account" });
-                await AppendErrorsToModelStateAsync(memberListResponse);
-            }
-            return PartialView("_ImageList", memberListResponse);
+            var memberListResponse = await _httpHelper.SendAsyncCAResult<GetCdnFilesListRequest, CdnFilesListResponseDto>(getCdnFilesListRequest, "api/cdn/image/list", HttpMethod.Get);
+            if (!memberListResponse.IsSuccess)
+                await AppendErrorsToModelStateAsyncCAResult(memberListResponse.ValidationErrors);
+
+            return PartialView("_ImageList", memberListResponse.Value);
         }
         /// <summary>
         /// Delete image. Should be post as get is not secure.
@@ -81,7 +74,7 @@ namespace RC.CA.WebMvc.Areas.Cdn.Controllers
             {
                 Id = Id
             };
-            var cdnFileListResponse = await _httpHelper.SendAsync<DeleteCdnFileRequest, BaseResponseDto>(deleteMemberRequest, "api/cdn/image/Delete",HttpMethod.Delete);
+            var cdnFileListResponse = await _httpHelper.SendAsync<DeleteCdnFileRequest, BaseResponseDto>(deleteMemberRequest, "api/cdn/image/Delete", HttpMethod.Delete);
             if (cdnFileListResponse?.TotalErrors > 0)
                 await AppendErrorsToModelStateAsync(cdnFileListResponse);
             return RedirectToAction(nameof(List));

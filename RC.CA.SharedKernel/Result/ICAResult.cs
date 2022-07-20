@@ -1,4 +1,4 @@
-﻿//Based on Ardalis.CAEmptyResult
+﻿//Based on Ardalis.CAResultEmpty
 
 namespace RC.CA.SharedKernel.Result;
 

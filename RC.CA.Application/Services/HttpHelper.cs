@@ -93,7 +93,8 @@ public class HttpHelper : IHttpHelper
         return response;
     }
 
-    public async Task<CAResult<TOut>> SendAsyncCAResult<TIn, TOut>(TIn request, string endPoint, HttpMethod method) where TOut : BaseResponseCAResult, new()
+    public async Task<CAResult<TOut>> SendAsyncCAResult<TIn, TOut>(TIn request, string endPoint, HttpMethod method)
+        where TOut : BaseResponseCAResult, new()
     {
 
         _httpClient = _httpClientFactory.CreateClient(RC.CA.SharedKernel.Constants.WebConstants.HttpFactoryName);

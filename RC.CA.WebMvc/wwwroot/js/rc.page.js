@@ -36,9 +36,10 @@ var rcPage = {
     },
     //Display errors returned by api standard base response errors
     displayAjaxErrors(response) {
-        if (response.totalErrors > 0) {
-            $(response.errors).each(function (key, value) {
-                rcPage.toastError("Upload failed: " + value.detail, true);
+        debugger;
+        if (!response.isSuccess) {
+            $(response.validationErrors).each(function (key, value) {
+                rcPage.toastError("Upload failed: " + value.errorMessage, true);
             });
         }
     },

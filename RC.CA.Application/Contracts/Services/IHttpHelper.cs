@@ -14,6 +14,7 @@ public interface IHttpHelper
     /// <exception cref="ApiException"></exception>
     [Obsolete]
     Task<TOut> SendAsync<TIn, TOut>(TIn request, string endPoint, HttpMethod method) where TOut : BaseResponseDto, new();
-    Task<CAResult<TOut>> SendAsyncCAResult<TIn, TOut>(TIn request, string endPoint, HttpMethod method) where TOut : BaseResponseCAResult, new();
+    Task<CAResult<TOut>> SendAsyncCAResult<TIn, TOut>(TIn request, string endPoint, HttpMethod method)
+        where TOut : BaseResponseCAResult, new();
 
 }

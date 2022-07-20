@@ -1,18 +1,14 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using RC.CA.Application.Contracts.Identity;
 using RC.CA.Application.Contracts.Persistence;
 using RC.CA.Application.Dto.Authentication;
 using RC.CA.Domain.Entities.Account;
-using RC.CA.Application.Models;
 using RC.CA.Infrastructure.Persistence.AuthorizationJwt;
 using RC.CA.Infrastructure.Persistence.Identity;
 
 namespace RC.CA.Infrastructure.Persistence.Services;
+
 
 /// <summary>
 /// Authentication service
@@ -48,69 +44,63 @@ public class AuthService : IAuthService
     /// Logout
     /// </summary>
     /// <returns></returns>
-    public async Task<BaseResponseDto> LogoutAsync()
+    public async Task<CAResultEmpty> LogoutAsync()
     {
-        BaseResponseDto response = new BaseResponseDto();
         await _signInManager.SignOutAsync();
-        return response;
+        return CAResultEmpty.Success();
     }
     /// <summary>
     /// Refresh login with JWT token
     /// </summary>
     /// <returns></returns>
-    public async Task<LoginResponse> RefreshAuthWithJwtRefreshToken(RefreshLoginRequest refreshLoginRequest)
+    public async Task<CAResult<LoginResponse>> RefreshAuthWithJwtRefreshToken(RefreshLoginRequest refreshLoginRequest)
     {
         LoginResponse response = new LoginResponse();
         var tokenExpiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.DurationInMinutes);
 
         response.AccessToken = await _jwtUtilities.RefreshJwtToken(refreshLoginRequest, tokenExpiresAt);
         if (response.AccessToken == null)
-            await response.AddResponseError(BaseResponseDto.ErrorType.Error, $"Login refresh failed please try to login again");
+            return CAResult<LoginResponse>.Invalid("LoginFailed", $"Login refresh failed please try to login again", ValidationSeverity.Error);
         else
         {
             //Add new refresh token to database
             response.RefreshToken = _jwtUtilities.GenerateRefreshToken();
             response.ExpiresAt = tokenExpiresAt;
-            await _jwtUtilities.SaveJwtRefreshToken(response.RefreshToken, refreshLoginRequest.UserName,"Refresh token");
+            await _jwtUtilities.SaveJwtRefreshToken(response.RefreshToken, refreshLoginRequest.UserName, "Refresh token");
+            return CAResult<LoginResponse>.Success(response);
         }
-        return response;
     }
-    public async Task RevokeJwtRefreshToken(string userId, string reason)
+    public async Task<CAResultEmpty> RevokeJwtRefreshToken(string userId, string reason)
     {
         await _jwtUtilities.RevokeJwtRefreshToken(userId, reason);
-        return;
+        return CAResultEmpty.Success();
     }
     /// <summary>
     /// Login
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
-    public async Task<LoginResponse> LoginAsync(LoginRequest request)
+    public async Task<CAResult<LoginResponse>> LoginAsync(LoginRequest request)
     {
-        LoginResponse response = new LoginResponse();
-
         //Get user
         var user = await _userManager.FindByEmailAsync(request.UserEmail);
         if (user == null)
-            await response.AddResponseError(BaseResponseDto.ErrorType.Error, $"User with {request.UserEmail} not found.");
+            return CAResult<LoginResponse>.Invalid("LoginFailed", $"User with {request.UserEmail} not found.", ValidationSeverity.Error);
 
-        if (response.TotalErrors == 0)
-        {
-            //Sign in user based on user and password
-            var result = await _signInManager.PasswordSignInAsync(request.UserEmail, request.Password, false, lockoutOnFailure: false);
-            if (!result.Succeeded)
-                await response.AddResponseError(BaseResponseDto.ErrorType.Error, $"Credentials for '{request.UserEmail} aren't valid'.");
+        //Sign in user based on user and password
+        var result = await _signInManager.PasswordSignInAsync(request.UserEmail, request.Password, false, lockoutOnFailure: false);
+        if (!result.Succeeded)
+            return CAResult<LoginResponse>.Invalid("LoginFailed", $"Credentials for '{request.UserEmail} aren't valid'.", ValidationSeverity.Error);
 
-            //Generate jwt token
-            var tokenExpiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.DurationInMinutes);
-            if (response.TotalErrors == 0)
-            {
-                string jwtSecurityToken = await _jwtUtilities.GenerateJwtTokenAsync(user, tokenExpiresAt);
-                response.AccessToken = jwtSecurityToken;
-                response.RefreshToken = _jwtUtilities.GenerateRefreshToken();
-                await _jwtUtilities.SaveJwtRefreshToken(response.RefreshToken, user.UserName,"Login");
-            }
-        }
+        //Generate jwt token
+        LoginResponse response = new LoginResponse();
+        var tokenExpiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.DurationInMinutes);
+        string jwtSecurityToken = await _jwtUtilities.GenerateJwtTokenAsync(user, tokenExpiresAt);
+        response.AccessToken = jwtSecurityToken;
+        response.RefreshToken = _jwtUtilities.GenerateRefreshToken();
+        await _jwtUtilities.SaveJwtRefreshToken(response.RefreshToken, user.UserName, "Login");
+        CAResult<LoginResponse>.Success(response);
+
         return response;
     }
     /// <summary>
@@ -118,10 +108,8 @@ public class AuthService : IAuthService
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
-    public async Task<RegistrationResponse> RegisterAsync(RegistrationRequest request)
+    public async Task<CAResult<RegistrationResponse>> RegisterAsync(RegistrationRequest request)
     {
-        RegistrationResponse response = new RegistrationResponse();
-        //
         var user = new ApplicationUser
         {
             Email = $"{request.Email}",
@@ -139,6 +127,8 @@ public class AuthService : IAuthService
         }
 
         //Add user
+        RegistrationResponse response = new RegistrationResponse();
+
         var result = await _userManager.CreateAsync(user, request.Password);
         if (result.Succeeded)
         {
@@ -148,11 +138,11 @@ public class AuthService : IAuthService
         }
         else
         {
-            foreach(var error in result.Errors)
-                await response.AddResponseError(BaseResponseDto.ErrorType.Error, error.Description);
+            var failedResponse = CAResult<RegistrationResponse>.Invalid();
+            foreach (var error in result.Errors)
+                failedResponse.AddValidationError(error.Code, error.Description, ValidationSeverity.Error);
+            return failedResponse;
         }
-        return response;
+        return CAResult<RegistrationResponse>.Success(response);
     }
-
-   
 }

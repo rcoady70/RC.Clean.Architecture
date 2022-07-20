@@ -1,5 +1,4 @@
 ﻿$(document).ready(function () {
-    debugger;
     var apiEndPoint = "";
     //Check if import id is set if not new
     if ($("#Id")[0].value.length == 0)
@@ -27,9 +26,10 @@
             $('#dropSection').removeClass('upload-active');
         },
         uploadFinished: function (i, file, response, time) {
+            debugger;
             norFileName = file.name.replace(/[^a-z0-9]/gi, '');
-            if (response.totalErrors > 0) {
-                $(response.errors).each(function (key, value) {
+            if (!response.isSuccess) {
+                $(response.validationErrors).each(function (key, value) {
                     $('#uploadedFiles').append(uploadTemplate(norFileName, true));
                 });
                 rcPage.displayAjaxErrors(response);
@@ -38,16 +38,17 @@
                 $('#uploadedFiles').append(uploadTemplate(norFileName, false));
                 $('#dropSection').addClass('upload-finished');
                 $("#dropSection").unbind();
-                $("#Id")[0].value = response.id;
+                $("#Id")[0].value = response.value.id;
                 $("#btnNext").removeClass("d-none");
                 $("#btnNext").addClass("d-block");
+                debugger;
             }
         },
         afterAll: function (e) {
 
             //refresh view
             var parms = {
-                filterByName: $("#FilterByName")[0].value,
+                filterByName: $("#FilterByName").length > 0 ? $("#FilterByName")[0].value : "",
                 filterById: "",
                 OrderBy: "createdon_desc",
                 pageSeq: 1,
