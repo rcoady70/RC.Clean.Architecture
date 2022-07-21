@@ -1,7 +1,7 @@
 ﻿using RC.CA.Application.Models;
 
 namespace RC.CA.Application.Dto.Cdn;
-public class CsvFilesListResponseDto : BaseResponseCAResult
+public class CsvFilesListResponseDto : BaseResponseDto
 {
     public string? FilterByName { get; set; } = "";
     public string? FilterById { get; set; } = "";

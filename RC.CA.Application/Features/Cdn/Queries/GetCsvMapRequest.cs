@@ -5,7 +5,7 @@ namespace RC.CA.Application.Features.Cdn.Queries;
 /// <summary>
 /// Get / build map from csv file
 /// </summary>
-public class GetCsvMapRequest : IRequest<CAResult<UpsertCsvMapResponseDto>>
+public class GetCsvMapRequest : IRequest<CAResult<UpsertCsvMapResponseDto>>, IServiceRequest
 {
     public Guid Id { get; set; }
 }

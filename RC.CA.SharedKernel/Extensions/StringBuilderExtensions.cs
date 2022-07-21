@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 
 namespace RC.CA.SharedKernel.Extensions;
 public static class StringBuilderExtensions
@@ -16,7 +12,7 @@ public static class StringBuilderExtensions
     /// <returns></returns>
     public static StringBuilder AppendFormattedLineExt(this StringBuilder str,
                                                        string format,
-                                                       params object[] args) => 
+                                                       params object[] args) =>
                                     str.AppendFormat(format, args).AppendLine();
     /// <summary>
     /// Append line based on true or false predicate. Second parameter is string builder gives flexibility on which append method to use 
@@ -31,7 +27,7 @@ public static class StringBuilderExtensions
     /// <returns></returns>
     public static StringBuilder AppendWhenExt(this StringBuilder str,
                                               Func<bool> predicate,
-                                              Func<StringBuilder,StringBuilder> func) => 
+                                              Func<StringBuilder, StringBuilder> func) =>
                          predicate() ? func(str) : str;
     /// <summary>
     /// Append line based on true or false predicate. Second parameter is string builder gives flexibility on which append method to use 
@@ -47,19 +43,19 @@ public static class StringBuilderExtensions
     /// <returns></returns>
     public static StringBuilder AppendCollectionExt<T>(this StringBuilder str,
                                                        IEnumerable<T> seq,
-                                                       Func<StringBuilder, T , StringBuilder> func) =>
+                                                       Func<StringBuilder, T, StringBuilder> func) =>
         seq.Aggregate(str, func);
-    public static void Samples()
+    private static void Samples()
     {
         System.Collections.Generic.Dictionary<string, String> dic = new System.Collections.Generic.Dictionary<string, String>();
         dic.Add("IE", "Ireland");
         dic.Add("UK", "United Kingdom");
         StringBuilder sbuild = new StringBuilder();
-        string result = sbuild.AppendCollectionExt(dic, (sb, opt) => sb.AppendFormattedLineExt("<option value=\"{0}\">{1}</option>",opt.Key,opt.Value)).ToString();
+        string result = sbuild.AppendCollectionExt(dic, (sb, opt) => sb.AppendFormattedLineExt("<option value=\"{0}\">{1}</option>", opt.Key, opt.Value)).ToString();
 
         sbuild.Clear();
         bool append = true;
-        result =  sbuild.AppendWhenExt(() => append, sb => sb.Append("Value to append if true")).ToString();
+        result = sbuild.AppendWhenExt(() => append, sb => sb.Append("Value to append if true")).ToString();
 
     }
 }

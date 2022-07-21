@@ -114,19 +114,19 @@ try
 
     //[Exceptions] Global error handling.
     //
-    if (app.Environment.IsDevelopment())
+    //if (app.Environment.IsDevelopment())
+    //{
+    //    app.UseDeveloperExceptionPage();
+    //}
+    //else
+    //{
+    //[Exceptions] Global exception handler implemented as middleware
+    app.UseApiExceptionHandler(options =>
     {
-        app.UseDeveloperExceptionPage();
-    }
-    else
-    {
-        //[Exceptions] Global exception handler implemented as middleware
-        app.UseApiExceptionHandler(options =>
-        {
             //Change log level from error to fatal depending on the error type
-            options.DetermineLogLevel = DetermineLogLevel;
-        });
-    }
+        options.DetermineLogLevel = DetermineLogLevel;
+    });
+    //}
 
     // Configure the HTTP request pipeline.
     //if (app.Environment.IsDevelopment())

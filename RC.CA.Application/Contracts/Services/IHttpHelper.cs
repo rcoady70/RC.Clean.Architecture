@@ -14,6 +14,8 @@ public interface IHttpHelper
     /// <exception cref="ApiException"></exception>
 
     Task<CAResult<TOut>> SendAsync<TIn, TOut>(TIn request, string endPoint, HttpMethod method)
-        where TOut : BaseResponseCAResult, new();
+        where TOut : BaseResponseDto, new()
+        //Mist inherit from marker interface IServiceRequest
+        where TIn : IServiceRequest;
 
 }

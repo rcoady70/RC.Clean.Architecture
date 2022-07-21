@@ -42,7 +42,7 @@ namespace RC.CA.WebMvc.Areas.Cdn.Controllers
             if (!ModelState.IsValid) return View();
             ModelState.Clear();
             var submitCsvImportRequest = new SubmitCsvImportRequest() { Id = id };
-            var response = await _httpHelper.SendAsync<SubmitCsvImportRequest, BaseResponseCAResult>(submitCsvImportRequest, "api/csvfile/SubmitImport", HttpMethod.Put);
+            var response = await _httpHelper.SendAsync<SubmitCsvImportRequest, BaseResponseDto>(submitCsvImportRequest, "api/csvfile/SubmitImport", HttpMethod.Put);
 
             if (response.IsSuccess)
                 return RedirectToAction(nameof(List));

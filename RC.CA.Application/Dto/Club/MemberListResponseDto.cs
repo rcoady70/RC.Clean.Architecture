@@ -1,7 +1,7 @@
 ﻿using RC.CA.Application.Models;
 
 namespace RC.CA.Application.Dto.Club;
-public class MemberListResponseDto : BaseResponseCAResult
+public class MemberListResponseDto : BaseResponseDto
 {
     public string? FilterByName { get; set; } = "";
     public string? FilterById { get; set; } = "";

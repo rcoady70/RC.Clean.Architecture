@@ -5,7 +5,7 @@ namespace RC.CA.Application.Features.Club.Queries;
 /// <summary>
 /// Get member list request, out IReadOnlyList<MemberListResponseDto>
 /// </summary>
-public class GetMemberListRequest : IRequest<CAResult<MemberListResponseDto>>
+public class GetMemberListRequest : IRequest<CAResult<MemberListResponseDto>>, IServiceRequest
 {
     public string? FilterByName { get; set; } = "";
     public string? FilterById { get; set; } = "";

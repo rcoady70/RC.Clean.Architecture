@@ -74,7 +74,7 @@ namespace RC.CA.WebMvc.Areas.Cdn.Controllers
             {
                 Id = Id
             };
-            var cdnFileListResponse = await _httpHelper.SendAsync<DeleteCdnFileRequest, BaseResponseCAResult>(deleteMemberRequest, "api/cdn/image/Delete", HttpMethod.Delete);
+            var cdnFileListResponse = await _httpHelper.SendAsync<DeleteCdnFileRequest, BaseResponseDto>(deleteMemberRequest, "api/cdn/image/Delete", HttpMethod.Delete);
             if (!cdnFileListResponse.IsSuccess)
             {
                 await AppendErrorsToModelStateAsyncCAResult(cdnFileListResponse.ValidationErrors);

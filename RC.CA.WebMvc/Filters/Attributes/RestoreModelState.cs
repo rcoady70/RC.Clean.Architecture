@@ -1,12 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using RC.CA.SharedKernel.Extensions;
 
 namespace RC.CA.WebMvc.Filters.Attributes;
 
 public class RestoreModelState : ActionFilterAttribute
 {
+    /// <summary>
+    /// Restore model state from temp data uses [RestoreModelState] data annotation
+    /// </summary>
+    /// <param name="filterContext"></param>
     public override void OnActionExecuting(ActionExecutingContext filterContext)
     {
         base.OnActionExecuting(filterContext);
@@ -15,11 +17,11 @@ public class RestoreModelState : ActionFilterAttribute
         {
             int ix = 0;
             var modelStateDictionary = (string)controller.TempData["ModelState"];
-            var errors = modelStateDictionary.FromJsonExt<BaseResponseDto>();
-            foreach (var error in errors.Errors)
+            CAResultEmpty errors = modelStateDictionary.FromJsonExt<CAResultEmpty>();
+            foreach (var error in errors.ValidationErrors)
             {
-                error.Id ??=  $"AutoId_{ix++}";
-                controller.ViewData.ModelState.AddModelError(error.Id, error.Detail);
+                error.ErrorCode ??= $"AutoId_{ix++}";
+                controller.ViewData.ModelState.AddModelError(error.ErrorCode, error.ErrorMessage);
             }
         }
     }

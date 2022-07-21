@@ -4,7 +4,6 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using RC.CA.Application.Contracts.Identity;
-using RC.CA.Application.Contracts.Services;
 using RC.CA.Application.Exceptions;
 using RC.CA.Application.Models;
 using RC.CA.Infrastructure.Logging.Constants;
@@ -51,7 +50,8 @@ public class HttpHelper : IHttpHelper
     /// <returns></returns>
     /// <exception cref="ApiException"></exception>
     public async Task<CAResult<TOut>> SendAsync<TIn, TOut>(TIn request, string endPoint, HttpMethod method)
-        where TOut : BaseResponseCAResult, new()
+        where TOut : BaseResponseDto, new()
+        where TIn : IServiceRequest
     {
 
         _httpClient = _httpClientFactory.CreateClient(RC.CA.SharedKernel.Constants.WebConstants.HttpFactoryName);
@@ -96,7 +96,7 @@ public class HttpHelper : IHttpHelper
         }
     }
     private async Task<CAResult<TOut>> ProssessResponse<TIn, TOut>(HttpResponseMessage apiResult, string endPoint, TIn request)
-                                                                where TOut : BaseResponseCAResult, new()
+                                                                where TOut : BaseResponseDto, new()
     {
         var dftResponse = CAResult<TOut>.Invalid(new ValidationError
         {
@@ -157,8 +157,8 @@ public class HttpHelper : IHttpHelper
                 break;
             default:
                 _apiResultAsString = await apiResult.Content.ReadAsStringAsync();
-                var baseResponse = JsonSerializer.Deserialize<BaseResponseDto>(_apiResultAsString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                throw new ApiException(_appContext.CorrelationId, endPoint, $"HttpPostHelper WebException {baseResponse?.Errors?[0]}", (int)baseResponse.RequestStatus, JsonSerializer.Serialize(request).MaskSensitiveDataExt(), JsonSerializer.Serialize(baseResponse).MaskSensitiveDataExt(), null);
+                var response = JsonSerializer.Deserialize<CAResult<TOut>>(_apiResultAsString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                throw new ApiException(_appContext.CorrelationId, endPoint, $"HttpPostHelper WebException {response?.ValidationErrors?[0]}", (int)response.Status, JsonSerializer.Serialize(request).MaskSensitiveDataExt(), JsonSerializer.Serialize(response).MaskSensitiveDataExt(), null);
                 break;
         }
         return dftResponse;

@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace RC.CA.Application.Dto.Authentication;
 
-public  class LoginRequest
+public class LoginRequest : IServiceRequest
 {
     public string UserEmail { get; set; } = default!;
     [DataType(DataType.Password)]

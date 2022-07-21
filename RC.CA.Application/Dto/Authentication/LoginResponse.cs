@@ -4,7 +4,7 @@ using RC.CA.Application.Models;
 
 namespace RC.CA.Application.Dto.Authentication;
 
-public class LoginResponse : BaseResponseCAResult
+public class LoginResponse : BaseResponseDto
 {
     [JsonPropertyName("expires_at")]
     public DateTime? ExpiresAt { get; set; }

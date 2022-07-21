@@ -17,23 +17,7 @@ public abstract class RootController : Controller
     {
         _appContextX = appContextX;
     }
-    /// <summary>
-    /// Helper function to apply errors returned from api to model state
-    /// </summary>
-    /// <param name="response">Base response from api call</param>
-    /// <returns></returns>
-    [Obsolete("Use AppendErrorsToModelStateAsyncCAResult all responses should return CAResult object")]
-    public async Task AppendErrorsToModelStateAsync(BaseResponseDto? response)
-    {
 
-        if (response != null)
-        {
-            foreach (var item in response.Errors)
-            {
-                ModelState.AddModelError("", item.Detail);
-            }
-        }
-    }
     /// <summary>
     /// Helper function to apply errors returned from api (CAResult) to model state 
     /// </summary>

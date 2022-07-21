@@ -5,7 +5,7 @@ namespace RC.CA.Application.Features.Club.Queries;
 /// <summary>
 /// Create member request
 /// </summary>
-public class UpdateMemberRequest : IRequest<CAResult<CreateMemberResponseDto>>
+public class UpdateMemberRequest : IRequest<CAResult<CreateMemberResponseDto>>, IServiceRequest
 {
     public Guid? Id { get; set; }
     public string Name { get; set; } = "";

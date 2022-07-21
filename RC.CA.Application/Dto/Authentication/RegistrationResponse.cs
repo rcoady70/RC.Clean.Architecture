@@ -2,7 +2,7 @@
 
 namespace RC.CA.Application.Dto.Authentication;
 
-public class RegistrationResponse : BaseResponseCAResult
+public class RegistrationResponse : BaseResponseDto
 {
     public string? UserId { get; set; }
 

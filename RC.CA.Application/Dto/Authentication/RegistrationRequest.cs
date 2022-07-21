@@ -2,7 +2,7 @@
 
 namespace RC.CA.Application.Dto.Authentication;
 
-public class RegistrationRequest
+public class RegistrationRequest : IServiceRequest
 {
     public string FirstName { get; set; } = default!;
     public string LastName { get; set; } = default!;

@@ -64,7 +64,7 @@ public class MemberController : RootController
         {
             Id = Id
         };
-        var memberListResponse = await _httpHelper.SendAsync<DeleteMemberRequest, BaseResponseCAResult>(deleteMemberRequest, "api/club/Members/Delete", HttpMethod.Delete);
+        var memberListResponse = await _httpHelper.SendAsync<DeleteMemberRequest, BaseResponseDto>(deleteMemberRequest, "api/club/Members/Delete", HttpMethod.Delete);
         if (!memberListResponse.IsSuccess)
             await AppendErrorsToModelStateAsyncCAResult(memberListResponse.ValidationErrors);
         return RedirectToAction(nameof(List));

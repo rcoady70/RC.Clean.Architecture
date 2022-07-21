@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using System.Text.Encodings.Web;
 
 namespace RC.CA.SharedKernel.Extensions;
 
@@ -43,7 +42,7 @@ public static class StringExtensions
     /// <param name="str">String to convert</param>
     /// <param name="defaultValue">Default value</param>
     /// <returns></returns>
-    public static decimal ToDecimalExt(this String str,decimal defaultValue)
+    public static decimal ToDecimalExt(this String str, decimal defaultValue)
     {
         if (string.IsNullOrEmpty(str))
             return defaultValue;
@@ -51,10 +50,26 @@ public static class StringExtensions
         {
             return Convert.ToDecimal(str);
         }
-        catch 
+        catch
         {
             return defaultValue;
         }
+    }
+    /// <summary>
+    /// To integer extension
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="defaultValue"></param>
+    /// <returns></returns>
+    public static decimal ToIntExt(this String str, int defaultValue = 0)
+    {
+        if (string.IsNullOrEmpty(str))
+            return defaultValue;
+
+        if (int.TryParse(str, out int returnVal))
+            return returnVal;
+        else
+            return defaultValue;
     }
     /// <summary>
     /// Get element from array Separator 
@@ -63,20 +78,20 @@ public static class StringExtensions
     /// <param name="Index"></param>
     /// <param name="Sepchar"></param>
     /// <returns></returns>
-    public static string GetArrayElementExt(this String str,int Index,char Sepchar = '_')
+    public static string GetArrayElementExt(this String str, int Index, char Sepchar = '_')
     {
         if (string.IsNullOrEmpty(str))
             return "";
         try
         {
-            var values =  str.Split(new char[] { Sepchar });
+            var values = str.Split(new char[] { Sepchar });
             if (values.Length >= Index)
                 return values[1];
         }
-        catch {}
+        catch { }
         return "";
     }
-    
+
     /// <summary>
     /// Mask sensitive data in josn, connection strings
     /// </summary>
@@ -117,7 +132,7 @@ public static class StringExtensions
     /// <returns></returns>
     public static string RemoveAllAlphaNumExt(this String s)
     {
-        return System.Text.RegularExpressions.Regex.Replace(s,"[^a-zA-Z0-9]","");
+        return System.Text.RegularExpressions.Regex.Replace(s, "[^a-zA-Z0-9]", "");
     }
     /// <summary>
     /// Remove all non alphanumeric characters from string leave _. Used for file names

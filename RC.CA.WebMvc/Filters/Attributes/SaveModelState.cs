@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace RC.CA.WebMvc.Filters.Attributes;
-
+/// <summary>
+/// Save model state to temp data for one response
+/// </summary>
 public class SaveModelState : ActionFilterAttribute
 {
     public override void OnActionExecuted(ActionExecutedContext filterContext)
@@ -13,13 +14,13 @@ public class SaveModelState : ActionFilterAttribute
         if (!controller.ViewData.ModelState.IsValid)
         {
             int ix = 0;
-            BaseResponseDto responseDto = new BaseResponseDto();
+            List<ValidationError> validationErrors = new List<ValidationError>();
             foreach (var modelError in controller.ViewData.ModelState)
             {
-                foreach(var error in modelError.Value.Errors)
-                    responseDto.AddResponseError($"AutoId_{ix++}",BaseResponseDto.ErrorType.Error, error.ErrorMessage);
+                foreach (var error in modelError.Value.Errors)
+                    validationErrors.Add(new ValidationError { ErrorCode = $"AutoId_{ix++}", ErrorMessage = error.ErrorMessage, Severity = ValidationSeverity.Error });
             }
-            controller.TempData["ModelState"] = responseDto.ToJsonExt();
+            controller.TempData["ModelState"] = CAResultEmpty.Invalid(validationErrors).ToJsonExt();
         }
     }
 }
