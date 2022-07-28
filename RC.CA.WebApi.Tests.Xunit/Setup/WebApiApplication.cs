@@ -34,6 +34,20 @@ public class WebApiApplication : WebApplicationFactory<Program>
 
         builder.ConfigureServices(services =>
         {
+            ////Remove dbcontext for di container
+            //var descriptor = services.SingleOrDefault(
+            //        d => d.ServiceType ==
+            //                 typeof(DbContextOptions<ApplicationDbContext>));
+            //services.Remove(descriptor);
+
+            ////Add dbcontext for di container
+            //string dbName = "InMemoryDbForTesting" + Guid.NewGuid().ToString();
+            //services.AddDbContext<ApplicationDbContext>(options =>
+            //{
+            //    options.UseInMemoryDatabase(dbName);
+            //});
+
+
             var serviceProvider = services.BuildServiceProvider();
         });
         return base.CreateHost(builder);
