@@ -1,5 +1,4 @@
 ﻿using Azure.Identity;
-using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Azure;
 using NT.CA.Notification.WebApi.Startup;
@@ -25,8 +24,10 @@ Log.Logger = new LoggerConfiguration()
 try
 {
     //[Serilog]
-    Log.Information($"{DateTime.Now.ToString()} Web api starting Environment.Version {Environment.Version}");
+    Log.Information($"{DateTime.Now.ToString()} STARTUP Web api starting Environment.Version {Environment.Version}.");
+
     var builder = WebApplication.CreateBuilder(args);
+    Log.Information($"{DateTime.Now.ToString()} STARTUP Web api Configuration file  {builder.Configuration.GetValue<string>("ConfigType") ?? "Unknown file missing ConfigType element"}.");
 
     //[KeyVault] If production hook up key vault
     //
@@ -60,8 +61,8 @@ try
 
     // Add controller services to the container.
     //
-    builder.Services.AddControllers()
-                    .AddFluentValidation();
+    builder.Services.AddControllers();
+    //.AddFluentValidation();
 
     //[EventBus] Notification requests will be queued to azure event buss and processed later
     //
@@ -123,7 +124,7 @@ try
     //[Exceptions] Global exception handler implemented as middleware
     app.UseApiExceptionHandler(options =>
     {
-            //Change log level from error to fatal depending on the error type
+        //Change log level from error to fatal depending on the error type
         options.DetermineLogLevel = DetermineLogLevel;
     });
     //}
@@ -172,13 +173,12 @@ try
 }
 catch (Exception ex)
 {
-    Log.Fatal(ex, $"{DateTime.Now.ToString()} Web api terminated unexpectedly {ex.Message}");
+    Log.Fatal(ex, $"{DateTime.Now.ToString()} STARTUP Web api terminated unexpectedly {ex.Message}");
 }
 finally
 {
     Log.CloseAndFlush();
 }
-
 
 //
 // Change log level depending on the type of error
@@ -195,4 +195,6 @@ LogLevel DetermineLogLevel(Exception ex)
     return LogLevel.Error;
 }
 
-
+// Make the implicit Program class public so test projects can access it
+//
+public partial class Program { }

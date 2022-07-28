@@ -6,22 +6,22 @@ public abstract class BaseController : ControllerBase
 {
 
     /// <summary>
-    /// Handel request wrap as Iaction result
+    /// Handle action result return correct action result
     /// </summary>
-    /// <typeparam name="T">CAResult</typeparam>
-    /// <param name="result">CAResult returned by mediatr</param>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="result"></param>
     /// <returns></returns>
     /// <exception cref="NotSupportedException"></exception>
-    protected ActionResult HandleResult<T>(CAResult<T> result)
+    protected ActionResult<T> HandleResult<T>(T result) where T : ICAResult
     {
         switch (result.Status)
         {
-            case ResultStatus.Ok: return typeof(T).IsInstanceOfType(result) ? (ActionResult)Ok() : Ok(result);
-            case ResultStatus.NotFound: return NotFound();
-            case ResultStatus.Unauthorized: return Unauthorized();
+            case ResultStatus.Ok: return Ok(result);
+            case ResultStatus.NotFound: return NotFound(result);
+            case ResultStatus.Unauthorized: return Unauthorized(result);
             case ResultStatus.Forbidden: return Forbid();
-            case ResultStatus.Invalid: return BadRequest(result);
-            case ResultStatus.Error: return UnprocessableEntity(result);
+            case ResultStatus.BadRequest: return BadRequest(result);
+            case ResultStatus.ServerError: return UnprocessableEntity(result);
             default: throw new NotSupportedException($"Result {result.Status} conversion is not supported.");
         }
     }

@@ -150,9 +150,12 @@ public static class StringExtensions
     /// <returns></returns>
     public static bool IsValidEmailExt(this String s)
     {
+        if (string.IsNullOrEmpty(s))
+            return false;
         bool emailOK = true;
         try
         {
+
             System.Net.Mail.MailAddress mail = new System.Net.Mail.MailAddress(s);
             if (!System.Text.RegularExpressions.Regex.IsMatch(s, "[\\w\\.-<-_']+(\\+[\\w-]*)?@([\\w-']+\\.)+[\\w->]+", System.Text.RegularExpressions.RegexOptions.Singleline | System.Text.RegularExpressions.RegexOptions.IgnoreCase))
                 emailOK = false;

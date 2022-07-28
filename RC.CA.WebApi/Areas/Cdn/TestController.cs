@@ -14,7 +14,7 @@ namespace RC.CA.WebApi.Areas.Cdn
     [Route("api/[controller]")]
     [ApiController]
     [AllowAnonymous]
-    public class TestController : ControllerBase
+    public class TestController : BaseController
     {
         private readonly IMediator _mediator;
         private readonly IServiceScopeFactory _serviceScopeFactory;
@@ -31,10 +31,10 @@ namespace RC.CA.WebApi.Areas.Cdn
         /// </summary>
         /// <returns></returns>
         [HttpGet("TestSuccess")]
-        public async Task<CAResult<UpsertCsvMapResponseDto>> TestSuccess()
+        public async Task<ActionResult<CAResult<UpsertCsvMapResponseDto>>> TestSuccess()
         {
             UpsertCsvMapResponseDto responseDTO = new UpsertCsvMapResponseDto();
-            return CAResultEmpty.Success(responseDTO);
+            return HandleResult(CAResultEmpty.Success(responseDTO));
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace RC.CA.WebApi.Areas.Cdn
         /// </summary>
         /// <returns></returns>
         [HttpGet("TestFluentErrors")]
-        public async Task<CAResult<UpsertCsvMapResponseDto>> TestFluentErrors()
+        public async Task<ActionResult<CAResult<UpsertCsvMapResponseDto>>> TestFluentErrors()
         {
             //Fluent validation 
             UpsertCsvMapResponseDto responseDTO = new UpsertCsvMapResponseDto();
@@ -50,9 +50,9 @@ namespace RC.CA.WebApi.Areas.Cdn
 
             var valResult = validationRules.Validate(new GetCdnFilesListRequest() { FilterByName = "<" });
             if (!valResult.IsValid)
-                return CAResult<UpsertCsvMapResponseDto>.Invalid(valResult.AsModelStateErrors());
+                return HandleResult(CAResult<UpsertCsvMapResponseDto>.Invalid(valResult.AsModelStateErrors()));
             else
-                return CAResult<UpsertCsvMapResponseDto>.Success(responseDTO, "Ran ok no errors");
+                return HandleResult(CAResult<UpsertCsvMapResponseDto>.Success(responseDTO, "Ran ok no errors"));
         }
 
         /// <summary>
@@ -70,9 +70,9 @@ namespace RC.CA.WebApi.Areas.Cdn
         /// </summary>
         /// <returns></returns>
         [HttpGet("TestNotFound")]
-        public async Task<CAResult<UpsertCsvMapResponseDto>> TestNotFound()
+        public async Task<ActionResult<CAResult<UpsertCsvMapResponseDto>>> TestNotFound()
         {
-            return CAResult<UpsertCsvMapResponseDto>.NotFound();
+            return HandleResult(CAResult<UpsertCsvMapResponseDto>.NotFound());
 
         }
 

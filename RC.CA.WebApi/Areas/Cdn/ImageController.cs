@@ -32,16 +32,15 @@ namespace RC.CA.WebApi.Areas.CDN
         }
 
         [HttpGet("List")]
-        public async Task<CAResult<CdnFilesListResponseDto>> List(GetCdnFilesListRequest getCdnFilesListRequest)
+        public async Task<ActionResult<CAResult<CdnFilesListResponseDto>>> List(GetCdnFilesListRequest getCdnFilesListRequest)
         {
-            CdnFilesListResponseDto response = new CdnFilesListResponseDto();
             GetCdnFilesRequestValidator validationRules = new GetCdnFilesRequestValidator();
             var valResult = validationRules.Validate(getCdnFilesListRequest);
             //Check result of model validation
             if (valResult.IsValid)
-                return await _mediator.Send(getCdnFilesListRequest);
+                return HandleResult(await _mediator.Send(getCdnFilesListRequest));
             else
-                return CAResult<CdnFilesListResponseDto>.Invalid(valResult.AsModelStateErrors());
+                return HandleResult(CAResult<CdnFilesListResponseDto>.Invalid(valResult.AsModelStateErrors()));
         }
         /// <summary>
         /// Process uploaded file.
@@ -50,7 +49,7 @@ namespace RC.CA.WebApi.Areas.CDN
         /// <returns></returns>
         [HttpPost("Upload")]
         [AllowAnonymous]
-        public async Task<CAResult<CreateCdnFileResponseDto>> Upload([FromForm] IFormFile? fileData)
+        public async Task<ActionResult<CAResult<CreateCdnFileResponseDto>>> Upload([FromForm] IFormFile? fileData)
         {
             var cookie = Request.Cookies.Count;
             CreateCdnFileResponseDto response = new CreateCdnFileResponseDto();
@@ -62,13 +61,13 @@ namespace RC.CA.WebApi.Areas.CDN
                 {
                     CreateCdnFileRequest createUploadedFilesRequest = new CreateCdnFileRequest();
                     createUploadedFilesRequest.UploadedFile = fileData;
-                    return await _mediator.Send(createUploadedFilesRequest);
+                    return HandleResult(await _mediator.Send(createUploadedFilesRequest));
                 }
                 else
-                    return CAResult<CreateCdnFileResponseDto>.Invalid(valResult.AsModelStateErrors());
+                    return HandleResult(CAResult<CreateCdnFileResponseDto>.Invalid(valResult.AsModelStateErrors()));
             }
             else
-                return CAResult<CreateCdnFileResponseDto>.Invalid("UploadFailed", "Uploaded file not found", ValidationSeverity.Error);
+                return HandleResult(CAResult<CreateCdnFileResponseDto>.Invalid("UploadFailed", "Uploaded file not found", ValidationSeverity.Error));
         }
         /// <summary>
         /// Delete image
@@ -76,12 +75,11 @@ namespace RC.CA.WebApi.Areas.CDN
         /// <param name="Id"></param>
         /// <returns></returns>
         [HttpDelete("Delete")]
-        public async Task<CAResultEmpty> Delete(DeleteCdnFileRequest deleteCdnFileRequest)
+        public async Task<ActionResult<CAResultEmpty>> Delete(DeleteCdnFileRequest deleteCdnFileRequest)
         {
             Guard.Against.Null(deleteCdnFileRequest, nameof(deleteCdnFileRequest));
 
-            return await _mediator.Send(deleteCdnFileRequest);
-
+            return HandleResult(await _mediator.Send(deleteCdnFileRequest));
         }
     }
 }

@@ -2,10 +2,10 @@
 
 public enum ResultStatus
 {
-    Ok,
-    Error,
-    Forbidden,
-    Unauthorized,
-    Invalid,
-    NotFound
+    Ok = 200,
+    ServerError = 500,
+    Forbidden = 403,
+    Unauthorized = 401,
+    BadRequest = 400,
+    NotFound = 404
 }

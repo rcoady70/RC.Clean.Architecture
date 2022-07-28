@@ -8,7 +8,7 @@ using RC.CA.Application.Dto.Authentication;
 namespace RC.CA.WebApi.Areas.Account.Controllers;
 [Route("api/[controller]")]
 [ApiController]
-public class UserAccountController : ControllerBase
+public class UserAccountController : BaseController
 {
     private readonly IMediator _mediator;
     private readonly IAuthService _authenticationService;
@@ -28,9 +28,9 @@ public class UserAccountController : ControllerBase
     /// <returns></returns>
     [HttpPost("Register")]
     [AllowAnonymous]
-    public async Task<CAResult<RegistrationResponse>> Register([FromBody] RegistrationRequest registrationRequest)
+    public async Task<ActionResult<CAResult<RegistrationResponse>>> Register([FromBody] RegistrationRequest registrationRequest)
     {
-        return await _authenticationService.RegisterAsync(registrationRequest);
+        return HandleResult(await _authenticationService.RegisterAsync(registrationRequest));
     }
 
     /// <summary>
@@ -40,10 +40,10 @@ public class UserAccountController : ControllerBase
     /// <returns></returns>
     [HttpPost("Login")]
     [AllowAnonymous]
-    public async Task<CAResult<LoginResponse>> Login([FromBody] LoginRequest loginRequest)
+    public async Task<ActionResult<CAResult<LoginResponse>>> Login([FromBody] LoginRequest loginRequest)
     {
         var authReponse = await _authenticationService.LoginAsync(loginRequest);
-        return authReponse;
+        return HandleResult(authReponse);
     }
     /// <summary>
     /// Refresh login with jwt token. Jwt token much be active and refresh token must be active
@@ -51,18 +51,18 @@ public class UserAccountController : ControllerBase
     /// <returns></returns>
     [HttpPost("RefreshAuthWithJwtRefreshToken")]
     [AllowAnonymous]
-    public async Task<CAResult<LoginResponse>> RefreshAuthWithJwtRefreshToken([FromBody] RefreshLoginRequest refreshLoginRequest)
+    public async Task<ActionResult<CAResult<LoginResponse>>> RefreshAuthWithJwtRefreshToken([FromBody] RefreshLoginRequest refreshLoginRequest)
     {
-        return await _authenticationService.RefreshAuthWithJwtRefreshToken(refreshLoginRequest);
+        return HandleResult(await _authenticationService.RefreshAuthWithJwtRefreshToken(refreshLoginRequest));
     }
     /// <summary>
     /// Revoke refresh token
     /// </summary>
     /// <returns></returns>
     [HttpPost("RevokeJwtRefreshToken")]
-    public async Task<CAResultEmpty> RevokeJwtRefreshToken([FromBody] RevokeJwtRefreshTokenRequest revokeJwtRefreshTokenRequest)
+    public async Task<ActionResult<CAResultEmpty>> RevokeJwtRefreshToken([FromBody] RevokeJwtRefreshTokenRequest revokeJwtRefreshTokenRequest)
     {
-        return await _authenticationService.RevokeJwtRefreshToken(revokeJwtRefreshTokenRequest.UserName, "Revoked");
+        return HandleResult(await _authenticationService.RevokeJwtRefreshToken(revokeJwtRefreshTokenRequest.UserName, "Revoked"));
     }
     /// <summary>
     /// Logout
@@ -70,9 +70,9 @@ public class UserAccountController : ControllerBase
     /// <returns></returns>
     [HttpPost("Logout")]
     [AllowAnonymous]
-    public async Task<CAResultEmpty> Logout()
+    public async Task<ActionResult<CAResultEmpty>> Logout()
     {
-        return await _authenticationService.LogoutAsync();
+        return HandleResult(await _authenticationService.LogoutAsync());
     }
 
 

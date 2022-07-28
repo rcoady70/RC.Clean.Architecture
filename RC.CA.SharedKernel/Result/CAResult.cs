@@ -4,7 +4,10 @@ namespace RC.CA.SharedKernel.Result;
 
 public class CAResult<T> : ICAResult
 {
-    protected CAResult() { }
+    protected CAResult()
+    {
+        string mm = "";
+    }
 
     /// <summary>
     /// Return result with value of T
@@ -84,8 +87,8 @@ public class CAResult<T> : ICAResult
             Identifier = Identifier,
         }
         );
-        if (Severity == ValidationSeverity.Error)
-            Status = ResultStatus.Invalid;
+        if (Severity == ValidationSeverity.Error && Status == ResultStatus.Ok)
+            Status = ResultStatus.BadRequest;
     }
 
     public void ClearValueType() => ValueType = null;
@@ -145,9 +148,9 @@ public class CAResult<T> : ICAResult
     /// </summary>
     /// <param name="errorMessages">A list of string error messages.</param>
     /// <returns>A CAResultEmpty<typeparamref name="T"/></returns>
-    public static CAResult<T> Error(params string[] errorMessages)
+    public static CAResult<T> ServerError(params string[] errorMessages)
     {
-        return new CAResult<T>(ResultStatus.Error) { Errors = errorMessages };
+        return new CAResult<T>(ResultStatus.ServerError) { Errors = errorMessages };
     }
 
     /// <summary>
@@ -157,7 +160,7 @@ public class CAResult<T> : ICAResult
     /// <returns>A CAResultEmpty<typeparamref name="T"/></returns>
     public static CAResult<T> Invalid(List<ValidationError> validationErrors)
     {
-        var result = new CAResult<T>(ResultStatus.Invalid) { ValidationErrors = new List<ValidationError>() };
+        var result = new CAResult<T>(ResultStatus.BadRequest) { ValidationErrors = new List<ValidationError>() };
         foreach (var error in validationErrors)
             result.AddValidationError(error.ErrorCode, error.ErrorMessage, error.Severity, error.Identifier);
         return result;
@@ -168,7 +171,7 @@ public class CAResult<T> : ICAResult
     /// <returns></returns>
     public static CAResult<T> Invalid()
     {
-        var result = new CAResult<T>(ResultStatus.Invalid) { ValidationErrors = new List<ValidationError>() };
+        var result = new CAResult<T>(ResultStatus.BadRequest) { ValidationErrors = new List<ValidationError>() };
         return result;
     }
     /// <summary>
@@ -178,7 +181,7 @@ public class CAResult<T> : ICAResult
     /// <returns>A CAResultEmpty<typeparamref name="T"/></returns>
     public static CAResult<T> Invalid(ValidationError validationError)
     {
-        var result = new CAResult<T>(ResultStatus.Invalid) { ValidationErrors = new List<ValidationError>() };
+        var result = new CAResult<T>(ResultStatus.BadRequest) { ValidationErrors = new List<ValidationError>() };
         result.AddValidationError(validationError.ErrorCode, validationError.ErrorMessage, validationError.Severity, validationError.Identifier);
         return result;
     }
@@ -189,7 +192,7 @@ public class CAResult<T> : ICAResult
     /// <returns>A CAResultEmpty<typeparamref name="T"/></returns>
     public static CAResult<T> Invalid(string errorCode, string errorMessage, ValidationSeverity severity, string identifier = "")
     {
-        var result = new CAResult<T>(ResultStatus.Invalid) { ValidationErrors = new List<ValidationError>() };
+        var result = new CAResult<T>(ResultStatus.BadRequest) { ValidationErrors = new List<ValidationError>() };
         result.AddValidationError(errorCode, errorMessage, severity, identifier);
         return result;
     }
@@ -221,5 +224,16 @@ public class CAResult<T> : ICAResult
     public static CAResult<T> Unauthorized()
     {
         return new CAResult<T>(ResultStatus.Unauthorized);
+    }
+    /// <summary>
+    /// This is similar to Forbidden, but should be used when the user has not authenticated or has attempted to authenticate but failed with error. 
+    /// See also HTTP 401 Unauthorized: https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#4xx_client_errors
+    /// </summary>
+    /// <returns>A CAResultEmpty<typeparamref name="T"/></returns>
+    public static CAResult<T> Unauthorized(string errorCode, string errorMessage, ValidationSeverity severity, string identifier = "")
+    {
+        var result = new CAResult<T>(ResultStatus.Unauthorized) { ValidationErrors = new List<ValidationError>() };
+        result.AddValidationError(errorCode, errorMessage, severity, identifier);
+        return result;
     }
 }

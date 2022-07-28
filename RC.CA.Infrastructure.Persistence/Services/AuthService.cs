@@ -60,7 +60,7 @@ public class AuthService : IAuthService
 
         response.AccessToken = await _jwtUtilities.RefreshJwtToken(refreshLoginRequest, tokenExpiresAt);
         if (response.AccessToken == null)
-            return CAResult<LoginResponse>.Invalid("LoginFailed", $"Login refresh failed please try to login again", ValidationSeverity.Error);
+            return CAResult<LoginResponse>.Unauthorized("LoginFailed", $"Login refresh failed please try to login again", ValidationSeverity.Error);
         else
         {
             //Add new refresh token to database
@@ -85,12 +85,12 @@ public class AuthService : IAuthService
         //Get user
         var user = await _userManager.FindByEmailAsync(request.UserEmail);
         if (user == null)
-            return CAResult<LoginResponse>.Invalid("LoginFailed", $"User with {request.UserEmail} not found.", ValidationSeverity.Error);
+            return CAResult<LoginResponse>.Unauthorized("LoginFailed", $"User with {request.UserEmail} not found.", ValidationSeverity.Error);
 
         //Sign in user based on user and password
         var result = await _signInManager.PasswordSignInAsync(request.UserEmail, request.Password, false, lockoutOnFailure: false);
         if (!result.Succeeded)
-            return CAResult<LoginResponse>.Invalid("LoginFailed", $"Credentials for '{request.UserEmail} aren't valid'.", ValidationSeverity.Error);
+            return CAResult<LoginResponse>.Unauthorized("LoginFailed", $"Credentials for '{request.UserEmail} aren't valid'.", ValidationSeverity.Error);
 
         //Generate jwt token
         LoginResponse response = new LoginResponse();

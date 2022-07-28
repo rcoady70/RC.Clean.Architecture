@@ -48,13 +48,9 @@ public class ApiExceptionMiddleware
         if (!context.Request.Headers.TryGetValue(WebConstants.CorrelationId, out var correlationId))
             correlationId = "Not-Found";
 
-
-        List<ValidationError> validationErrors = new List<ValidationError>();
-
-        context.Response.ContentType = "application/json";
-        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-
         //If known error give more information
+        //
+        List<ValidationError> validationErrors = new List<ValidationError>();
         switch (exception)
         {
             case ArgumentException:
@@ -79,6 +75,8 @@ public class ApiExceptionMiddleware
 
         // Public error message returned in api response
         //
+        context.Response.ContentType = "application/json";
+        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
         var result = JsonSerializer.Serialize(CAResultEmpty.Invalid(validationErrors));
         await context.Response.WriteAsync(result);
     }

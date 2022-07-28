@@ -53,9 +53,9 @@ public class CAResultEmpty : CAResult<CAResultEmpty>
     /// </summary>
     /// <param name="errorMessages">A list of string error messages.</param>
     /// <returns>A CAResultEmpty</returns>
-    public static new CAResultEmpty Error(params string[] errorMessages)
+    public static new CAResultEmpty ServerError(params string[] errorMessages)
     {
-        return new CAResultEmpty(ResultStatus.Error) { Errors = errorMessages };
+        return new CAResultEmpty(ResultStatus.ServerError) { Errors = errorMessages };
     }
 
     /// <summary>
@@ -65,7 +65,7 @@ public class CAResultEmpty : CAResult<CAResultEmpty>
     /// <returns>A CAResultEmpty</returns>
     public static new CAResultEmpty Invalid(List<ValidationError> validationErrors)
     {
-        return new CAResultEmpty(ResultStatus.Invalid) { ValidationErrors = validationErrors };
+        return new CAResultEmpty(ResultStatus.BadRequest) { ValidationErrors = validationErrors };
     }
 
     /// <summary>

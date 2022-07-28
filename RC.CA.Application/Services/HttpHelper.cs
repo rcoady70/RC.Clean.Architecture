@@ -10,14 +10,7 @@ using RC.CA.Infrastructure.Logging.Constants;
 using RC.CA.SharedKernel.Models.FluentError;
 
 namespace RC.CA.Application.Services;
-public class GofT<T>
-{
-    public string ValueOfT { get; set; }
-    public void SetString<T>(T M)
-    {
-        ValueOfT = M.ToString();
-    }
-}
+
 /// <summary>
 /// Return parameters have to be inherited from base response
 /// </summary>

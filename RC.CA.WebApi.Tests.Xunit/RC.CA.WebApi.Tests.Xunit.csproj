@@ -9,11 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentAssertions" Version="6.7.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.7" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
     <PackageReference Include="Moq" Version="4.18.1" />
-    <PackageReference Include="Respawn" Version="5.0.1" />
     <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -26,6 +26,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RC.CA.Application\RC.CA.Application.csproj" />
+    <ProjectReference Include="..\RC.CA.Infrastructure.Persistence\RC.CA.Infrastructure.Persistence.csproj" />
+    <ProjectReference Include="..\RC.CA.WebApi\RC.CA.WebApi.csproj" />
   </ItemGroup>
 
 </Project>

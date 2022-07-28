@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RC.CA.Application.Dto.Club;
 using RC.CA.Application.Features.Club.Queries;
@@ -20,10 +21,9 @@ public class MembersController : BaseController
     }
 
     [HttpGet("Get")]
-    public async Task<CAResult<GetMemberResponseDto>> Get(GetMemberRequest getMemberRequest)
+    public async Task<ActionResult<CAResult<GetMemberResponseDto>>> Get(GetMemberRequest getMemberRequest)
     {
-        var memberResponse = await _mediator.Send(getMemberRequest);
-        return memberResponse;
+        return HandleResult(await _mediator.Send(getMemberRequest));
     }
     /// <summary>
     /// Get member list
@@ -31,7 +31,7 @@ public class MembersController : BaseController
     /// <param name="createMemberRequest"></param>
     /// <returns></returns>
     [HttpGet("List")]
-    public async Task<CAResult<MemberListResponseDto>> List(GetMemberListRequest getMemberListRequest)
+    public async Task<ActionResult<CAResult<MemberListResponseDto>>> List(GetMemberListRequest getMemberListRequest)
     {
         Request.Headers.TryGetValue(WebConstants.CorrelationId, out var correlationId);
         GetMemberListRequestValidator validationRules = new GetMemberListRequestValidator();
@@ -39,9 +39,9 @@ public class MembersController : BaseController
 
         //Check result of model validation
         if (valResult.IsValid)
-            return await _mediator.Send(getMemberListRequest);
+            return HandleResult(await _mediator.Send(getMemberListRequest));
         else
-            return CAResult<MemberListResponseDto>.Invalid(valResult.AsModelStateErrors());
+            return HandleResult(CAResult<MemberListResponseDto>.Invalid(valResult.AsModelStateErrors()));
     }
     /// <summary>
     /// Create member with list of experience
@@ -49,11 +49,9 @@ public class MembersController : BaseController
     /// <param name="createMemberRequest"></param>
     /// <returns></returns>
     [HttpDelete("Delete")]
-    public async Task<CAResultEmpty> Delete(DeleteMemberRequest deleteMemberRequest)
+    public async Task<ActionResult<CAResultEmpty>> Delete(DeleteMemberRequest deleteMemberRequest)
     {
-
-        return await _mediator.Send(deleteMemberRequest);
-
+        return HandleResult(await _mediator.Send(deleteMemberRequest));
     }
     /// <summary>
     /// Create member with list of experience's
@@ -61,7 +59,8 @@ public class MembersController : BaseController
     /// <param name="createMemberRequest"></param>
     /// <returns></returns>
     [HttpPut("Create")]
-    public async Task<CAResult<CreateMemberResponseDto>> Create(CreateMemberRequest createMemberRequest)
+    [AllowAnonymous]
+    public async Task<ActionResult<CAResult<CreateMemberResponseDto>>> Create(CreateMemberRequest createMemberRequest)
     {
         CreateMemberResponseDto memberResponse = new CreateMemberResponseDto();
         CreateMemberRequestValidator validationRules = new CreateMemberRequestValidator();
@@ -80,9 +79,9 @@ public class MembersController : BaseController
         }
 
         if (valResult.IsValid)
-            return await _mediator.Send(createMemberRequest);
+            return HandleResult(await _mediator.Send(createMemberRequest));
         else
-            return CAResult<CreateMemberResponseDto>.Invalid(valResult.AsModelStateErrors());
+            return HandleResult(CAResult<CreateMemberResponseDto>.Invalid(valResult.AsModelStateErrors()));
     }
     /// <summary>
     /// Update member with list of experience's
@@ -90,9 +89,8 @@ public class MembersController : BaseController
     /// <param name="createMemberRequest"></param>
     /// <returns></returns>
     [HttpPatch("Update")]
-    public async Task<CAResult<CreateMemberResponseDto>> Update(UpdateMemberRequest updateMemberRequest)
+    public async Task<ActionResult<CAResult<CreateMemberResponseDto>>> Update(UpdateMemberRequest updateMemberRequest)
     {
-        CreateMemberResponseDto memberResponse = new CreateMemberResponseDto();
         UpdateMemberRequestValidator validationRules = new UpdateMemberRequestValidator();
         var valResult = validationRules.Validate(updateMemberRequest);
         if (valResult.IsValid)
@@ -108,9 +106,9 @@ public class MembersController : BaseController
         }
 
         if (valResult.IsValid)
-            return await _mediator.Send(updateMemberRequest);
+            return HandleResult(await _mediator.Send(updateMemberRequest));
         else
-            return CAResultEmpty.Invalid(valResult.AsModelStateErrors());
+            return HandleResult(CAResult<CreateMemberResponseDto>.Invalid(valResult.AsModelStateErrors()));
     }
 
 }
