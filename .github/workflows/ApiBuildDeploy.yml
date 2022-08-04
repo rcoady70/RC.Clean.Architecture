@@ -31,7 +31,7 @@ jobs:
       
     - name: Build
       run: dotnet build '${{env.AZURE_WEBAPP_PROJECTNAME}}' --configuration Release
-      
+        
     - name: Publish
       run: dotnet publish '${{env.AZURE_WEBAPP_PROJECTNAME}}' -c Release -o '${{env.AZURE_WEBAPP_PACKAGE_PATH}}/myapp'
       
