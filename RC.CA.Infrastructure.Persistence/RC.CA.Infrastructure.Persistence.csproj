@@ -19,10 +19,7 @@
 	<PackageReference Include="Serilog.Settings.Configuration" Version="3.3.0" />
 	<PackageReference Include="Serilog.Sinks.Seq" Version="5.1.1" />
 	<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.15.1" />
-  </ItemGroup>
-	
-  <ItemGroup>
-    <Folder Include="Linq\" />
+	<PackageReference Include="System.Runtime.Caching" Version="6.0.0" />
   </ItemGroup>
 	
   <ItemGroup>

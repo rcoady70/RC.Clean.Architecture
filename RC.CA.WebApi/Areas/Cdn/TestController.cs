@@ -5,6 +5,7 @@ using RC.CA.Application.Contracts.Persistence;
 using RC.CA.Application.Dto.Cdn;
 using RC.CA.Application.Features.Cdn.Queries;
 using RC.CA.Application.Features.Club.Queries;
+using RC.CA.Infrastructure.Persistence.Cache;
 
 namespace RC.CA.WebApi.Areas.Cdn
 {
@@ -19,12 +20,17 @@ namespace RC.CA.WebApi.Areas.Cdn
         private readonly IMediator _mediator;
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly ICsvFileRepository _csvFileRepository;
+        private readonly ICacheProvider<UpsertCsvMapResponseDto> _cache;
 
-        public TestController(IMediator mediator, IServiceScopeFactory serviceScopeFactory, ICsvFileRepository csvFileRepository)
+        public TestController(IMediator mediator,
+                              IServiceScopeFactory serviceScopeFactory,
+                              ICsvFileRepository csvFileRepository,
+                              ICacheProvider<UpsertCsvMapResponseDto> cache)
         {
             _mediator = mediator;
             _serviceScopeFactory = serviceScopeFactory;
             _csvFileRepository = csvFileRepository;
+            _cache = cache;
         }
         /// <summary>
         /// Test success
@@ -33,8 +39,18 @@ namespace RC.CA.WebApi.Areas.Cdn
         [HttpGet("TestSuccess")]
         public async Task<ActionResult<CAResult<UpsertCsvMapResponseDto>>> TestSuccess()
         {
-            UpsertCsvMapResponseDto responseDTO = new UpsertCsvMapResponseDto();
-            return HandleResult(CAResultEmpty.Success(responseDTO));
+
+            Guid.TryParse("9a6aace3-5c72-467b-a21b-4b0bf8712df3", out Guid id);
+            _cache.RemoveFromCache("ssssss");
+            var m = await _cache.GetFromCacheAsync($"{id}");
+            if (m == null)
+            {
+                UpsertCsvMapResponseDto responseDTO = new UpsertCsvMapResponseDto();
+                responseDTO.Id = id;
+                _cache.AddToCacheAsync(responseDTO, $"{id}");
+            }
+            m = await _cache.GetFromCacheAsync($"{id}");
+            return HandleResult(CAResultEmpty.Success(m));
         }
 
         /// <summary>

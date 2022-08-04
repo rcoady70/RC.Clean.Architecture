@@ -32,7 +32,7 @@ namespace RC.CA.WebApi.Areas.CDN
         }
 
         [HttpGet("List")]
-        public async Task<ActionResult<CAResult<CdnFilesListResponseDto>>> List(GetCdnFilesListRequest getCdnFilesListRequest)
+        public async Task<ActionResult<CAResult<CdnFilesListResponseDto>>> List(GetCdnFilesListRequest getCdnFilesListRequest, CancellationToken cancellationToken)
         {
             GetCdnFilesRequestValidator validationRules = new GetCdnFilesRequestValidator();
             var valResult = validationRules.Validate(getCdnFilesListRequest);
@@ -49,7 +49,7 @@ namespace RC.CA.WebApi.Areas.CDN
         /// <returns></returns>
         [HttpPost("Upload")]
         [AllowAnonymous]
-        public async Task<ActionResult<CAResult<CreateCdnFileResponseDto>>> Upload([FromForm] IFormFile? fileData)
+        public async Task<ActionResult<CAResult<CreateCdnFileResponseDto>>> Upload([FromForm] IFormFile? fileData, CancellationToken cancellationToken)
         {
             var cookie = Request.Cookies.Count;
             CreateCdnFileResponseDto response = new CreateCdnFileResponseDto();
@@ -75,7 +75,7 @@ namespace RC.CA.WebApi.Areas.CDN
         /// <param name="Id"></param>
         /// <returns></returns>
         [HttpDelete("Delete")]
-        public async Task<ActionResult<CAResultEmpty>> Delete(DeleteCdnFileRequest deleteCdnFileRequest)
+        public async Task<ActionResult<CAResultEmpty>> Delete(DeleteCdnFileRequest deleteCdnFileRequest, CancellationToken cancellationToken)
         {
             Guard.Against.Null(deleteCdnFileRequest, nameof(deleteCdnFileRequest));
 

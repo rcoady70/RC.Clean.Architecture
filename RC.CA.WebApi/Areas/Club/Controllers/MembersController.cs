@@ -21,7 +21,7 @@ public class MembersController : BaseController
     }
 
     [HttpGet("Get")]
-    public async Task<ActionResult<CAResult<GetMemberResponseDto>>> Get(GetMemberRequest getMemberRequest)
+    public async Task<ActionResult<CAResult<GetMemberResponseDto>>> Get(GetMemberRequest getMemberRequest, CancellationToken cancellationToken)
     {
         return HandleResult(await _mediator.Send(getMemberRequest));
     }
@@ -31,7 +31,7 @@ public class MembersController : BaseController
     /// <param name="createMemberRequest"></param>
     /// <returns></returns>
     [HttpGet("List")]
-    public async Task<ActionResult<CAResult<MemberListResponseDto>>> List(GetMemberListRequest getMemberListRequest)
+    public async Task<ActionResult<CAResult<MemberListResponseDto>>> List(GetMemberListRequest getMemberListRequest, CancellationToken cancellationToken)
     {
         Request.Headers.TryGetValue(WebConstants.CorrelationId, out var correlationId);
         GetMemberListRequestValidator validationRules = new GetMemberListRequestValidator();
@@ -39,7 +39,7 @@ public class MembersController : BaseController
 
         //Check result of model validation
         if (valResult.IsValid)
-            return HandleResult(await _mediator.Send(getMemberListRequest));
+            return HandleResult(await _mediator.Send(getMemberListRequest, cancellationToken));
         else
             return HandleResult(CAResult<MemberListResponseDto>.Invalid(valResult.AsModelStateErrors()));
     }
@@ -49,7 +49,7 @@ public class MembersController : BaseController
     /// <param name="createMemberRequest"></param>
     /// <returns></returns>
     [HttpDelete("Delete")]
-    public async Task<ActionResult<CAResultEmpty>> Delete(DeleteMemberRequest deleteMemberRequest)
+    public async Task<ActionResult<CAResultEmpty>> Delete(DeleteMemberRequest deleteMemberRequest, CancellationToken cancellationToken)
     {
         return HandleResult(await _mediator.Send(deleteMemberRequest));
     }
@@ -60,7 +60,7 @@ public class MembersController : BaseController
     /// <returns></returns>
     [HttpPut("Create")]
     [AllowAnonymous]
-    public async Task<ActionResult<CAResult<CreateMemberResponseDto>>> Create(CreateMemberRequest createMemberRequest)
+    public async Task<ActionResult<CAResult<CreateMemberResponseDto>>> Create(CreateMemberRequest createMemberRequest, CancellationToken cancellationToken)
     {
         CreateMemberResponseDto memberResponse = new CreateMemberResponseDto();
         CreateMemberRequestValidator validationRules = new CreateMemberRequestValidator();
@@ -89,7 +89,7 @@ public class MembersController : BaseController
     /// <param name="createMemberRequest"></param>
     /// <returns></returns>
     [HttpPatch("Update")]
-    public async Task<ActionResult<CAResult<CreateMemberResponseDto>>> Update(UpdateMemberRequest updateMemberRequest)
+    public async Task<ActionResult<CAResult<CreateMemberResponseDto>>> Update(UpdateMemberRequest updateMemberRequest, CancellationToken cancellationToken)
     {
         UpdateMemberRequestValidator validationRules = new UpdateMemberRequestValidator();
         var valResult = validationRules.Validate(updateMemberRequest);

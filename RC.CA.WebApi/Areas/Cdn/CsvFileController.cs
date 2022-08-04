@@ -27,7 +27,7 @@ public class CsvFileController : BaseController
     /// <returns></returns>
     [HttpPost("Upload")]
     [AllowAnonymous]
-    public async Task<ActionResult<CAResult<CreateCsvFileResponseDto>>> Upload([FromForm] IFormFile? fileData)
+    public async Task<ActionResult<CAResult<CreateCsvFileResponseDto>>> Upload([FromForm] IFormFile? fileData, CancellationToken cancellationToken)
     {
         if (fileData != null)
         {
@@ -53,7 +53,7 @@ public class CsvFileController : BaseController
     /// <param name="fileData"></param>
     /// <returns></returns>
     [HttpGet("GetMap")]
-    public async Task<ActionResult<CAResult<UpsertCsvMapResponseDto>>> GetMap(GetCsvMapRequest getCsvMapRequest)
+    public async Task<ActionResult<CAResult<UpsertCsvMapResponseDto>>> GetMap(GetCsvMapRequest getCsvMapRequest, CancellationToken cancellationToken)
     {
 
         GetCsvMapRequestValidator validationRules = new GetCsvMapRequestValidator(_csvFileRepository);
@@ -70,7 +70,7 @@ public class CsvFileController : BaseController
     /// <param name="getCsvFilesListRequest"></param>
     /// <returns></returns>
     [HttpGet("List")]
-    public async Task<ActionResult<CAResult<CsvFilesListResponseDto>>> List(GetCsvFileListRequest getCsvFilesListRequest)
+    public async Task<ActionResult<CAResult<CsvFilesListResponseDto>>> List(GetCsvFileListRequest getCsvFilesListRequest, CancellationToken cancellationToken)
     {
         return HandleResult(await _mediator.Send(getCsvFilesListRequest));
     }
@@ -80,7 +80,7 @@ public class CsvFileController : BaseController
     /// <param name="getCsvMapRequest"></param>
     /// <returns></returns>
     [HttpPatch("UpdateMap")]
-    public async Task<ActionResult<CAResult<UpsertCsvMapResponseDto>>> UpdateMap(UpsertCsvMapRequest upsertCsvMapRequest)
+    public async Task<ActionResult<CAResult<UpsertCsvMapResponseDto>>> UpdateMap(UpsertCsvMapRequest upsertCsvMapRequest, CancellationToken cancellationToken)
     {
         UpsertCsvMapRequestValidator validationRules = new UpsertCsvMapRequestValidator(_csvFileRepository);
         var valResult = validationRules.Validate(upsertCsvMapRequest);
@@ -95,7 +95,7 @@ public class CsvFileController : BaseController
     /// <param name="upsertCsvMapRequest"></param>
     /// <returns></returns>
     [HttpPut("SubmitImport")]
-    public async Task<ActionResult<CAResultEmpty>> SubmitImport(SubmitCsvImportRequest submitCsvImportRequest)
+    public async Task<ActionResult<CAResultEmpty>> SubmitImport(SubmitCsvImportRequest submitCsvImportRequest, CancellationToken cancellationToken)
     {
         return HandleResult(await _mediator.Send(submitCsvImportRequest));
     }
