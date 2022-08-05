@@ -25,7 +25,7 @@ public static class BaseServiceRegistrationPersistence
         services.TryAddTransient<IAuthService, AuthService>();
 
         //Add caching 
-        services.AddSingleton(typeof(ICacheProvider<>), typeof(CacheProvider<>));
+        services.AddSingleton<ICacheProvider, CacheProvider>();
         services.AddSingleton<IMemoryCache, MemoryCache>();
 
         return services;

@@ -20,12 +20,12 @@ namespace RC.CA.WebApi.Areas.Cdn
         private readonly IMediator _mediator;
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly ICsvFileRepository _csvFileRepository;
-        private readonly ICacheProvider<UpsertCsvMapResponseDto> _cache;
+        private readonly ICacheProvider _cache;
 
         public TestController(IMediator mediator,
                               IServiceScopeFactory serviceScopeFactory,
                               ICsvFileRepository csvFileRepository,
-                              ICacheProvider<UpsertCsvMapResponseDto> cache)
+                              ICacheProvider cache)
         {
             _mediator = mediator;
             _serviceScopeFactory = serviceScopeFactory;
@@ -42,14 +42,14 @@ namespace RC.CA.WebApi.Areas.Cdn
 
             Guid.TryParse("9a6aace3-5c72-467b-a21b-4b0bf8712df3", out Guid id);
             _cache.RemoveFromCache("ssssss");
-            var m = await _cache.GetFromCacheAsync($"{id}");
+            var m = await _cache.GetFromCacheAsync<UpsertCsvMapResponseDto>($"{id}");
             if (m == null)
             {
                 UpsertCsvMapResponseDto responseDTO = new UpsertCsvMapResponseDto();
                 responseDTO.Id = id;
-                _cache.AddToCacheAsync(responseDTO, $"{id}");
+                _cache.AddToCacheAsync<UpsertCsvMapResponseDto>($"{id}", responseDTO);
             }
-            m = await _cache.GetFromCacheAsync($"{id}");
+            m = await _cache.GetFromCacheAsync<UpsertCsvMapResponseDto>($"{id}");
             return HandleResult(CAResultEmpty.Success(m));
         }
 

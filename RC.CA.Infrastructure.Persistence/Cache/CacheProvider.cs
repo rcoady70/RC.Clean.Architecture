@@ -1,15 +1,16 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using RC.CA.Infrastructure.Logging.Constants;
+using RC.CA.SharedKernel.GuardClauses;
 
 namespace RC.CA.Infrastructure.Persistence.Cache
 {
-    public class CacheProvider<T> : ICacheProvider<T>
+    public class CacheProvider : ICacheProvider
     {
         private readonly IMemoryCache _cache;
-        private readonly ILogger<CacheProvider<T>> _logger;
+        private readonly ILogger<CacheProvider> _logger;
 
-        public CacheProvider(IMemoryCache memoryCache, ILogger<CacheProvider<T>> logger)
+        public CacheProvider(IMemoryCache memoryCache, ILogger<CacheProvider> logger)
         {
             _cache = memoryCache;
             _logger = logger;
@@ -19,7 +20,7 @@ namespace RC.CA.Infrastructure.Persistence.Cache
         /// </summary>
         /// <param name="cacheKey"></param>
         /// <returns></returns>
-        public async Task<T> GetFromCacheAsync(string cacheKey)
+        public async Task<T> GetFromCacheAsync<T>(string cacheKey)
         {
             T cachedValue = default(T);
             bool isAvaiable = _cache.TryGetValue($"{typeof(T).Name}-{cacheKey}", out cachedValue);
@@ -32,8 +33,11 @@ namespace RC.CA.Infrastructure.Persistence.Cache
         /// <param name="cacheKey"></param>
         /// <param name="expiresInMinutes"></param>
         /// <returns></returns>
-        public async Task<T> AddToCacheAsync(T valueToCache, string cacheKey, int expiresInMinutes = 5)
+        public async Task<T> AddToCacheAsync<T>(string cacheKey, T valueToCache, int expiresInMinutes = 5)
         {
+            Guard.Against.Null(valueToCache, nameof(valueToCache));
+            Guard.Against.NullOrEmpty(cacheKey, nameof(cacheKey));
+
             //Lock when adding in case the item has been added to cache since check was completed
             SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
             T cachedValue = default;
@@ -41,7 +45,7 @@ namespace RC.CA.Infrastructure.Persistence.Cache
             {
                 cacheKey = $"{typeof(T).Name}-{cacheKey}";
                 await semaphore.WaitAsync();
-                cachedValue = await GetFromCacheAsync(cacheKey);
+                cachedValue = await GetFromCacheAsync<T>(cacheKey);
                 if (cachedValue != null) return cachedValue;
 
                 var cacheEntryOptions = new MemoryCacheEntryOptions
