@@ -26,6 +26,27 @@ namespace RC.CA.WebApi.UnitTests.Caching
             string result = await _cache.GetFromCacheAsync<string>(key);
             Assert.Equal(result, expectedResult);
         }
+        [Fact]
+        public async Task CacheProvider_GetFromCacheAsync_NoKeyNoValue()
+        {
+            try
+            {
+                await _cache.AddToCacheAsync<string>("key1", null);
+            }
+            catch (Exception ex)
+            {
+                Assert.Equal(ex.GetType().Name, nameof(ArgumentNullException));
+            }
+            try
+            {
+                await _cache.AddToCacheAsync<string>("", "value ");
+            }
+            catch (Exception ex)
+            {
+                Assert.Equal(ex.GetType().Name, nameof(ArgumentException));
+            }
+
+        }
         [Theory]
         [InlineData("KeyOK1", "Value 1", "Value 1")]
         [InlineData("KeyOK2", "Value 2", "Value 2")]
