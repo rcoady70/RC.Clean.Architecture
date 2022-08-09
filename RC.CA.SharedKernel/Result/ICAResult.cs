@@ -10,4 +10,5 @@ public interface ICAResult
     List<ValidationError> ValidationErrors { get; }
     Type ValueType { get; }
     Object GetValue();
+    void AddValidationError(string ErrorCode, string ErrorMessage, ValidationSeverity Severity, string Identifier = "");
 }

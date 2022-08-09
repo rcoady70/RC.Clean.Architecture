@@ -4,9 +4,8 @@ namespace RC.CA.SharedKernel.Result;
 
 public class CAResult<T> : ICAResult
 {
-    protected CAResult()
+    public CAResult()
     {
-        string mm = "";
     }
 
     /// <summary>

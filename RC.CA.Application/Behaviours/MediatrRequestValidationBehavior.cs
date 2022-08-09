@@ -4,7 +4,7 @@ using MediatR;
 namespace RC.CA.Application.Behaviours;
 public class MediatrRequestValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
                                                                        where TRequest : IRequest<TResponse>
-                                                                       where TResponse : ICAResult
+                                                                       where TResponse : ICAResult, new()
 {
     private readonly IEnumerable<IValidator<TRequest>> _validators;
 
@@ -14,7 +14,6 @@ public class MediatrRequestValidationBehavior<TRequest, TResponse> : IPipelineBe
     }
 
     public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
-
     {
         if (_validators.Any())
         {
@@ -26,12 +25,15 @@ public class MediatrRequestValidationBehavior<TRequest, TResponse> : IPipelineBe
                 .Where(f => f != null)
                 .ToList();
 
-            var xx = typeof(TResponse).Name;
-
-            var m = CAResult<TResponse>.Invalid();
-            var l = m.Value;
             if (failures.Count != 0)
-                return await Task.FromResult(CAResult<TResponse>.Invalid().Value);
+            {
+                var errorResponse = new TResponse();
+                foreach (var failure in failures)
+                {
+                    errorResponse.AddValidationError(failure.ErrorCode, failure.ErrorMessage, 0, "");
+                }
+                return await Task.FromResult(errorResponse);
+            }
             else
                 return await next();
         }

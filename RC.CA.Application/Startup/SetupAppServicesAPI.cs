@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,7 +14,7 @@ namespace NT.CA.Notification.WebApi.Startup
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
         {
-            //[Automapper] Register auto mappermethods
+            //[Automapper] Register auto mapper methods
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
             //[Mediatr]
@@ -21,8 +22,8 @@ namespace NT.CA.Notification.WebApi.Startup
 
             //[Mediatr]  Validation behaviour
             //
-            //services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-            //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>));
+            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(MediatrRequestValidationBehavior<,>));
 
             //[Mediatr] Add caching 
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
