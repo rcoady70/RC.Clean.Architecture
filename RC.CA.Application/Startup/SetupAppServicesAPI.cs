@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RC.CA.Application.Behaviours;
 
 namespace NT.CA.Notification.WebApi.Startup
 {
@@ -12,15 +13,20 @@ namespace NT.CA.Notification.WebApi.Startup
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
         {
-            //Auto mapper
+            //[Automapper] Register auto mappermethods
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
-            //Mediatr
+
+            //[Mediatr]
             services.AddMediatR(Assembly.GetExecutingAssembly());
 
-            //Register mediatr validation behavior to mediatr pipeline TEST
+            //[Mediatr]  Validation behaviour
             //
             //services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>));
+
+            //[Mediatr] Add caching 
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
+            services.AddDistributedMemoryCache();
             return services;
         }
     }

@@ -1,12 +1,9 @@
 ﻿using System.Globalization;
-using System.Threading.Tasks;
-using Azure.Storage.Blobs;
 using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.Extensions.Options;
 using RC.CA.Application.Contracts.Persistence;
-using RC.CA.Application.Contracts.Services;
-using RC.CA.Application.Dto.Authentication;
+using RC.CA.Application.Settings;
 using RC.CA.Domain.Entities.CSV;
 
 namespace RC.CA.Application.Services
@@ -17,8 +14,8 @@ namespace RC.CA.Application.Services
         private readonly IBlobStorage _blobStorage;
         private readonly BlobStorageSettings _blobStorageSettings;
 
-        public CsvMapService(ICsvFileRepository csvFileRepository, 
-                             IBlobStorage blobStorage, 
+        public CsvMapService(ICsvFileRepository csvFileRepository,
+                             IBlobStorage blobStorage,
                              IOptions<BlobStorageSettings> blobStorageSettings)
         {
             _csvFileRepository = csvFileRepository;
@@ -43,11 +40,11 @@ namespace RC.CA.Application.Services
                     using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
                     {
                         var records = csv.GetRecords<dynamic>();
-                        foreach(var record in records)
+                        foreach (var record in records)
                         {
                             foreach (var col in record)
                             {
-                                csvMap.MapColumns.Add(new CsvMapColumn(col.Key, "", "", "", col.Value)); ; 
+                                csvMap.MapColumns.Add(new CsvMapColumn(col.Key, "", "", "", col.Value)); ;
                             }
                             break;
                         }

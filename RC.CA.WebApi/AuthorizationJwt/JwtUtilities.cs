@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using RC.CA.Application.Dto.Authentication;
+using RC.CA.Application.Settings;
 using RC.CA.Infrastructure.Persistence.Identity;
 
 namespace RC.CA.WebApi.AuthorizationJwt;

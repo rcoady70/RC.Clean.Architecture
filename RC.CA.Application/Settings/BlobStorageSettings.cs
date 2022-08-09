@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RC.CA.Application.Dto.Authentication
+﻿namespace RC.CA.Application.Settings
 {
     public class BlobStorageSettings
     {

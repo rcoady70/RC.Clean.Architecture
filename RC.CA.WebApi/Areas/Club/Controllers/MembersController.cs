@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using RC.CA.Application.Dto.Club;
 using RC.CA.Application.Features.Club.Queries;
 
-
 namespace RC.CA.WebApi.Areas.Club.Controllers;
 [Route("api/club/[controller]")]
 [ApiController]
@@ -33,15 +32,21 @@ public class MembersController : BaseController
     [HttpGet("List")]
     public async Task<ActionResult<CAResult<MemberListResponseDto>>> List(GetMemberListRequest getMemberListRequest, CancellationToken cancellationToken)
     {
+
         Request.Headers.TryGetValue(WebConstants.CorrelationId, out var correlationId);
         GetMemberListRequestValidator validationRules = new GetMemberListRequestValidator();
         var valResult = validationRules.Validate(getMemberListRequest);
 
         //Check result of model validation
         if (valResult.IsValid)
+        {
+            getMemberListRequest.CacheSkip = false;
             return HandleResult(await _mediator.Send(getMemberListRequest, cancellationToken));
+        }
         else
+        {
             return HandleResult(CAResult<MemberListResponseDto>.Invalid(valResult.AsModelStateErrors()));
+        }
     }
     /// <summary>
     /// Create member with list of experience

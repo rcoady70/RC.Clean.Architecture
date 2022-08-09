@@ -2,13 +2,13 @@
 using MediatR;
 
 namespace RC.CA.Application.Behaviours;
-public class RequestValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-       where TRequest : IRequest<TResponse>
-       where TResponse : ICAResult
+public class MediatrRequestValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+                                                                       where TRequest : IRequest<TResponse>
+                                                                       where TResponse : ICAResult
 {
     private readonly IEnumerable<IValidator<TRequest>> _validators;
 
-    public RequestValidationBehavior(IEnumerable<IValidator<TRequest>> validators)
+    public MediatrRequestValidationBehavior(IEnumerable<IValidator<TRequest>> validators)
     {
         _validators = validators;
     }

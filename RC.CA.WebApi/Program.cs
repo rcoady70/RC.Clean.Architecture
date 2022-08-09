@@ -64,7 +64,7 @@ try
     builder.Services.AddControllers();
     //.AddFluentValidation();
 
-    //[EventBus] Notification requests will be queued to azure event buss and processed later
+    //[EventBus] Notification requests will be queued to azure event bus and processed later
     //
     builder.Services.AddEventBus(builder.Configuration);
 

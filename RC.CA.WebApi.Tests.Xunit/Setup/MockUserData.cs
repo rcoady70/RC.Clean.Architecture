@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using Moq;
-using RC.CA.Application.Dto.Authentication;
+using RC.CA.Application.Settings;
 using RC.CA.Infrastructure.Persistence.Identity;
 
 namespace RC.CA.WebApi.Tests.Xunit.Setup

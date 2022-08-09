@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using RC.CA.Application.Dto.Authentication;
+using RC.CA.Application.Settings;
 using RC.CA.Infrastructure.Logging.Constants;
 using RC.CA.SharedKernel.Constants;
 

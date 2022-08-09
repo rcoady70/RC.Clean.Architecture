@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using RC.CA.Application.Contracts.Identity;
 using RC.CA.Application.Contracts.Persistence;
 using RC.CA.Application.Dto.Authentication;
+using RC.CA.Application.Settings;
 using RC.CA.Domain.Entities.Account;
 using RC.CA.Infrastructure.Persistence.AuthorizationJwt;
 using RC.CA.Infrastructure.Persistence.Identity;

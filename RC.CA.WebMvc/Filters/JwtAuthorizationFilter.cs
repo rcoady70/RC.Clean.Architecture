@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using RC.CA.Application.Contracts.Identity;
-using RC.CA.Application.Dto.Authentication;
+using RC.CA.Application.Settings;
 using RC.CA.Infrastructure.Logging.Constants;
 
 namespace NT.CA.WebUiMvc.Filters;

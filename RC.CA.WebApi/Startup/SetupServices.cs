@@ -5,6 +5,7 @@ using RC.CA.Application.Contracts.Services;
 using RC.CA.Application.Dto.Authentication;
 using RC.CA.Application.MsgBusHandlers;
 using RC.CA.Application.Services;
+using RC.CA.Application.Settings;
 using RC.CA.Infrastructure.MessageBus;
 using RC.CA.Infrastructure.MessageBus.Interfaces;
 using RC.CA.Infrastructure.Persistence.AzureBlob;
@@ -26,12 +27,15 @@ namespace RC.CA.WebApi.Startup
 
             //Get JWT token settings
             services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
-            
+
             //Get blob storage settings
             services.Configure<BlobStorageSettings>(configuration.GetSection("BlobStorage"));
 
             //Get CORS settings
             services.Configure<CorsSettings>(configuration.GetSection("CorsSettings"));
+
+            //Cache settings
+            services.Configure<CacheSettings>(configuration.GetSection("CacheSettings"));
 
             //Http helper used to generate security nouce
             services.AddScoped<INonce, Nonce>();
@@ -63,18 +67,19 @@ namespace RC.CA.WebApi.Startup
             //);
 
             services.AddCors(options => options.AddPolicy(WebConstants.CORSPolicyName,
-                                                          builder => {
-                                                          //builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+                                                          builder =>
+                                                          {
+                                                              //builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
                                                               builder
                                                               .WithOrigins(corsSettings.AllowedOrgins.ToArray())
                                                               .AllowAnyMethod()
                                                               .AllowAnyHeader()
                                                               .SetIsOriginAllowedToAllowWildcardSubdomains();
-                                                          //.AllowCredentials(); //Allows cookies to be posted on ajax querys
+                                                              //.AllowCredentials(); //Allows cookies to be posted on ajax querys
 
-                                                          //builder.SetPreflightMaxAge(TimeSpan.FromMinutes(10));//Chrome is hardwired to 10 
-                                                          //builder.WithExposedHeaders("PageNo","PageSize","PageCount","PageTotalRecords"); //Expose headers
-                                                          //builder.SetIsOriginAllowed(IsOrginAllowed); //Call custom function to check if origin is allowed
+                                                              //builder.SetPreflightMaxAge(TimeSpan.FromMinutes(10));//Chrome is hardwired to 10 
+                                                              //builder.WithExposedHeaders("PageNo","PageSize","PageCount","PageTotalRecords"); //Expose headers
+                                                              //builder.SetIsOriginAllowed(IsOrginAllowed); //Call custom function to check if origin is allowed
                                                           }));
             //services.AddCors(options => options.AddPolicy(WebConstants.CORSPublicPolicyName, builder =>
             //                                                           builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader()
@@ -95,7 +100,8 @@ namespace RC.CA.WebApi.Startup
             var corsSettings = configuration.GetSection("CorsSettings").Get<CorsSettings>();
 
             services.AddCors(options => options.AddPolicy(WebConstants.CORSPolicyName,
-                                                            builder => {
+                                                            builder =>
+                                                            {
                                                                 builder.WithOrigins(corsSettings.AllowedOrgins.ToArray())
                                                                        .SetIsOriginAllowedToAllowWildcardSubdomains() //Allow sub domains
                                                                        .AllowAnyMethod().AllowAnyHeader();
@@ -127,7 +133,7 @@ namespace RC.CA.WebApi.Startup
 
             hcBuilder.AddCheck($"Self", () => HealthCheckResult.Healthy(), new string[] { $"{webHostEnvironment.EnvironmentName}" });
 
-            hcBuilder.CheckConfigurationFileSettings("Check application configuration",configuration, HealthStatus.Unhealthy, tags: new[] { "Config" })
+            hcBuilder.CheckConfigurationFileSettings("Check application configuration", configuration, HealthStatus.Unhealthy, tags: new[] { "Config" })
                      .AddSqlServer(configuration.GetConnectionString("Default"), tags: new[] { "Database" })
                      .AddAzureKeyVaultSettings("KeyVaultCheck",
                                               new Uri(configuration.GetValue<string>("KeyVault:VaultName")),

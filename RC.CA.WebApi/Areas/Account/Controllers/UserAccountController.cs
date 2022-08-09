@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using RC.CA.Application.Contracts.Identity;
 using RC.CA.Application.Dto.Authentication;
+using RC.CA.Application.Settings;
 
 namespace RC.CA.WebApi.Areas.Account.Controllers;
 [Route("api/[controller]")]
@@ -74,6 +75,4 @@ public class UserAccountController : BaseController
     {
         return HandleResult(await _authenticationService.LogoutAsync());
     }
-
-
 }

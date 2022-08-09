@@ -44,6 +44,7 @@ public class CAResult<T> : ICAResult
     public IEnumerable<string> Errors { get; protected set; } = new List<string>();
     [JsonInclude] // Causes the protected setter to be called on de-serialization.
     public List<ValidationError> ValidationErrors { get; protected set; } = new List<ValidationError>();
+    public bool IsCachedResult { get; set; } = false;
 
     /// <summary>
     /// Implicit convert TO T FROM CAResultEmpty<T>

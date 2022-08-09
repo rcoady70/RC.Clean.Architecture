@@ -7,6 +7,7 @@ using RC.CA.Application.Contracts.Identity;
 using RC.CA.Application.Contracts.Services;
 using RC.CA.Application.Dto.Authentication;
 using RC.CA.Application.Services;
+using RC.CA.Application.Settings;
 using RC.CA.SharedKernel.Constants;
 using RC.CA.SharedKernel.WebHelpers;
 

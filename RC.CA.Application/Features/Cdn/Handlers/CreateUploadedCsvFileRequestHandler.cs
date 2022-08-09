@@ -3,9 +3,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using RC.CA.Application.Contracts.Persistence;
 using RC.CA.Application.Contracts.Services;
-using RC.CA.Application.Dto.Authentication;
 using RC.CA.Application.Dto.Cdn;
 using RC.CA.Application.Features.Cdn.Queries;
+using RC.CA.Application.Settings;
 using RC.CA.Domain.Entities.CSV;
 
 namespace RC.CA.Application.Features.Club.Handlers;
