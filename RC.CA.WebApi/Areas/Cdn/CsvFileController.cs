@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using RC.CA.Application.Contracts.Persistence;
 using RC.CA.Application.Dto.Cdn;
 using RC.CA.Application.Features.Cdn.Queries;
-using RC.CA.Application.Features.Club.Queries;
 
 namespace RC.CA.WebApi.Areas.Cdn;
 
@@ -31,17 +30,10 @@ public class CsvFileController : BaseController
     {
         if (fileData != null)
         {
-            CreateCdnFileRequestValidator validationRules = new CreateCdnFileRequestValidator();
-            var valResult = validationRules.Validate(fileData);
-            if (valResult.IsValid)
-            {
-                CreateCSvFileRequest createUploadedFilesRequest = new CreateCSvFileRequest();
-                createUploadedFilesRequest.UploadedFile = fileData;
-                var response = await _mediator.Send(createUploadedFilesRequest);
-                return HandleResult(response);
-            }
-            else
-                return HandleResult(CAResult<CreateCsvFileResponseDto>.Invalid(valResult.AsModelStateErrors()));
+            CreateCSvFileRequest createUploadedFilesRequest = new CreateCSvFileRequest();
+            createUploadedFilesRequest.UploadedFile = fileData;
+            var response = await _mediator.Send(createUploadedFilesRequest);
+            return HandleResult(response);
         }
         else
             return HandleResult(CAResult<CreateCsvFileResponseDto>.Invalid("NoFile", "Uploaded file not found", ValidationSeverity.Error));
@@ -55,14 +47,7 @@ public class CsvFileController : BaseController
     [HttpGet("GetMap")]
     public async Task<ActionResult<CAResult<UpsertCsvMapResponseDto>>> GetMap(GetCsvMapRequest getCsvMapRequest, CancellationToken cancellationToken)
     {
-
-        GetCsvMapRequestValidator validationRules = new GetCsvMapRequestValidator(_csvFileRepository);
-        var valResult = validationRules.Validate(getCsvMapRequest);
-
-        if (valResult.IsValid)
-            return HandleResult(await _mediator.Send(getCsvMapRequest));
-        else
-            return HandleResult(CAResult<UpsertCsvMapResponseDto>.Invalid(valResult.AsModelStateErrors()));
+        return HandleResult(await _mediator.Send(getCsvMapRequest));
     }
     /// <summary>
     /// Get csv file list
@@ -82,12 +67,7 @@ public class CsvFileController : BaseController
     [HttpPatch("UpdateMap")]
     public async Task<ActionResult<CAResult<UpsertCsvMapResponseDto>>> UpdateMap(UpsertCsvMapRequest upsertCsvMapRequest, CancellationToken cancellationToken)
     {
-        UpsertCsvMapRequestValidator validationRules = new UpsertCsvMapRequestValidator(_csvFileRepository);
-        var valResult = validationRules.Validate(upsertCsvMapRequest);
-        if (valResult.IsValid)
-            return HandleResult(await _mediator.Send(upsertCsvMapRequest));
-        else
-            return HandleResult(CAResult<UpsertCsvMapResponseDto>.Invalid(valResult.AsModelStateErrors()));
+        return HandleResult(await _mediator.Send(upsertCsvMapRequest));
     }
     /// <summary>
     /// Submit import 

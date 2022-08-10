@@ -20,5 +20,8 @@ public class UpdateMemberRequestValidator : AbstractValidator<UpdateMemberReques
         RuleFor(p => p.Qualification).ExtIsValidDescription()
                                     .NotEmpty();
 
+        //Validate each experience
+        RuleForEach(x => x.Experiences).SetValidator(new CreateExpierenceRequestValidator());
+
     }
 }

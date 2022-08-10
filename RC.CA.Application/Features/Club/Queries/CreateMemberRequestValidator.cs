@@ -5,7 +5,7 @@ namespace RC.CA.Application.Features.Club.Queries;
 public class CreateMemberRequestValidator : AbstractValidator<CreateMemberRequest>
 {
     /// <summary>
-    /// Create member Validator
+    /// Create member validator
     /// </summary>
     public CreateMemberRequestValidator()
     {
@@ -19,6 +19,9 @@ public class CreateMemberRequestValidator : AbstractValidator<CreateMemberReques
 
         RuleFor(p => p.Qualification).ExtIsValidDescription()
                                     .NotEmpty();
+
+        //Validate each experience
+        RuleForEach(x => x.Experiences).SetValidator(new CreateExpierenceRequestValidator());
 
     }
 }

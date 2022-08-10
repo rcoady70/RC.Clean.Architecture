@@ -30,8 +30,8 @@ namespace RC.CA.Application.Features.Cdn.Handlers
                     _eventBus.Publish(ebMessage);
                     csvFile.Status = Domain.Entities.CSV.FileStatus.OnQueue;
                     csvFile.ProcessedOn = DateTime.MinValue;
-                    _csvFileRepository.UpdateAsync(csvFile);
-                    _csvFileRepository.SaveChangesAsync();
+                    await _csvFileRepository.UpdateAsync(csvFile);
+                    await _csvFileRepository.SaveChangesAsync();
                 }
                 return CAResultEmpty.Success();
             }

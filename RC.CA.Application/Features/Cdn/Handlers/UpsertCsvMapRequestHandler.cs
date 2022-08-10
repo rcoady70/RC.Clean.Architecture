@@ -21,8 +21,8 @@ namespace RC.CA.Application.Features.Cdn.Handlers
             if (csv != null)
             {
                 csv.ColumnMap = upsertCsvMapRequest.ColumnMap.ToJsonExt();
-                _csvFileRepository.UpdateAsync(csv);
-                _csvFileRepository.SaveChangesAsync();
+                await _csvFileRepository.UpdateAsync(csv);
+                await _csvFileRepository.SaveChangesAsync();
             }
             return CAResult<UpsertCsvMapResponseDto>.Success(response);
         }

@@ -46,7 +46,10 @@ public class MemberController : RootController
 
         var memberListResponse = await _httpHelper.SendAsync<GetMemberListRequest, MemberListResponseDto>(getMemberListRequest, "api/club/Members/List", HttpMethod.Get);
         if (!memberListResponse.IsSuccess)
+        {
             await AppendErrorsToModelStateAsyncCAResult(memberListResponse.ValidationErrors);
+            memberListResponse = new MemberListResponseDto();
+        }
 
         return View(memberListResponse.Value);
     }

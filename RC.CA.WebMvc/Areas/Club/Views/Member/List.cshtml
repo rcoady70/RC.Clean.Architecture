@@ -69,11 +69,11 @@
         <!-- End heading panel-->
         @foreach (var item in Model.Members)
         {
-             <!-- List main row -->
+                <!-- List main row -->
             <div class="row list-row">
                 <div class="col-sm-1">
                     <span class="list-subhead"></span><img src='@Url.Content($"~/images/{@item.PhotoUrl.NullIfWhiteSpaceExt() ?? "noimage.jpg"}")' class="img-fluid rounded-circle p-1">
-                 </div>
+                    </div>
                 <div class="col-sm-4 evt-list-col-more text-truncate">
                     <span class="list-subhead">ID:</span>@item.Id
                 </div>

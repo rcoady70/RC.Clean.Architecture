@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RC.CA.Application.Dto.Cdn;
 using RC.CA.Application.Features.Cdn.Queries;
-using RC.CA.Application.Features.Club.Queries;
 using RC.CA.Infrastructure.MessageBus;
 
 namespace RC.CA.WebApi.Areas.CDN
@@ -34,13 +33,7 @@ namespace RC.CA.WebApi.Areas.CDN
         [HttpGet("List")]
         public async Task<ActionResult<CAResult<CdnFilesListResponseDto>>> List(GetCdnFilesListRequest getCdnFilesListRequest, CancellationToken cancellationToken)
         {
-            GetCdnFilesRequestValidator validationRules = new GetCdnFilesRequestValidator();
-            var valResult = validationRules.Validate(getCdnFilesListRequest);
-            //Check result of model validation
-            if (valResult.IsValid)
-                return HandleResult(await _mediator.Send(getCdnFilesListRequest));
-            else
-                return HandleResult(CAResult<CdnFilesListResponseDto>.Invalid(valResult.AsModelStateErrors()));
+            return HandleResult(await _mediator.Send(getCdnFilesListRequest));
         }
         /// <summary>
         /// Process uploaded file.
@@ -51,20 +44,12 @@ namespace RC.CA.WebApi.Areas.CDN
         [AllowAnonymous]
         public async Task<ActionResult<CAResult<CreateCdnFileResponseDto>>> Upload([FromForm] IFormFile? fileData, CancellationToken cancellationToken)
         {
-            var cookie = Request.Cookies.Count;
             CreateCdnFileResponseDto response = new CreateCdnFileResponseDto();
             if (fileData != null)
             {
-                CreateCdnFileRequestValidator validationRules = new CreateCdnFileRequestValidator();
-                var valResult = validationRules.Validate(fileData);
-                if (valResult.IsValid)
-                {
-                    CreateCdnFileRequest createUploadedFilesRequest = new CreateCdnFileRequest();
-                    createUploadedFilesRequest.UploadedFile = fileData;
-                    return HandleResult(await _mediator.Send(createUploadedFilesRequest));
-                }
-                else
-                    return HandleResult(CAResult<CreateCdnFileResponseDto>.Invalid(valResult.AsModelStateErrors()));
+                CreateCdnFileRequest createUploadedFilesRequest = new CreateCdnFileRequest();
+                createUploadedFilesRequest.UploadedFile = fileData;
+                return HandleResult(await _mediator.Send(createUploadedFilesRequest));
             }
             else
                 return HandleResult(CAResult<CreateCdnFileResponseDto>.Invalid("UploadFailed", "Uploaded file not found", ValidationSeverity.Error));

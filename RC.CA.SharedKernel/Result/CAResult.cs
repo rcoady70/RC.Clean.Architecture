@@ -4,8 +4,10 @@ namespace RC.CA.SharedKernel.Result;
 
 public class CAResult<T> : ICAResult
 {
-    public CAResult()
+
+    protected CAResult()
     {
+        //Do not make public as it will cause objects to de-serialize incorrectly. Base constructor will be used.
     }
 
     /// <summary>
@@ -181,6 +183,7 @@ public class CAResult<T> : ICAResult
     /// <returns>A CAResultEmpty<typeparamref name="T"/></returns>
     public static CAResult<T> Invalid(ValidationError validationError)
     {
+
         var result = new CAResult<T>(ResultStatus.BadRequest) { ValidationErrors = new List<ValidationError>() };
         result.AddValidationError(validationError.ErrorCode, validationError.ErrorMessage, validationError.Severity, validationError.Identifier);
         return result;

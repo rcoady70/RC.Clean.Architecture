@@ -1,10 +1,11 @@
-﻿using FluentValidation;
+﻿using System.Reflection;
+using FluentValidation;
 using MediatR;
 
 namespace RC.CA.Application.Behaviours;
 public class MediatrRequestValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
                                                                        where TRequest : IRequest<TResponse>
-                                                                       where TResponse : ICAResult, new()
+                                                                       where TResponse : ICAResult
 {
     private readonly IEnumerable<IValidator<TRequest>> _validators;
 
@@ -27,11 +28,10 @@ public class MediatrRequestValidationBehavior<TRequest, TResponse> : IPipelineBe
 
             if (failures.Count != 0)
             {
-                var errorResponse = new TResponse();
-                foreach (var failure in failures)
-                {
-                    errorResponse.AddValidationError(failure.ErrorCode, failure.ErrorMessage, 0, "");
-                }
+                List<ValidationError> errorList = failures.ToCAResultErrors();
+                MethodInfo methodInfo = typeof(TResponse).GetMethod("Invalid", new[] { typeof(List<ValidationError>) });
+                //Execute none generic static method to create invalid CAResult<t> 
+                var errorResponse = (TResponse)methodInfo.Invoke(null, new object[] { errorList });
                 return await Task.FromResult(errorResponse);
             }
             else
