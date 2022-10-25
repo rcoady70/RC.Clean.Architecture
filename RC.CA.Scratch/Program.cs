@@ -1,36 +1,44 @@
-﻿// See https://aka.ms/new-console-template for more information
-using System.Reflection;
-using RC.CA.SharedKernel.Result;
+﻿
+//Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId}");
+//var tea = await MakeTeaAsync();
+//Console.WriteLine(tea);
 
-try
+using RC.CA.Scratch;
+
+TreeTest _tree = new TreeTest();
+_tree.Run();
+
+
+async Task<string> MakeTeaAsync()
 {
-    var e = new ValidationError()
+    var waterTASK = BoillWaterAsync();
+    Console.WriteLine($"Take the cups out t-{Thread.CurrentThread.ManagedThreadId}");
+
+    int a = 0;
+    for (int i = 0; i < 10000000000; i++)
     {
-        ErrorCode = "123456",
-        ErrorMessage = "Message",
-        Severity = ValidationSeverity.Error,
-        Identifier = "",
-    };
-    List<ValidationError> lE = new List<ValidationError>();
-    lE.Add(e);
-    //public static CAResult<T> Invalid(List<ValidationError> validationErrors)
-
-    MethodInfo MI = typeof(CAResult<string>).GetMethod("Invalid", new[] { typeof(List<ValidationError>) });
-    var x = MI.Invoke(null, new object[] { lE });
-    Console.WriteLine("Hello");
-}
-catch (Exception ex)
-{
-    string message = ex.Message;
-}
-
-
-class MyClass<T>
-{
-    public static string Invalid(List<ValidationError> errors)
-    {
-        Console.WriteLine("Hello");
-        return "Called......";
+        a += i;
     }
+
+    Console.WriteLine($"Put tea in cups t-{Thread.CurrentThread.ManagedThreadId}");
+    var water = await waterTASK;
+    var tea = $"pour {water} in cups t-{Thread.CurrentThread.ManagedThreadId}";
+
+    return tea;
 }
 
+async Task<string> BoillWaterAsync()
+{
+    Console.WriteLine($"Kettle start t-{Thread.CurrentThread.ManagedThreadId}");
+    Console.WriteLine($"Kettle boiling t-{Thread.CurrentThread.ManagedThreadId}");
+    await Task.Delay(2000);
+    Console.WriteLine($"Kettle finished t-{Thread.CurrentThread.ManagedThreadId}");
+
+    return "water";
+}
+
+class Node
+{
+    public int Id { get; set; }
+    public List<int> Children = new List<int>();
+}
